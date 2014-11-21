@@ -19,7 +19,7 @@ void get_urls (void *ptr)
 	regex_t regex;
 	int reti;
 
-	reti = regcomp(&regex, "*http*", 0);
+	reti = regcomp(&regex, "<[aA] [hH][rR][eE][fF]", 0);
 	if (reti) 
 	{
 		fprintf(stderr, "Cound not compile regex.\n");
