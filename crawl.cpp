@@ -4,6 +4,7 @@
 */
 #include <iostream>
 #include <stdio.h>
+#include <cstring>		// memset ()
 #include <string>
 #include <unordered_set>	// set of links 
 #include <curl/curl.h>		// http gathering
@@ -18,25 +19,26 @@ int depth = 0;
 
 std::unordered_set<std::string> urls;
 
-int is_link (char * str)
+bool is_link (char * str)
 {
 	regex_t regex;
 	int reti;
 	char buf [MAX_BUF_SIZE];
 
-	reti = regcomp(&regex, "", 0);		// compile regex
+	reti = regcomp(&regex, "[a-zA-Z0-9./]*(.bmp|.gif|.jpg|.pdf|.png)", REG_EXTENDED);		// compile regex
 	if (reti){fprintf(stderr, "Could not compile regex\n"); exit(1);}
 
 	reti = regexec(&regex, str, 0, NULL, 0);
+	reti = !reti;
 	if(!reti)
 	{
-		fprintf(stdout, "[ ] %s\n", str);
-		return 1;
+		fprintf(stdout, "[x] %s %d\n", str, reti);
+		return true;
 	}
 	else if (reti == REG_NOMATCH)
 	{
-		fprintf(stdout, "[x] %s\n", str);
-		return 0;
+		fprintf(stdout, "[ ] %s %d\n", str, reti);
+		return false;
 	}
 	else
 	{
@@ -64,17 +66,18 @@ int get_urls (char *input)
 	int cmp_index = 0;
 	char buf [MAX_BUF_SIZE];
 	int count = 0;
+	bool show_debug = false;
 	
 	for (int i = 0; input[i] != '\0'; i++)		// iterate through input
 	{
 		if (input[i] == link[cmp_index])	// when you find a match
 		{
-			if(cmp_index == 0) fprintf(stdout, "||%c", input[i]);
+			if(cmp_index == 0 && show_debug) fprintf(stdout, "||%c", input[i]);
 			cmp_index++;			// walk along match string
 			if(link[cmp_index] == '\0')	// if you reach the end
 			{				// of the match string
 				i++;
-				fprintf(stdout, "<||%c", input[i]);
+				if(show_debug)fprintf(stdout, "<||%c", input[i]);
 
 				// Copy the string AFTER the match into buf
 				int b = 0;
@@ -82,20 +85,21 @@ int get_urls (char *input)
 				    && input[i] != '"' && input[i] != '\n' 
 				    && b < MAX_BUF_SIZE; b++, i++)
 				{
-					fprintf(stdout, "%c", input[i]);
+					if(show_debug)fprintf(stdout, "%c", input[i]);
 					buf[b] = input[i];
 				}
 				buf[b] = '\0';
-				fprintf(stdout, "||>");
+				if(show_debug)fprintf(stdout, "||>");
 
 				// then add it to the set of urls
-				add_to_urls(buf);
+				if (is_link(buf)) add_to_urls(buf);
+				std::memset(buf, 0, sizeof(buf));
 				count++;
 			}
 		}
 		else
 		{
-			fprintf(stdout, "%c", input[i]);
+			if(show_debug)fprintf(stdout, "%c", input[i]);
 			cmp_index = 0;
 		}
 	}	
@@ -169,7 +173,8 @@ int mCurl (const char* url)
 			}
 			else
 			{
-				mCurl((*it).c_str());
+				fprintf(stdout, "trying url: %s\n", it->c_str());
+				mCurl(it->c_str());
 			}
 		}
 	}	
