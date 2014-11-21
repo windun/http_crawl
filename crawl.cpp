@@ -5,14 +5,46 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include <unordered_set>
-#include <curl/curl.h>
+#include <unordered_set>	// set of links 
+#include <curl/curl.h>		// http gathering
+
+// link recognition (vs. file)
+#include <sys/types.h>
+#include <regex.h>
 
 #define MAX_BUF_SIZE 4096
-#define MAX_CURL_DEPTH 10
+#define MAX_CURL_DEPTH 2
 int depth = 0;
 
 std::unordered_set<std::string> urls;
+
+int is_link (char * str)
+{
+	regex_t regex;
+	int reti;
+	char buf [MAX_BUF_SIZE];
+
+	reti = regcomp(&regex, "", 0);		// compile regex
+	if (reti){fprintf(stderr, "Could not compile regex\n"); exit(1);}
+
+	reti = regexec(&regex, str, 0, NULL, 0);
+	if(!reti)
+	{
+		fprintf(stdout, "[ ] %s\n", str);
+		return 1;
+	}
+	else if (reti == REG_NOMATCH)
+	{
+		fprintf(stdout, "[x] %s\n", str);
+		return 0;
+	}
+	else
+	{
+		regerror(reti, &regex, buf, sizeof(buf));
+		fprintf(stderr, "Regex match failed: %s\n", buf);
+		exit(1);
+	}
+}
 
 void add_to_urls (char * str)
 {
@@ -33,28 +65,37 @@ int get_urls (char *input)
 	char buf [MAX_BUF_SIZE];
 	int count = 0;
 	
-	for (int i = 0; input[i] != '\0'; i++)
+	for (int i = 0; input[i] != '\0'; i++)		// iterate through input
 	{
-		if (input[i] == link[cmp_index])
+		if (input[i] == link[cmp_index])	// when you find a match
 		{
-			cmp_index++;			
-			if(link[cmp_index] == '\0')
-			{
+			if(cmp_index == 0) fprintf(stdout, "||%c", input[i]);
+			cmp_index++;			// walk along match string
+			if(link[cmp_index] == '\0')	// if you reach the end
+			{				// of the match string
 				i++;
+				fprintf(stdout, "<||%c", input[i]);
+
+				// Copy the string AFTER the match into buf
 				int b = 0;
 				for (; input[i] != '\0' && input[i] != ' ' 
 				    && input[i] != '"' && input[i] != '\n' 
 				    && b < MAX_BUF_SIZE; b++, i++)
 				{
+					fprintf(stdout, "%c", input[i]);
 					buf[b] = input[i];
 				}
 				buf[b] = '\0';
+				fprintf(stdout, "||>");
+
+				// then add it to the set of urls
 				add_to_urls(buf);
 				count++;
 			}
 		}
 		else
 		{
+			fprintf(stdout, "%c", input[i]);
 			cmp_index = 0;
 		}
 	}	
