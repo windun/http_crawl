@@ -2,15 +2,49 @@
 	Compile with: g++ crawl.cpp -o crawl -lcurl -std=c++11
 
 */
+#include <iostream>
 #include <stdio.h>
-#include <string>
 #include <curl/curl.h>
+#include <sys/types.h>
+#include <regex.h>
 
+#define MAX_BUF_SIZE 4096
 #define CURL_DEPTH 10
 int depth = 0;
 
+void get_urls (void *ptr)
+{
+	char* input = (char *)ptr;
+	char buf [MAX_BUF_SIZE];
+	regex_t regex;
+	int reti;
+
+	reti = regcomp(&regex, "*http*", 0);
+	if (reti) 
+	{
+		fprintf(stderr, "Cound not compile regex.\n");
+		exit(1);
+	}
+	reti = regexec(&regex, input, 0, NULL, 0);
+	if (!reti)
+	{
+		fprintf(stdout, "[x] %s", input);
+	} 
+	else if (reti == REG_NOMATCH)
+	{
+		fprintf(stdout, "[ ] %s", input);
+	}
+	else
+	{
+		regerror(reti, &regex, buf, sizeof(buf));
+		fprintf(stderr, "Regex match failed: %s\n", buf);
+		exit(1); 
+	}
+}
+
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
+	get_urls(ptr);
 	int written = fwrite(ptr, size, nmemb, (FILE *)stream);
 	return written;	
 }
