@@ -4,52 +4,71 @@
 */
 #include <iostream>
 #include <stdio.h>
+#include <string>
+#include <unordered_set>
 #include <curl/curl.h>
-#include <sys/types.h>
-#include <regex.h>
 
 #define MAX_BUF_SIZE 4096
-#define CURL_DEPTH 10
+#define MAX_CURL_DEPTH 10
 int depth = 0;
 
-void get_urls (void *ptr)
-{
-	char* input = (char *)ptr;
-	char buf [MAX_BUF_SIZE];
-	regex_t regex;
-	int reti;
+std::unordered_set<std::string> urls;
 
-	reti = regcomp(&regex, "<[aA] [hH][rR][eE][fF]", 0);
-	if (reti) 
+void add_to_urls (char * str)
+{
+	std::string url = "";
+	for (int i = 0; str[i] != '\0'; i++)
 	{
-		fprintf(stderr, "Cound not compile regex.\n");
-		exit(1);
-	}
-	reti = regexec(&regex, input, 0, NULL, 0);
-	if (!reti)
-	{
-		fprintf(stdout, "[x] %s", input);
+		url += str[i];	
 	} 
-	else if (reti == REG_NOMATCH)
+	if (url != "")
 	{
-		fprintf(stdout, "[ ] %s", input);
-	}
-	else
+		urls.insert(url);
+	}	
+}
+int get_urls (char *input)
+{
+	const char * link = "http://";
+	int cmp_index = 0;
+	char buf [MAX_BUF_SIZE];
+	int count = 0;
+	
+	for (int i = 0; input[i] != '\0'; i++)
 	{
-		regerror(reti, &regex, buf, sizeof(buf));
-		fprintf(stderr, "Regex match failed: %s\n", buf);
-		exit(1); 
-	}
+		if (input[i] == link[cmp_index])
+		{
+			cmp_index++;			
+			if(link[cmp_index] == '\0')
+			{
+				i++;
+				int b = 0;
+				for (; input[i] != '\0' && input[i] != ' ' 
+				    && input[i] != '"' && input[i] != '\n' 
+				    && b < MAX_BUF_SIZE; b++, i++)
+				{
+					buf[b] = input[i];
+				}
+				buf[b] = '\0';
+				add_to_urls(buf);
+				count++;
+			}
+		}
+		else
+		{
+			cmp_index = 0;
+		}
+	}	
+	return count;
 }
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-	get_urls(ptr);
 	int written = fwrite(ptr, size, nmemb, (FILE *)stream);
+	get_urls((char *)ptr);
 	return written;	
 }
 
-int mCurl (char* url)
+int mCurl (const char* url)
 {
 	CURL *curl_handle;
 	CURLcode res;
@@ -58,6 +77,7 @@ int mCurl (char* url)
 	FILE *headerFile;
 	FILE *bodyFile;
 
+	depth++;
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
 	if(curl_handle)
@@ -65,11 +85,10 @@ int mCurl (char* url)
 
 		/////////////////////////////////////////////
 		//	SET UP CURL
-		fprintf(stdout, "url: %s\n", url);
+		fprintf(stdout, "[%d] %s\n", depth, url);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, url);
 		//curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);	
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
-
 
 		/////////////////////////////////////////////
 		//	SET UP FILES
@@ -100,6 +119,18 @@ int mCurl (char* url)
 			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
 		}
 		curl_easy_cleanup(curl_handle);
+		
+		for (std::unordered_set<std::string>::iterator it=urls.begin(); it != urls.end(); it++)
+		{
+			if(depth > MAX_CURL_DEPTH)
+			{
+				return 0;
+			}
+			else
+			{
+				mCurl((*it).c_str());
+			}
+		}
 	}	
 	return 0;
 
