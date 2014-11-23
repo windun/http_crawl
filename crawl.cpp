@@ -7,14 +7,15 @@
 #include <cstdio>
 #include <cstring>		// memset ()
 #include <string>
-#include <unordered_set>	// set of links 
 #include <unordered_map>
+#include <unordered_set>
 #include <curl/curl.h>		// http gathering
 
 // link recognition (vs. file)
 #include <sys/types.h>
 #include <regex.h> 
 #define DATA_DIR "data/"
+#define INDENT_STEP 5
 #define MAX_BUF_SIZE 4096
 #define MAX_CURL_DEPTH 1
 
@@ -23,12 +24,11 @@
 //	unordered_set
 //	<- origin url
 //	<- origin url
-// target url
-//	unordered_set
+// target url //	unordered_set
 //	<- origin url
 //	...
+//std::unordered_multimap<std::string, std::string> URLS;
 std::unordered_map<std::string, std::unordered_set<std::string>*> URLS;
-
 struct UrlData
 {
 	std::string source;
@@ -36,7 +36,7 @@ struct UrlData
 	int level;
 };
 
-void print_column (int indent, char * str, int width)
+void print_column (int indent, const char * str, int width)
 {
 	for (int i = 0; i < indent; i++)
 	{
@@ -51,23 +51,22 @@ void print_column (int indent, char * str, int width)
 
 void add_url (std::string source, std::string target)
 {
-	std::unordered_set<std::string> *target_urls;
 	try
 	{
-		target_urls = URLS.at(source);
-		if(!target_urls->insert(target).second) fprintf(stdout, "already inserted\n");
+		std::unordered_set<std::string> *target_urls = URLS.at(source);
+		target_urls->insert(target);
 	}
 	catch (std::exception& e)
 	{
-		target_urls = new std::unordered_set<std::string>();
-		URLS.insert({{source, target_urls}});	
+		std::unordered_set<std::string> *target_urls = new std::unordered_set<std::string> ();
+		URLS.insert({{source, target_urls}}); 
 		target_urls->insert(target);
 	}
 }
 
 bool is_link (char * str, int level)
 {
-	int indent = level * 5;
+	int indent = level * INDENT_STEP;
 	regex_t regex;
 	int reti;
 	char buf [MAX_BUF_SIZE];
@@ -82,12 +81,10 @@ bool is_link (char * str, int level)
 	reti = !reti;	// negate match result
 	if(!reti)
 	{
-		print_column(indent, str,40);
 		return true;
 	}
 	else if (reti == REG_NOMATCH)
 	{
-		//fprintf(stdout, "[ ] %s %d\n", str, reti);
 		return false;
 	}
 	else
@@ -101,7 +98,10 @@ bool is_link (char * str, int level)
 std::string toString (char *c_str)
 {
 	std::string str = "";
-	for (int i = 0; c_str[i] != '\0'; i++)
+	// Convert only the symbols, letters, and numbers
+	// to strings. I had a hard time with an ASCII 13
+	// (carriage regurn) being copied into the string.
+	for (int i = 0; c_str[i] >= 33 && c_str[i] <= 126; i++)
 	{
 		str += c_str[i];	
 	} 
@@ -193,7 +193,10 @@ int mCurl (const char* source_url, int level)
 
 		/////////////////////////////////////////////
 		//	SET UP CURL
-		fprintf(stdout, "[%d] %s\n", level, source_url);
+		//std::string heading = "[" + level + "]-> " + source_url + "\n";
+		std::string heading = "[";
+		heading += level;
+		print_column (level * INDENT_STEP, heading.c_str(), 20);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url);
 		//curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);	
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
@@ -235,8 +238,10 @@ int mCurl (const char* source_url, int level)
 		}
 		curl_easy_cleanup(curl_handle);
 		
-		fprintf(stdout, "[%d] urls found.\n", URLS.at(source_url)->size());
-		for (std::unordered_set<std::string>::iterator it=URLS.at(source_url)->begin(); it != URLS.at(source_url)->end(); it++)
+		fprintf(stdout,"found %d urls\n", URLS.at(source_url)->size());
+		int n = 0; 
+		std::string previous;
+		for (std::unordered_set<std::string>::iterator it=URLS.at(source_url)->begin(); it != URLS.at(source_url)->end(); it++, n++)
 		{
 			if(level >= MAX_CURL_DEPTH)
 			{
@@ -244,9 +249,9 @@ int mCurl (const char* source_url, int level)
 			}
 			else
 			{
-				fprintf(stdout, "-> %s\n", it->c_str());
 				mCurl(it->c_str(), level + 1);
 			}
+			previous = *it;
 		}
 	}	
 	return 0;
@@ -254,5 +259,7 @@ int mCurl (const char* source_url, int level)
 }
 int main (int argc, char* argv[])
 {
+	std::string one = "abc";
+	std::string two = "abc";
 	mCurl(argv[1], 0);	
 }
