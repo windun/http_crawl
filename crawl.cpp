@@ -4,6 +4,7 @@
 */
 #include <iostream>
 #include <stdio.h>
+#include <cstdio>
 #include <cstring>		// memset ()
 #include <string>
 #include <unordered_set>	// set of links 
@@ -17,7 +18,11 @@
 #define MAX_CURL_DEPTH 2
 int depth = 0;
 
-std::unordered_set<std::string> urls;
+struct UrlData
+{
+	FILE * file;
+	std::unordered_set<std::string> urls;
+};
 
 bool is_link (char * str)
 {
@@ -25,11 +30,14 @@ bool is_link (char * str)
 	int reti;
 	char buf [MAX_BUF_SIZE];
 
+	// match image files, is_link() should return false for
+	// thee matches, so we will negate the result
 	reti = regcomp(&regex, "[a-zA-Z0-9./]*(.bmp|.gif|.jpg|.pdf|.png)", REG_EXTENDED);		// compile regex
 	if (reti){fprintf(stderr, "Could not compile regex\n"); exit(1);}
 
 	reti = regexec(&regex, str, 0, NULL, 0);
-	reti = !reti;
+	//reti == 0 if there was a match, 1 if no match
+	reti = !reti;	// negate match result
 	if(!reti)
 	{
 		fprintf(stdout, "[x] %s %d\n", str, reti);
@@ -62,10 +70,12 @@ void add_to_urls (char * str)
 }
 int get_urls (char *input)
 {
-	const char * link = "http://";
-	int cmp_index = 0;
-	char buf [MAX_BUF_SIZE];
-	int count = 0;
+	const char * link = "http://";			// check for urls for all strings that 
+							// begin with "http://"
+	int cmp_index = 0;				// link[cmp_index] 
+						
+	char buf [MAX_BUF_SIZE];			// buf - for error messages
+	int count = 0;					// count of urls found - get_urls returns this
 	bool show_debug = false;
 	
 	for (int i = 0; input[i] != '\0'; i++)		// iterate through input
@@ -106,22 +116,23 @@ int get_urls (char *input)
 	return count;
 }
 
-static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
+static size_t write_data(void *ptr, size_t size, size_t nmemb, void *data)
 {
-	int written = fwrite(ptr, size, nmemb, (FILE *)stream);
+	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data).file);
 	get_urls((char *)ptr);
 	return written;	
 }
 
 int mCurl (const char* url)
 {
+	struct UrlData header_data;
+	struct UrlData body_data;
+
 	CURL *curl_handle;
 	CURLcode res;
 	std::string headerFilename = std::to_string(depth) + "_" + std::string(url) + "_head.out";
 	std::string bodyFilename = std::to_string(depth) + "_" + std::string(url) + "_body.out";
-	FILE *headerFile;
-	FILE *bodyFile;
-
+	
 	depth++;
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -137,20 +148,20 @@ int mCurl (const char* url)
 
 		/////////////////////////////////////////////
 		//	SET UP FILES
-		headerFile = fopen(headerFilename.c_str(), "wb");
+		header_data.file = fopen(headerFilename.c_str(), "wb");
 		if (headerFile == NULL)
 		{
 			curl_easy_cleanup(curl_handle);
 			return -1;
 		}
-		bodyFile = fopen(bodyFilename.c_str(), "wb");
+		body_data.file = fopen(bodyFilename.c_str(), "wb");
 		if (bodyFile == NULL)
 		{
 			curl_easy_cleanup(curl_handle);
 			return -1;
 		}
-		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, headerFile);
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, bodyFile);
+		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, &header_data);
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &body_data);
 
 
  		/////////////////////////////////////////////
@@ -162,6 +173,8 @@ int mCurl (const char* url)
 		if (res != CURLE_OK)
 		{
 			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+			remove(headerFilename.c_str());
+			remove(bodyFilename.c_str());
 		}
 		curl_easy_cleanup(curl_handle);
 		
