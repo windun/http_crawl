@@ -16,16 +16,24 @@
 
 #define MAX_BUF_SIZE 4096
 #define MAX_CURL_DEPTH 2
-int depth = 0;
 
 struct UrlData
 {
 	FILE * file;
 	std::unordered_set<std::string> urls;
+	int level;
 };
-
-bool is_link (char * str)
+void print_column (int indent, char * str, int width)
 {
+	for (int i = 0; i < width && str[i] != '\0'; i++)
+	{
+		fprintf(stdout, "%c", str[i]);
+	}
+	fprintf(stdout, "\n");
+}
+bool is_link (char * str, int level)
+{
+	int indent = level * 5;
 	regex_t regex;
 	int reti;
 	char buf [MAX_BUF_SIZE];
@@ -40,12 +48,12 @@ bool is_link (char * str)
 	reti = !reti;	// negate match result
 	if(!reti)
 	{
-		fprintf(stdout, "[x] %s %d\n", str, reti);
+		print_column(indent, str,40);
 		return true;
 	}
 	else if (reti == REG_NOMATCH)
 	{
-		fprintf(stdout, "[ ] %s %d\n", str, reti);
+		//fprintf(stdout, "[ ] %s %d\n", str, reti);
 		return false;
 	}
 	else
@@ -56,19 +64,17 @@ bool is_link (char * str)
 	}
 }
 
-void add_to_urls (char * str)
+std::string toString (char * c_str)
 {
-	std::string url = "";
-	for (int i = 0; str[i] != '\0'; i++)
+	std::string str = "";
+	for (int i = 0; c_str[i] != '\0'; i++)
 	{
-		url += str[i];	
+		str += c_str[i];	
 	} 
-	if (url != "")
-	{
-		urls.insert(url);
-	}	
+	return str;
 }
-int get_urls (char *input)
+
+int get_urls (char *input, struct UrlData *data)
 {
 	const char * link = "http://";			// check for urls for all strings that 
 							// begin with "http://"
@@ -102,7 +108,10 @@ int get_urls (char *input)
 				if(show_debug)fprintf(stdout, "||>");
 
 				// then add it to the set of urls
-				if (is_link(buf)) add_to_urls(buf);
+				if (is_link(buf, data->level))
+				{
+					data->urls.insert(toString(buf));
+				}
 				std::memset(buf, 0, sizeof(buf));
 				count++;
 			}
@@ -118,22 +127,21 @@ int get_urls (char *input)
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *data)
 {
-	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data).file);
-	get_urls((char *)ptr);
+	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
+	get_urls((char *)ptr, (struct UrlData *)data);
 	return written;	
 }
 
-int mCurl (const char* url)
+int mCurl (const char* url, int level)
 {
 	struct UrlData header_data;
 	struct UrlData body_data;
 
 	CURL *curl_handle;
 	CURLcode res;
-	std::string headerFilename = std::to_string(depth) + "_" + std::string(url) + "_head.out";
-	std::string bodyFilename = std::to_string(depth) + "_" + std::string(url) + "_body.out";
+	std::string headerFilename = std::to_string(level) + "_" + std::string(url) + "_head.out";
+	std::string bodyFilename = std::to_string(level) + "_" + std::string(url) + "_body.out";
 	
-	depth++;
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
 	if(curl_handle)
@@ -141,7 +149,7 @@ int mCurl (const char* url)
 
 		/////////////////////////////////////////////
 		//	SET UP CURL
-		fprintf(stdout, "[%d] %s\n", depth, url);
+		fprintf(stdout, "[%d] %s\n", level, url);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, url);
 		//curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);	
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
@@ -149,17 +157,19 @@ int mCurl (const char* url)
 		/////////////////////////////////////////////
 		//	SET UP FILES
 		header_data.file = fopen(headerFilename.c_str(), "wb");
-		if (headerFile == NULL)
+		if (header_data.file == NULL)
 		{
 			curl_easy_cleanup(curl_handle);
 			return -1;
 		}
 		body_data.file = fopen(bodyFilename.c_str(), "wb");
-		if (bodyFile == NULL)
+		if (body_data.file == NULL)
 		{
 			curl_easy_cleanup(curl_handle);
 			return -1;
 		}
+		header_data.level = level;
+		body_data.level = level;
 		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, &header_data);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &body_data);
 
@@ -178,16 +188,16 @@ int mCurl (const char* url)
 		}
 		curl_easy_cleanup(curl_handle);
 		
-		for (std::unordered_set<std::string>::iterator it=urls.begin(); it != urls.end(); it++)
+		for (std::unordered_set<std::string>::iterator it=body_data.urls.begin(); it != body_data.urls.end(); it++)
 		{
-			if(depth > MAX_CURL_DEPTH)
+			if(level > MAX_CURL_DEPTH)
 			{
 				return 0;
 			}
 			else
 			{
 				fprintf(stdout, "trying url: %s\n", it->c_str());
-				mCurl(it->c_str());
+				mCurl(it->c_str(), level + 1);
 			}
 		}
 	}	
@@ -196,5 +206,5 @@ int mCurl (const char* url)
 }
 int main (int argc, char* argv[])
 {
-	mCurl(argv[1]);	
+	mCurl(argv[1], 0);	
 }
