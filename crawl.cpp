@@ -8,24 +8,34 @@
 #include <cstring>		// memset ()
 #include <string>
 #include <unordered_set>	// set of links 
+#include <unordered_map>
 #include <curl/curl.h>		// http gathering
 
 // link recognition (vs. file)
 #include <sys/types.h>
-#include <regex.h>
-
+#include <regex.h> 
 #define DATA_DIR "data/"
 #define MAX_BUF_SIZE 4096
-#define MAX_CURL_DEPTH 2
+#define MAX_CURL_DEPTH 1
 
-std::unordered_set<std::string> global_urls;
+// unordered_map
+// target url
+//	unordered_set
+//	<- origin url
+//	<- origin url
+// target url
+//	unordered_set
+//	<- origin url
+//	...
+std::unordered_map<std::string, std::unordered_set<std::string>*> URLS;
 
 struct UrlData
 {
+	std::string source;
 	FILE * file;
-	std::unordered_set<std::string> urls;
 	int level;
 };
+
 void print_column (int indent, char * str, int width)
 {
 	for (int i = 0; i < indent; i++)
@@ -38,6 +48,23 @@ void print_column (int indent, char * str, int width)
 	}
 	fprintf(stdout, "\n");
 }
+
+void add_url (std::string source, std::string target)
+{
+	std::unordered_set<std::string> *target_urls;
+	try
+	{
+		target_urls = URLS.at(source);
+		if(!target_urls->insert(target).second) fprintf(stdout, "already inserted\n");
+	}
+	catch (std::exception& e)
+	{
+		target_urls = new std::unordered_set<std::string>();
+		URLS.insert({{source, target_urls}});	
+		target_urls->insert(target);
+	}
+}
+
 bool is_link (char * str, int level)
 {
 	int indent = level * 5;
@@ -71,7 +98,7 @@ bool is_link (char * str, int level)
 	}
 }
 
-std::string toString (char * c_str)
+std::string toString (char *c_str)
 {
 	std::string str = "";
 	for (int i = 0; c_str[i] != '\0'; i++)
@@ -80,8 +107,16 @@ std::string toString (char * c_str)
 	} 
 	return str;
 }
-
-int get_urls (char *input, struct UrlData *data)
+std::string toString (const char *c_str)
+{
+	std::string str = "";
+	for (int i = 0; c_str[i] != '\0'; i++)
+	{
+		str += c_str[i];	
+	} 
+	return str;
+}
+int get_urls (const char *input, struct UrlData *data)
 {
 	std::string url;
 	const char * link = "http://";			// check for urls for all strings that 
@@ -119,18 +154,7 @@ int get_urls (char *input, struct UrlData *data)
 				if (is_link(buf, data->level))
 				{
 					url = toString(buf);
-					if ((global_urls.insert(url)).second)
-					{
-						// If url hasn't been explored
-						data->urls.insert(url);
-					}
-					else
-					{
-						// If url has already been seen
-						// - insert, but not that it has
-						// 	already been explored
-
-					}
+					add_url (data->source, url);
 				}
 				std::memset(buf, 0, sizeof(buf));
 				count++;
@@ -152,15 +176,15 @@ static size_t write_data(void *ptr, size_t size, size_t nmemb, void *data)
 	return written;	
 }
 
-int mCurl (const char* url, int level)
+int mCurl (const char* source_url, int level)
 {
 	struct UrlData header_data;
 	struct UrlData body_data;
 
 	CURL *curl_handle;
 	CURLcode res;
-	std::string headerFilename = DATA_DIR + std::to_string(level) + "_" + std::string(url) + "_head.out";
-	std::string bodyFilename = DATA_DIR + std::to_string(level) + "_" + std::string(url) + "_body.out";
+	std::string headerFilename = DATA_DIR + std::to_string(level) + "_" + std::string(source_url) + "_head.out";
+	std::string bodyFilename = DATA_DIR + std::to_string(level) + "_" + std::string(source_url) + "_body.out";
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -169,8 +193,8 @@ int mCurl (const char* url, int level)
 
 		/////////////////////////////////////////////
 		//	SET UP CURL
-		fprintf(stdout, "[%d] %s\n", level, url);
-		curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+		fprintf(stdout, "[%d] %s\n", level, source_url);
+		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url);
 		//curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);	
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
 
@@ -188,8 +212,11 @@ int mCurl (const char* url, int level)
 			curl_easy_cleanup(curl_handle);
 			return -1;
 		}
+		header_data.source = toString(source_url);
 		header_data.level = level;
+		body_data.source = toString(source_url);
 		body_data.level = level;
+
 		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, &header_data);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &body_data);
 
@@ -208,7 +235,8 @@ int mCurl (const char* url, int level)
 		}
 		curl_easy_cleanup(curl_handle);
 		
-		for (std::unordered_set<std::string>::iterator it=body_data.urls.begin(); it != body_data.urls.end(); it++)
+		fprintf(stdout, "[%d] urls found.\n", URLS.at(source_url)->size());
+		for (std::unordered_set<std::string>::iterator it=URLS.at(source_url)->begin(); it != URLS.at(source_url)->end(); it++)
 		{
 			if(level >= MAX_CURL_DEPTH)
 			{
@@ -216,7 +244,7 @@ int mCurl (const char* url, int level)
 			}
 			else
 			{
-				fprintf(stdout, "trying url: %s\n", it->c_str());
+				fprintf(stdout, "-> %s\n", it->c_str());
 				mCurl(it->c_str(), level + 1);
 			}
 		}
