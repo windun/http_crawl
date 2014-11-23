@@ -14,8 +14,11 @@
 #include <sys/types.h>
 #include <regex.h>
 
+#define DATA_DIR "data/"
 #define MAX_BUF_SIZE 4096
 #define MAX_CURL_DEPTH 2
+
+std::unordered_set<std::string> global_urls;
 
 struct UrlData
 {
@@ -25,6 +28,10 @@ struct UrlData
 };
 void print_column (int indent, char * str, int width)
 {
+	for (int i = 0; i < indent; i++)
+	{
+		fprintf(stdout, " ");
+	}
 	for (int i = 0; i < width && str[i] != '\0'; i++)
 	{
 		fprintf(stdout, "%c", str[i]);
@@ -76,6 +83,7 @@ std::string toString (char * c_str)
 
 int get_urls (char *input, struct UrlData *data)
 {
+	std::string url;
 	const char * link = "http://";			// check for urls for all strings that 
 							// begin with "http://"
 	int cmp_index = 0;				// link[cmp_index] 
@@ -110,7 +118,19 @@ int get_urls (char *input, struct UrlData *data)
 				// then add it to the set of urls
 				if (is_link(buf, data->level))
 				{
-					data->urls.insert(toString(buf));
+					url = toString(buf);
+					if ((global_urls.insert(url)).second)
+					{
+						// If url hasn't been explored
+						data->urls.insert(url);
+					}
+					else
+					{
+						// If url has already been seen
+						// - insert, but not that it has
+						// 	already been explored
+
+					}
 				}
 				std::memset(buf, 0, sizeof(buf));
 				count++;
@@ -139,8 +159,8 @@ int mCurl (const char* url, int level)
 
 	CURL *curl_handle;
 	CURLcode res;
-	std::string headerFilename = std::to_string(level) + "_" + std::string(url) + "_head.out";
-	std::string bodyFilename = std::to_string(level) + "_" + std::string(url) + "_body.out";
+	std::string headerFilename = DATA_DIR + std::to_string(level) + "_" + std::string(url) + "_head.out";
+	std::string bodyFilename = DATA_DIR + std::to_string(level) + "_" + std::string(url) + "_body.out";
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -190,7 +210,7 @@ int mCurl (const char* url, int level)
 		
 		for (std::unordered_set<std::string>::iterator it=body_data.urls.begin(); it != body_data.urls.end(); it++)
 		{
-			if(level > MAX_CURL_DEPTH)
+			if(level >= MAX_CURL_DEPTH)
 			{
 				return 0;
 			}
