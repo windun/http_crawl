@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <cstring>		// memset ()
 #include <string>
+#include <map>
+#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 #include <curl/curl.h>		// http gathering
@@ -16,7 +18,6 @@
 #include <regex.h> 
 
 #define REGEX_PATTERN "[a-zA-Z0-9./]*(.bmp|.gif|.jpg|.pdf|.png)"
-//#define REGEX_PATTERN "/^[a-z](?:[-a-z0-9\+\.])*:(?:\/\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:])*@)?(?:\[(?:(?:(?:[0-9a-f]{1,4}:){6}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|::(?:[0-9a-f]{1,4}:){5}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:[0-9a-f]{1,4}:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|v[0-9a-f]+[-a-z0-9\._~!\$&'\(\)\*\+,;=:]+)\]|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}|(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=@])*)(?::[0-9]*)?(?:\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@]))*)*|\/(?:(?:(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@]))+)(?:\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@]))*)*)?|(?:(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@]))+)(?:\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@]))*)*|(?!(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@])))(?:\?(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@])|[\x{E000}-\x{F8FF}\x{F0000}-\x{FFFFD}|\x{100000}-\x{10FFFD}\/\?])*)?(?:\#(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&'\(\)\*\+,;=:@])|[\/\?])*)?$/i"  
 #define DATA_DIR "data/"
 #define INDENT_STEP 5
 #define COLUMN_WIDTH 40
@@ -62,20 +63,6 @@ void add_url (std::string source, std::string target)
 	target_urls->insert(target);
 }
 
-std::string get_domain (std::string url)
-{
-	std::string dom = "";
-	// Convert only the symbols, letters, and numbers
-	// to strings. I had a hard time with an ASCII 13
-	// (carriage regurn) being copied into the string.
-	for (int i = 0; c_str[i] >= 33 && c_str[i] <= 126; i++)
-	{
-		if (c_str[i] == '\'' || c_str[i] == '/') break;
-		dom += c_str[i];	
-	} 
-	return dom;
-
-}
 bool is_link (char * str, int level)
 {
 	int indent = level * INDENT_STEP;
@@ -130,64 +117,116 @@ std::string toString (const char *c_str)
 	} 
 	return str;
 }
-int get_urls (const char *input, struct UrlData *data)
+
+
+
+
+class Parser
 {
-	std::string url;
-	const char * link = "http://";			// check for urls for all strings that 
-							// begin with "http://"
-	int cmp_index = 0;				// link[cmp_index] 
-						
-	char buf [MAX_BUF_SIZE];			// buf - for error messages
-	int count = 0;					// count of urls found - get_urls returns this
-	bool show_debug = false;
-	
-	for (int i = 0; input[i] != '\0'; i++)		// iterate through input
+private:
+	const char * input;
+	std::multimap<std::string, std::unordered_set<std::string>*> Tag_Map;
+	std::stack<std::string> Tag_Stack;
+	int c = 0;
+
+	void process ()
 	{
-		if (input[i] == link[cmp_index])	// when you find a match
+		bool is_tag = false;
+		std::string name_tag = "";
+
+		switch (input[c])
 		{
-			if(cmp_index == 0 && show_debug) fprintf(stdout, "||%c", input[i]);
-			cmp_index++;			// walk along match string
-			if(link[cmp_index] == '\0')	// if you reach the end
-			{				// of the match string
-				i++;
-				if(show_debug)fprintf(stdout, "<||%c", input[i]);
+		case ' ':
+			break;
+		case '<':
+			// If the next characters are a series of 
+			// letters, we will call it a tag
+			is_tag = true;
+			int c_ = c + 1;
 
-				// Copy the string AFTER the match into buf
-				int b = 0;
-				for (; input[i] != '\0' && input[i] != ' ' 
-				    && input[i] != '"' && input[i] != '\n' 
-				    && b < MAX_BUF_SIZE; b++, i++)
+			// Open tag
+			if (input[c_] != '/')
+			{
+				while (input[c_] != ' ' && input[c_] != '\0')
 				{
-					if(show_debug)fprintf(stdout, "%c", input[i]);
-					buf[b] = input[i];
+					// Not a tag if there is anything 
+					// but letters
+					if (input[c_] < 65 || input[c_] > 122)
+					{
+						is_tag = false;
+						break;
+					}
+					name_tag += input[c_];
+					c_++;
 				}
-				buf[b] = '\0';
-				if(show_debug)fprintf(stdout, "||>");
-
-				// then add it to the set of urls
-				if (is_link(buf, data->level))
+				// If it is a tag, put it on the stack 
+				if (is_tag)
 				{
-					url = toString(buf);
-					add_url (data->source, url);
+					Tag_Stack.push(name_tag);
+					Tag_Map.insert(
+							std::pair<std::string, std::unordered_set<std::string>*>(name_tag, new std::unordered_set<std::string> ())
+					);
 				}
-				std::memset(buf, 0, sizeof(buf));
-				count++;
+				break;
+			}
+			// Close tag
+			else
+			{
+				while (input[c_] != ' ')
+				{
+					if (input[c_] < 65 || input[c_] > 122)
+					{
+						is_tag = false;
+						break;
+					}	
+					name_tag = input[c_] + name_tag;
+					c--;
+				}
+				if (is_tag)
+				{
+					if (Tag_Stack.top() == name_tag)
+					{
+						Tag_Stack.pop();
+					}
+					else
+					{
+						fprintf(stdout, "Improper tag nesting.\n");
+					}
+				}
 			}
 		}
-		else
+	}
+
+public:
+	Parser (const char *input_, struct UrlData *data)
+	{
+			input = input_;
+	}
+	int get_urls ()
+	{
+		while (input[c] != '\0')
 		{
-			if(show_debug)fprintf(stdout, "%c", input[i]);
-			cmp_index = 0;
+			process();
+			c++;
 		}
-	}	
-	return count;
-}
+	}
+	void print ()
+	{
+		for (std::multimap<std::string, std::unordered_set<std::string>*>::iterator it = Tag_Map.begin(); it != Tag_Map.end(); it++)
+		{
+			fprintf(stdout, "tag: %s\n", it->first.c_str());
+		}
+	}
+};
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *data)
 {
-	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
-	get_urls((char *)ptr, (struct UrlData *)data);
-	return written;	
+	//int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
+	//get_urls((char *)ptr, (struct UrlData *)data);
+	Parser Parser_((char *)ptr, (struct UrlData *)data);
+	Parser_.get_urls();
+	Parser_.print();
+	return 0;
 }
 
 int mCurl (const char* source_url, int level)
@@ -282,7 +321,5 @@ int mCurl (const char* source_url, int level)
 }
 int main (int argc, char* argv[])
 {
-	std::string one = "abc";
-	std::string two = "abc";
 	mCurl(argv[1], 0);	
 }
