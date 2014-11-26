@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <cstring>		// memset ()
 #include <string>
-#include <map>
+#include <list>
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
@@ -124,75 +124,113 @@ std::string toString (const char *c_str)
 class Parser
 {
 private:
+	struct Attribute
+	{
+		std::string name;
+		std::string value;
+	};
+	struct Tag
+	{
+		int id;
+		int nest_id;
+		std::string type;
+		std::list<Attribute> attributes;
+		std::string content;
+	};
+
+	bool debug = false;
 	const char * input;
-	std::multimap<std::string, std::unordered_set<std::string>*> Tag_Map;
-	std::stack<std::string> Tag_Stack;
+	std::list<Tag> Tag_List;
+	std::stack<Tag> Tag_Stack;
 	int c = 0;
+	bool in_tag = false;
+	int global_id = 0;
+
+	void skip_spaces ()
+	{
+		// Skip space (32), tab (9), newline
+		while (input[c] == 32 || input[c] == 9 || input[c] == '\n')
+		{
+			if(debug) std::cout << input[c] << " skip_spaces, loop\n";
+			c++;
+		}
+	}
+	std::string open_tag ()
+	{
+		if(debug) std::cout << input[c] << " open_tag\n";
+		std::string tag_type = "";
+		int c_ = c;
+		if (input[c_++] != '<') return "";
+		while (input[c_] != '\n' && input[c_] != '\0' && input[c_] != '>' && input[c_] != '/')
+		{
+			if (input[c_] < 65 || input[c_] > 122)
+			{
+				return "";
+			}
+			tag_type += input[c_++];
+			if(debug) std::cout << input[c_] << " open_tag\n";
+		}
+		return tag_type;
+	}
+
+	void get_attribute (Tag &tag)
+	{
+		Attribute attrib;
+		if(debug) std::cout << "get_attribute\n";
+		while (input[c] != ' ' && input[c] != '=')
+		{
+			attrib.name += input[c++];
+		}
+		skip_spaces ();
+		if (input[c] != '\"')
+		{
+			fprintf(stderr, "Error, incorrectly formed attribute.\n");
+			exit(1);
+		}
+		c++;
+		while (input[c] != '\"')
+		{
+			attrib.value += input[c++];
+		}
+		tag.attributes.push_back(attrib);
+	}
+
+	// We are in a tag, now we need to fill in the  Tag struct.
+	// We will stop filling in when we get to the end of the
+	// end of the tag .../> or ...> or EOF
+	void process_tag (std::string tag_type)
+	{
+		Tag tag;
+		tag.type = tag_type;
+		tag.id = global_id++;
+
+		if(debug) std::cout << input[c] << " process_tag\n";
+		// While not the end of the tag...
+		skip_spaces (); std::cout << input[c] << " process_tag,skip_spaces\n";
+		while (input[c] != '\\' && input[c] != '>' && input[c] != '\0')
+		{
+			get_attribute(tag);
+			skip_spaces ();
+		}
+	}
+
+	std::string close_tag ()
+	{
+		std::string tag_name;
+		if (input[c] != '<' && input[c + 1] != '/') return "";
+		c = c + 2;
+	}
 
 	void process ()
 	{
-		bool is_tag = false;
-		std::string name_tag = "";
-
-		switch (input[c])
+		std::string tag_type;
+		while (input[c] != '\0')
 		{
-		case ' ':
-			break;
-		case '<':
-			// If the next characters are a series of 
-			// letters, we will call it a tag
-			is_tag = true;
-			int c_ = c + 1;
-
-			// Open tag
-			if (input[c_] != '/')
+			skip_spaces(); if(debug) std::cout << input[c] << " process, skip_spaces\n";
+			tag_type = open_tag (); if(debug) std::cout << input[c] << " process, open_tag: " << tag_type << std::endl;
+			if(tag_type != "")
 			{
-				while (input[c_] != ' ' && input[c_] != '\0')
-				{
-					// Not a tag if there is anything 
-					// but letters
-					if (input[c_] < 65 || input[c_] > 122)
-					{
-						is_tag = false;
-						break;
-					}
-					name_tag += input[c_];
-					c_++;
-				}
-				// If it is a tag, put it on the stack 
-				if (is_tag)
-				{
-					Tag_Stack.push(name_tag);
-					Tag_Map.insert(
-							std::pair<std::string, std::unordered_set<std::string>*>(name_tag, new std::unordered_set<std::string> ())
-					);
-				}
-				break;
-			}
-			// Close tag
-			else
-			{
-				while (input[c_] != ' ')
-				{
-					if (input[c_] < 65 || input[c_] > 122)
-					{
-						is_tag = false;
-						break;
-					}	
-					name_tag = input[c_] + name_tag;
-					c--;
-				}
-				if (is_tag)
-				{
-					if (Tag_Stack.top() == name_tag)
-					{
-						Tag_Stack.pop();
-					}
-					else
-					{
-						fprintf(stdout, "Improper tag nesting.\n");
-					}
-				}
+				process_tag (tag_type);
 			}
 		}
 	}
@@ -202,31 +240,33 @@ public:
 	{
 			input = input_;
 	}
+	void set_debug (bool show_debug)
+	{
+		debug = show_debug;
+	}
 	int get_urls ()
 	{
-		while (input[c] != '\0')
-		{
-			process();
-			c++;
-		}
+		if(debug) std::cout << "get_urls\n";
+		process ();
 	}
 	void print ()
 	{
-		for (std::multimap<std::string, std::unordered_set<std::string>*>::iterator it = Tag_Map.begin(); it != Tag_Map.end(); it++)
+		for (std::list<Tag>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
-			fprintf(stdout, "tag: %s\n", it->first.c_str());
+			fprintf(stdout, "tag: %s\n", it->type.c_str());
 		}
 	}
 };
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *data)
 {
-	//int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
+	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
 	//get_urls((char *)ptr, (struct UrlData *)data);
 	Parser Parser_((char *)ptr, (struct UrlData *)data);
+	Parser_.set_debug(true);
 	Parser_.get_urls();
 	Parser_.print();
-	return 0;
+	return written;
 }
 
 int mCurl (const char* source_url, int level)
