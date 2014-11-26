@@ -138,61 +138,88 @@ private:
 		std::string content;
 	};
 
+	int PRINT_WIDTH = 10;
 	bool debug = false;
 	const char * input;
 	std::list<Tag> Tag_List;
 	std::stack<Tag> Tag_Stack;
 	int c = 0;
 	bool in_tag = false;
-	int global_id = 0;
+	int global_id = 1;
 
 	void skip_spaces ()
 	{
 		// Skip space (32), tab (9), newline
+		if(debug) print_section("skip_spaces, before loop");
 		while (input[c] == 32 || input[c] == 9 || input[c] == '\n')
 		{
-			if(debug) std::cout << input[c] << " skip_spaces, loop\n";
+			if(debug) print_section("skip_spaces, loop");
 			c++;
 		}
 	}
 	std::string open_tag ()
 	{
-		if(debug) std::cout << input[c] << " open_tag\n";
+		if(debug) print_section("open_tag begin");
 		std::string tag_type = "";
+		std::string value;
 		int c_ = c;
-		if (input[c_++] != '<') return "";
-		while (input[c_] != '\n' && input[c_] != '\0' && input[c_] != '>' && input[c_] != '/')
+		if (input[c_] != '<')
 		{
-			if (input[c_] < 65 || input[c_] > 122)
+			if(debug) print_section("open_tag did not see <");
+			return "";
+		}
+		if (input[c_ + 1] == '/')
+		{
+			if(debug) print_section("open_tag found a close_tag");
+			return "";
+		}
+		c_++;
+		while (input[c_] != '\n' && input[c_] != '\0' && input[c_] != '>' && input[c_] != '/' && input[c_] != ' ')
+		{
+			if (input[c_] < 48 || (input[c_] > 57 && input[c_] < 65) || input[c_] > 122)
 			{
 				return "";
 			}
+			value = input[c_];
+			if(debug) print_section("open_tag " + value);
 			tag_type += input[c_++];
-			if(debug) std::cout << input[c_] << " open_tag\n";
 		}
+		c = c_;
 		return tag_type;
 	}
 
 	void get_attribute (Tag &tag)
 	{
 		Attribute attrib;
-		if(debug) std::cout << "get_attribute\n";
+		if(debug) print_section("get_attribute");
 		while (input[c] != ' ' && input[c] != '=')
 		{
 			attrib.name += input[c++];
 		}
+		if(debug) print_section("get_attribute, found " + attrib.name);
 		skip_spaces ();
-		if (input[c] != '\"')
+		if (input[c] != '=')
 		{
 			fprintf(stderr, "Error, incorrectly formed attribute.\n");
 			exit(1);
 		}
+		if(debug) print_section("get_attribute =");
 		c++;
-		while (input[c] != '\"')
+		skip_spaces ();
+		if (input[c] != '"')
+		{
+			fprintf(stderr, "Error, incorrectly formed attribute.\n");
+			exit(1);
+		}
+		if(debug) print_section("get_attribute \"");
+		c++;
+		while (input[c] != '"')
 		{
 			attrib.value += input[c++];
 		}
+		if(debug) print_section("get_attribute, " + attrib.name + "=" + attrib.value);
 		tag.attributes.push_back(attrib);
+		c++;
 	}
 
 	// We are in a tag, now we need to fill in the  Tag struct.
@@ -203,22 +230,61 @@ private:
 		Tag tag;
 		tag.type = tag_type;
 		tag.id = global_id++;
+		tag.nest_id = Tag_Stack.size() == 0 ? 0 : Tag_Stack.top().id;
 
-		if(debug) std::cout << input[c] << " process_tag\n";
-		// While not the end of the tag...
-		skip_spaces (); std::cout << input[c] << " process_tag,skip_spaces\n";
-		while (input[c] != '\\' && input[c] != '>' && input[c] != '\0')
+		if(debug) print_section("process_tag");
+		Tag_List.push_back(tag);
+		Tag_Stack.push(tag);
+
+		// You have the tag, skip white space
+		if(debug) print_section("process_tag,skip_spaces");
+		skip_spaces ();
+
+		while (input[c] != '/' && input[c] != '>' && input[c] != '\0')
 		{
 			get_attribute(tag);
 			skip_spaces ();
+		}
+
+		// Exit the tag definition?
+		if (input[c] == '>')
+		{
+			c++;
+			return;
+		}
+
+		// Close the tag
+		if (input[c] == '/' && input[c + 1] == '>')
+		{
+			c = c + 2;
+			Tag_Stack.pop();
 		}
 	}
 
 	std::string close_tag ()
 	{
+		if(debug) print_section("close_tag");
 		std::string tag_name;
 		if (input[c] != '<' && input[c + 1] != '/') return "";
+		if(debug) print_section("close_tag found ...");
+
 		c = c + 2;
+		while (input[c] != '>')
+		{
+			tag_name += input[c++];
+		}
+		if(debug) print_section("close_tag found " + tag_name);
+		c++;
+		Tag_Stack.pop();
+		return tag_name;
+	}
+
+	void process_content ()
+	{
+		while (input[c] != '\0' && input[c] != '<')
+		{
+			Tag_Stack.top().content += input[c++];
+		}
 	}
 
 	void process ()
@@ -226,13 +292,37 @@ private:
 		std::string tag_type;
 		while (input[c] != '\0')
 		{
-			skip_spaces(); if(debug) std::cout << input[c] << " process, skip_spaces\n";
-			tag_type = open_tag (); if(debug) std::cout << input[c] << " process, open_tag: " << tag_type << std::endl;
+			skip_spaces(); if(debug) print_section("process, skip_spaces");
+			tag_type = open_tag (); if(debug) print_section("process, open_tag found: " + tag_type);
 			if(tag_type != "")
 			{
 				process_tag (tag_type);
 			}
+			else
+			{
+				tag_type = close_tag ();
+				if (tag_type == "")
+				{
+					process_content();
+				}
+			}
 		}
+	}
+
+	void print_section (std::string comment)
+	{
+		for (int i = c; input[i] != '\0' && i < (c + PRINT_WIDTH); i++)
+		{
+			if (input[i] < 32)
+			{
+				std::cout << "|" << (int)input[i] << "|";
+			}
+			else
+			{
+				std::cout << input[i];
+			}
+		}
+		std::cout << "      " << comment << std::endl;
 	}
 
 public:
@@ -253,15 +343,24 @@ public:
 	{
 		for (std::list<Tag>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
-			fprintf(stdout, "tag: %s\n", it->type.c_str());
+			std::cout << it->id << "," << it->nest_id << "  " << it->type << std::endl;
+			for (std::list<Attribute>::iterator it_attr = it->attributes.begin(); it_attr != it->attributes.end(); it_attr++)
+			{
+				std::cout << "     " << it_attr->name << " = " << it_attr->value << std::endl;
+			}
 		}
 	}
 };
 
-static size_t write_data(void *ptr, size_t size, size_t nmemb, void *data)
+static size_t write_header (void *ptr, size_t size, size_t nmemb, void *data)
 {
 	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
-	//get_urls((char *)ptr, (struct UrlData *)data);
+	return written;
+}
+
+static size_t write_body (void *ptr, size_t size, size_t nmemb, void *data)
+{
+	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
 	Parser Parser_((char *)ptr, (struct UrlData *)data);
 	Parser_.set_debug(true);
 	Parser_.get_urls();
@@ -300,7 +399,8 @@ int mCurl (const char* source_url, int level)
 		print_indent(level * INDENT_STEP); print_column (heading.c_str(), COLUMN_WIDTH);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url);
 		//curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);	
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
+		curl_easy_setopt(curl_handle, CURLOPT_HEADERFUNCTION, write_header);
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_body);
 
 		/////////////////////////////////////////////
 		//	SET UP FILES
