@@ -181,7 +181,7 @@ private:
 				return "";
 			}
 			value = input[c_];
-			if(debug) print_section("open_tag() sees \"" + value + "\"");
+			if(debug) print_section("open_tag() sees \"" + char_string(c_) + "\"");
 			tag_type += input[c_++];
 		}
 		c = c_;
@@ -212,10 +212,12 @@ private:
 				fprintf(stderr, "Error, incorrectly formed attribute.\n");
 				exit(1);
 			}
-			if(debug) print_section("get_attribute() saw \"");
+			char delimiter = input[c];
+			if(debug) print_section("get_attribute() saw " + char_string(c));
 			c++;
-			while (input[c] != '"' && input[c] != '\'' )
+			while (input[c] != delimiter)
 			{
+				if(debug) print_section("get_attribute() value += \"" + char_string(c) + "\"");
 				attrib->value += input[c++];
 			}
 			c++;
@@ -238,6 +240,13 @@ private:
 		if(debug) print_section("process_tag() begin");
 		Tag_List.push_back(tag);
 		Tag_Stack.push(tag);
+
+		if(tag_type == "!--")
+		{
+			if (debug) print_section("process_tag() defers to process_comment()");
+			process_comment ();
+			return;
+		}
 
 		// You have the tag, skip white space
 		if(debug) print_section("process_tag() skip_spaces");
@@ -285,17 +294,42 @@ private:
 
 	void process_content ()
 	{
+		Tag tag = Tag_Stack.top();
 		if(debug) print_section("process_content() begin");
-		while (input[c] != '\0' && input[c] != '<')
+		while (input[c] != '\0')
 		{
-			if(debug) print_section("process_content() for " + Tag_Stack.top().type);
-			Tag_Stack.top().content += input[c++];
+			if (input[c] == '<' && !(tag.type == "script" || tag.type == "Script" || tag.type == "SCRIPT"))
+			{
+				if(debug) print_section("process_content() break");
+				break;
+			}
+			//if(debug) print_section("process_content() for " + Tag_Stack.top().type);
+			tag.content += input[c++];
 		}
+		if(debug) print_section("process_content() for " + tag.type + " found: " + tag.content);
 	}
 
 	void process_comment ()
 	{
-		if(debug) print_section ("process_content() begin");
+
+		if(debug) print_section ("process_comment() begin");
+		if (Tag_Stack.top().type != "!--")
+		{
+			if(debug) print_section ("process_comment() Error: top is \"" + Tag_Stack.top().type + "\"");
+			fprintf(stderr, "Error, comment tag is not Tag_Stack.top().\n");
+			exit(1);
+		}
+		Tag tag = Tag_Stack.top();
+		while (input[c] != '\0')
+		{
+			if (input[c] == '-' && input[c] == '-' && input[c] =='>')
+			{
+				c = c + 3;
+				if(debug) print_section("process_comment() found comment: " + tag.content);
+				Tag_Stack.pop();
+			}
+			tag.content += input[c++];
+		}
 	}
 	void process ()
 	{
@@ -324,16 +358,25 @@ private:
 	{
 		for (int i = c; input[i] != '\0' && i < (c + PRINT_WIDTH); i++)
 		{
-			if (input[i] < 32)
-			{
-				std::cout << "|" << (int)input[i] << "|";
-			}
-			else
-			{
-				std::cout << input[i];
-			}
+			std::cout << char_string(i);
 		}
 		std::cout << "      " << comment << std::endl;
+	}
+
+	std::string char_string (int i)
+	{
+		std::string str;
+		if (input[i] < 32)
+		{
+			str = "|";
+			str += (int)input[i];
+			str += "|";
+		}
+		else
+		{
+			str = std::string(1, input[i]);
+		}
+		return str;
 	}
 
 public:
@@ -359,6 +402,7 @@ public:
 			{
 				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value << std::endl;
 			}
+			std::cout << "     content = \"" << it->content << "\"" << std::endl;
 		}
 	}
 };
