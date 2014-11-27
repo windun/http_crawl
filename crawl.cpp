@@ -134,7 +134,7 @@ private:
 		int id;
 		int nest_id;
 		std::string type;
-		std::list<Attribute> attributes;
+		std::list<Attribute*>* attributes;
 		std::string content;
 	};
 
@@ -150,38 +150,38 @@ private:
 	void skip_spaces ()
 	{
 		// Skip space (32), tab (9), newline
-		if(debug) print_section("skip_spaces, before loop");
+		if(debug) print_section("skip_spaces(), before loop");
 		while (input[c] == 32 || input[c] == 9 || input[c] == '\n')
 		{
-			if(debug) print_section("skip_spaces, loop");
+			if(debug) print_section("skip_spaces(), loop");
 			c++;
 		}
 	}
 	std::string open_tag ()
 	{
-		if(debug) print_section("open_tag begin");
+		if(debug) print_section("open_tag() begin");
 		std::string tag_type = "";
 		std::string value;
 		int c_ = c;
 		if (input[c_] != '<')
 		{
-			if(debug) print_section("open_tag did not see <");
+			if(debug) print_section("open_tag() did not see <");
 			return "";
 		}
 		if (input[c_ + 1] == '/')
 		{
-			if(debug) print_section("open_tag found a close_tag");
+			if(debug) print_section("open_tag() found a close_tag");
 			return "";
 		}
 		c_++;
 		while (input[c_] != '\n' && input[c_] != '\0' && input[c_] != '>' && input[c_] != '/' && input[c_] != ' ')
 		{
-			if (input[c_] < 48 || (input[c_] > 57 && input[c_] < 65) || input[c_] > 122)
+			if (input[c_] < 33 || (input[c_] > 57 && input[c_] < 65) || input[c_] > 122)
 			{
 				return "";
 			}
 			value = input[c_];
-			if(debug) print_section("open_tag " + value);
+			if(debug) print_section("open_tag() sees \"" + value + "\"");
 			tag_type += input[c_++];
 		}
 		c = c_;
@@ -190,36 +190,38 @@ private:
 
 	void get_attribute (Tag &tag)
 	{
-		Attribute attrib;
-		if(debug) print_section("get_attribute");
-		while (input[c] != ' ' && input[c] != '=')
+		Attribute *attrib = new Attribute ();
+		if(debug) print_section("get_attribute() begin");
+		while (input[c] != ' ' && input[c] != '=' && input[c] != '>')
 		{
-			attrib.name += input[c++];
+			attrib->name += input[c++];
 		}
-		if(debug) print_section("get_attribute, found " + attrib.name);
+		if(debug) print_section("get_attribute() found \"" + attrib->name + "\"");
 		skip_spaces ();
 		if (input[c] != '=')
 		{
-			fprintf(stderr, "Error, incorrectly formed attribute.\n");
-			exit(1);
+
 		}
-		if(debug) print_section("get_attribute =");
-		c++;
-		skip_spaces ();
-		if (input[c] != '"')
+		else
 		{
-			fprintf(stderr, "Error, incorrectly formed attribute.\n");
-			exit(1);
+			if(debug) print_section("get_attribute() saw =");
+			c++;
+			skip_spaces ();
+			if (input[c] != '"' && input[c] != '\'')
+			{
+				fprintf(stderr, "Error, incorrectly formed attribute.\n");
+				exit(1);
+			}
+			if(debug) print_section("get_attribute() saw \"");
+			c++;
+			while (input[c] != '"' && input[c] != '\'' )
+			{
+				attrib->value += input[c++];
+			}
+			c++;
 		}
-		if(debug) print_section("get_attribute \"");
-		c++;
-		while (input[c] != '"')
-		{
-			attrib.value += input[c++];
-		}
-		if(debug) print_section("get_attribute, " + attrib.name + "=" + attrib.value);
-		tag.attributes.push_back(attrib);
-		c++;
+		if(debug) print_section("get_attribute() stored \"" + attrib->name + "\" = \"" + attrib->value + "\"");
+		tag.attributes->push_back(attrib);
 	}
 
 	// We are in a tag, now we need to fill in the  Tag struct.
@@ -231,13 +233,14 @@ private:
 		tag.type = tag_type;
 		tag.id = global_id++;
 		tag.nest_id = Tag_Stack.size() == 0 ? 0 : Tag_Stack.top().id;
+		tag.attributes = new std::list<Attribute*> ();
 
-		if(debug) print_section("process_tag");
+		if(debug) print_section("process_tag() begin");
 		Tag_List.push_back(tag);
 		Tag_Stack.push(tag);
 
 		// You have the tag, skip white space
-		if(debug) print_section("process_tag,skip_spaces");
+		if(debug) print_section("process_tag() skip_spaces");
 		skip_spaces ();
 
 		while (input[c] != '/' && input[c] != '>' && input[c] != '\0')
@@ -257,23 +260,24 @@ private:
 		if (input[c] == '/' && input[c + 1] == '>')
 		{
 			c = c + 2;
+			if(debug) print_section("process_tag() closed " + Tag_Stack.top().type);
 			Tag_Stack.pop();
 		}
 	}
 
 	std::string close_tag ()
 	{
-		if(debug) print_section("close_tag");
+		if(debug) print_section("close_tag() begin");
 		std::string tag_name;
 		if (input[c] != '<' && input[c + 1] != '/') return "";
-		if(debug) print_section("close_tag found ...");
+		if(debug) print_section("close_tag() found ...");
 
 		c = c + 2;
 		while (input[c] != '>')
 		{
 			tag_name += input[c++];
 		}
-		if(debug) print_section("close_tag found " + tag_name);
+		if(debug) print_section("close_tag() found \"" + tag_name + "\"");
 		c++;
 		Tag_Stack.pop();
 		return tag_name;
@@ -281,22 +285,29 @@ private:
 
 	void process_content ()
 	{
+		if(debug) print_section("process_content() begin");
 		while (input[c] != '\0' && input[c] != '<')
 		{
+			if(debug) print_section("process_content() for " + Tag_Stack.top().type);
 			Tag_Stack.top().content += input[c++];
 		}
 	}
 
+	void process_comment ()
+	{
+		if(debug) print_section ("process_content() begin");
+	}
 	void process ()
 	{
 		std::string tag_type;
 		while (input[c] != '\0')
 		{
-			skip_spaces(); if(debug) print_section("process, skip_spaces");
-			tag_type = open_tag (); if(debug) print_section("process, open_tag found: " + tag_type);
+			skip_spaces(); if(debug) print_section("process() skip_spaces");
+			tag_type = open_tag (); if(debug) print_section("process() open_tag found: \"" + tag_type + "\"");
 			if(tag_type != "")
 			{
 				process_tag (tag_type);
+				process_content ();
 			}
 			else
 			{
@@ -344,9 +355,9 @@ public:
 		for (std::list<Tag>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
 			std::cout << it->id << "," << it->nest_id << "  " << it->type << std::endl;
-			for (std::list<Attribute>::iterator it_attr = it->attributes.begin(); it_attr != it->attributes.end(); it_attr++)
+			for (std::list<Attribute*>::iterator it_attr = it->attributes->begin(); it_attr != it->attributes->end(); it_attr++)
 			{
-				std::cout << "     " << it_attr->name << " = " << it_attr->value << std::endl;
+				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value << std::endl;
 			}
 		}
 	}
