@@ -139,14 +139,15 @@ private:
 		int nest_id;
 		std::string type;
 		std::list<Attribute*>* attributes;
-		std::string content;
+		char content [MAX_BUF_SIZE];
+		int content_size = 0;
 	};
 
 	int PRINT_WIDTH = 10;
 	bool debug = false;
 	const char * input;
-	std::list<Tag> Tag_List;
-	std::stack<Tag> Tag_Stack;
+	std::list<Tag*> Tag_List;
+	std::stack<Tag*> Tag_Stack;
 	int c = 0;
 	bool in_tag = false;
 	int global_id = 1;
@@ -233,7 +234,7 @@ private:
 				{
 					if (input[c] == ' ') break;
 				}
-				if(debug) print_section("get_attribute() value += \"" + char_string(c) + "\"");
+				//if(debug) print_section("get_attribute() value += \"" + char_string(c) + "\"");
 				attrib->value += input[c++];
 			}
 			c++;
@@ -322,7 +323,7 @@ private:
 		return tag_name;
 	}
 
-	void process_content ()
+	std::string process_content ()
 	{
 		Tag tag = Tag_Stack.top();
 		if(debug) print_section("process_content() begin");
@@ -334,9 +335,11 @@ private:
 				break;
 			}
 			//if(debug) print_section("process_content() for " + Tag_Stack.top().type);
-			tag.content += input[c++];
+			tag.content[tag.content_size++] = input[c++];
 		}
-		if(debug) print_section("process_content() for " + tag.type + " found: " + tag.content);
+		tag.content[tag.content_size] = 0;
+		if(debug) print_section("process_content() for " + tag.type + " found: " + std::string(tag.content, tag.content + 1));
+		return tag.content;
 	}
 
 	void process_comment ()
@@ -355,10 +358,12 @@ private:
 			if (input[c] == '-' && input[c] == '-' && input[c] =='>')
 			{
 				c = c + 3;
-				if(debug) print_section("process_comment() found comment: " + tag.content);
+				if(debug) print_section("process_comment() found comment: " + std::string (tag.content, tag.content + 1));
 				Tag_Stack.pop();
 			}
-			tag.content += input[c++];
+			tag.content[tag.content_size] += input[c++];
+			tag.content_size = tag.content_size + 1;
+			tag.content[tag.content_size] = 0;
 		}
 	}
 	void process ()
@@ -371,7 +376,8 @@ private:
 			if(tag_type != "")
 			{
 				process_tag (tag_type);
-				process_content ();
+				process_content();
+				std::cout << "process(), Tag_Stack.top() " << Tag_Stack.top().content << std::endl;
 			}
 			else
 			{
@@ -379,6 +385,8 @@ private:
 				if (tag_type == "")
 				{
 					process_content();
+					//std::cout << "process() sees: " << result;
+					std::cout << "process(), Tag_Stack.top() " << Tag_Stack.top().content << std::endl;
 				}
 			}
 		}
@@ -432,7 +440,7 @@ public:
 			{
 				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value << std::endl;
 			}
-			std::cout << "     content = \"" << it->content << "\"" << std::endl;
+			std::cout << "     content (" << it->content_size << ") = \"" << std::string(it->content, it->content + 1) << "\"" << std::endl;
 		}
 	}
 	std::list<std::string>* get_attribute_values (std::string attrib)
