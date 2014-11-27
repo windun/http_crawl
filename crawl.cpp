@@ -21,8 +21,10 @@
 #define DATA_DIR "data/"
 #define INDENT_STEP 5
 #define COLUMN_WIDTH 40
-#define MAX_BUF_SIZE 4096
+#define MAX_BUF_SIZE 1000000
+#define MSG_BUF_SIZE 4096
 #define MAX_CURL_DEPTH 1
+
 
 // unordered_map
 // target url
@@ -39,6 +41,8 @@ struct UrlData
 {
 	std::string source;
 	FILE * file;
+	char buffer [MAX_BUF_SIZE];
+	int buf_size = 0;
 	int level;
 };
 void print_indent (int indent)
@@ -69,7 +73,7 @@ bool is_link (char * str, int level)
 	std::string url;
 	regex_t regex;
 	int reti;
-	char buf [MAX_BUF_SIZE];
+	char buf [MSG_BUF_SIZE];
 
 	// match image files, is_link() should return false for
 	// thee matches, so we will negate the result
@@ -380,7 +384,7 @@ private:
 	}
 
 public:
-	Parser (const char *input_, struct UrlData *data)
+	Parser (const char *input_)
 	{
 			input = input_;
 	}
@@ -413,18 +417,33 @@ static size_t write_header (void *ptr, size_t size, size_t nmemb, void *data)
 	return written;
 }
 
+// called during curl_easy_perform ()
+// ptr = data from internet
+// size = #packets ?
+// nmemb = amount data per packet
+// data = my data
 static size_t write_body (void *ptr, size_t size, size_t nmemb, void *data)
 {
-	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
-	Parser Parser_((char *)ptr, (struct UrlData *)data);
-	Parser_.set_debug(true);
-	Parser_.get_urls();
-	Parser_.print();
+	UrlData *url_data = (struct UrlData *)data;
+	char *mem_buf = url_data->buffer;
+	int written = fwrite(ptr, size, nmemb, url_data->file);
+
+	int mem_size = size * nmemb;
+	memcpy(&(mem_buf[url_data->buf_size]), (char *)ptr, mem_size);
+	url_data->buf_size += mem_size;
+	mem_buf[url_data->buf_size] = 0;	// null terminate 1 index past end
+
 	return written;
 }
 
+
 int mCurl (const char* source_url, int level)
 {
+	//Parser Parser_((char *)ptr, (struct UrlData *)data);
+	//Parser_.set_debug(true);
+	//Parser_.get_urls();
+	//Parser_.print();
+
 	struct UrlData header_data;
 	struct UrlData body_data;
 
@@ -494,6 +513,11 @@ int mCurl (const char* source_url, int level)
 		}
 		curl_easy_cleanup(curl_handle);
 		
+		Parser Parser_((char *)body_data.buffer);
+		Parser_.set_debug(true);
+		Parser_.get_urls();
+		Parser_.print();
+
 		std::string footer = "[+] " + std::to_string(URLS.at(source_url)->size()) + " urls found.";
 		print_indent(level * INDENT_STEP); print_column (footer.c_str(), COLUMN_WIDTH);
 		int n = 0; 
