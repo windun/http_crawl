@@ -211,16 +211,28 @@ private:
 			if(debug) print_section("get_attribute() saw =");
 			c++;
 			skip_spaces ();
-			if (input[c] != '"' && input[c] != '\'')
+//			if (input[c] != '"' && input[c] != '\'')
+//			{
+//				fprintf(stderr, "Error, incorrectly formed attribute.\n");
+//				exit(1);
+//			}
+			char delimiter = 0; //= input[c];
+			if (input[c] == '"' || input[c] == '\'')
 			{
-				fprintf(stderr, "Error, incorrectly formed attribute.\n");
-				exit(1);
+				delimiter = input[c];
+				if(debug) print_section("get_attribute() saw delimiter " + char_string(c));
+				c++;
 			}
-			char delimiter = input[c];
-			if(debug) print_section("get_attribute() saw " + char_string(c));
-			c++;
-			while (input[c] != delimiter)
+			while (input[c] != '\0')
 			{
+				if (delimiter != 0)
+				{
+					if (input[c] == delimiter) break;
+				}
+				else
+				{
+					if (input[c] == ' ') break;
+				}
 				if(debug) print_section("get_attribute() value += \"" + char_string(c) + "\"");
 				attrib->value += input[c++];
 			}
@@ -291,8 +303,22 @@ private:
 			tag_name += input[c++];
 		}
 		if(debug) print_section("close_tag() found \"" + tag_name + "\"");
+
+		// Check if this should be within a script or terminate the script
+		Tag tag = Tag_Stack.top();
+		if ((tag_name == "script" || tag_name == "Script" || tag_name == "SCRIPT") && (tag.type == "script" || tag.type == "Script" || tag.type == "SCRIPT"))
+		{
+			return "";
+		}
 		c++;
-		Tag_Stack.pop();
+		if (tag.type == tag_name)
+		{
+			Tag_Stack.pop();
+		}
+		else
+		{
+			print_section ("error: close tag \"" + tag_name + "\" isn't matched.");
+		}
 		return tag_name;
 	}
 
@@ -302,7 +328,7 @@ private:
 		if(debug) print_section("process_content() begin");
 		while (input[c] != '\0')
 		{
-			if (input[c] == '<' && !(tag.type == "script" || tag.type == "Script" || tag.type == "SCRIPT"))
+			if (input[c] == '<') // && !(tag.type == "script" || tag.type == "Script" || tag.type == "SCRIPT"))
 			{
 				if(debug) print_section("process_content() break");
 				break;
@@ -408,6 +434,10 @@ public:
 			}
 			std::cout << "     content = \"" << it->content << "\"" << std::endl;
 		}
+	}
+	std::list<std::string>* get_attribute_values (std::string attrib)
+	{
+
 	}
 };
 
