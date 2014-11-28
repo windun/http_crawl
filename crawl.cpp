@@ -124,7 +124,6 @@ static size_t write_body (void *ptr, size_t size, size_t nmemb, void *data)
 	memcpy(&(mem_buf[url_data->buf_size]), (char *)ptr, mem_size);
 	url_data->buf_size += mem_size;
 	mem_buf[url_data->buf_size] = 0;	// null terminate 1 index past end
-
 	return written;
 }
 
@@ -144,7 +143,7 @@ int mCurl (const char* source_url, int level)
 
 	try
 	{
-		URLS.at(source_url);
+		target_URLS = URLS.at(source_url);
 	}
 	catch (std::exception& e)
 	{
@@ -159,7 +158,6 @@ int mCurl (const char* source_url, int level)
 
 		/////////////////////////////////////////////
 		//	SET UP CURL
-		//std::string heading = "[" + level + "]-> " + source_url + "\n";
 		std::string heading = "[" + std::to_string(level) + "]-> " + source_url;
 		print_indent(level * INDENT_STEP); print_column (heading.c_str(), COLUMN_WIDTH);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url);
@@ -205,8 +203,9 @@ int mCurl (const char* source_url, int level)
 		curl_easy_cleanup(curl_handle);
 		
 		Parser Parser_((char *)body_data.buffer);
-		Parser_.set_debug(false);
+		Parser_.set_debug(true);
 		Parser_.process();
+		Parser_.print_info();
 
 		new_URLS = Parser_.get_attribute_values("href");
 
@@ -223,6 +222,7 @@ int mCurl (const char* source_url, int level)
 		{
 			if(level >= MAX_CURL_DEPTH)
 			{
+				fprintf(stdout, "[x] max depth reached.\n");
 				return 0;
 			}
 			else
@@ -232,6 +232,10 @@ int mCurl (const char* source_url, int level)
 			previous = *it;
 		}
 	}	
+	else
+	{
+		fprintf(stderr, "[x] could not initialize curl.\n");
+	}
 	return 0;
 
 }
