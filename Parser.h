@@ -9,8 +9,8 @@
 
 class Parser
 {
-	#define MAX_BUF_SIZE 1000000
-	#define COLUMN_WIDTH 40			// process_content()
+	#define MAX_BUF_SIZE 2000000
+	#define PARSE_COLUMN_WIDTH 40			// process_content()
 
 private:
 	struct Attribute
@@ -251,12 +251,13 @@ private:
 			//if(debug) print_section("process_content() for " + Tag_Stack.top().type);
 			tag->content[tag->content_size++] = input[c++];
 		}
+
 		tag->content[tag->content_size] = 0;
 		if(debug)
 		{
 			if (is_tag("script", tag->type))
 			{
-				print_section("process_content() for " + tag->type + " found: " + std::string(tag->content, COLUMN_WIDTH));
+				print_section("process_content() for " + tag->type + " found: " + std::string(tag->content, PARSE_COLUMN_WIDTH));
 			}
 			else
 			{
@@ -322,6 +323,17 @@ public:
 	{
 			input = input_;
 	}
+	~Parser ()
+	{
+		for (std::list<Tag*>::iterator it=Tag_List.begin(); it != Tag_List.end(); it++)
+		{
+			for (std::list<Attribute*>::iterator attr_it = (*it)->attributes->begin(); attr_it != (*it)->attributes->end(); attr_it++)
+			{
+				delete *attr_it;
+			}
+			delete *it;
+		}
+	}
 	void set_debug (bool show_debug)
 	{
 		debug = show_debug;
@@ -329,6 +341,7 @@ public:
 	void process ()
 	{
 		std::string tag_type;
+		if (input == 0 ) return;
 		while (input[c] != '\0')
 		{
 			skip_spaces(); if(debug) print_section("process() skip_spaces");
@@ -357,9 +370,9 @@ public:
 			std::cout << (*it)->id << "," << (*it)->nest_id << "  " << (*it)->type << std::endl;
 			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
 			{
-				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value.substr(0, COLUMN_WIDTH) << std::endl;
+				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value.substr(0, PARSE_COLUMN_WIDTH) << std::endl;
 			}
-			if ((*it)->content_size != 0) std::cout << "     content (" << (*it)->content_size << ") = \"" << std::string((*it)->content, COLUMN_WIDTH) << "...\"" << std::endl;
+			if ((*it)->content_size != 0) std::cout << "     content (" << (*it)->content_size << ") = \"" << std::string((*it)->content, PARSE_COLUMN_WIDTH) << "...\"" << std::endl;
 		}
 	}
 	std::list<std::string>* get_attribute_values (std::string attrib)
