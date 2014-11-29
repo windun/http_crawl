@@ -4,7 +4,6 @@
 #include <iostream>
 #include <list>
 #include <sstream>		// ostringstream in char_string()
-#include <stack>
 #include <string>
 
 class Parser
@@ -32,7 +31,7 @@ private:
 	bool debug = false;
 	const char * input;
 	std::list<Tag*> Tag_List;
-	std::stack<Tag*> Tag_Stack;
+	std::list<Tag*> Tag_Stack;
 	int c = 0;
 	bool in_tag = false;
 	int global_id = 1;
@@ -165,12 +164,13 @@ private:
 		Tag *tag = new Tag ();
 		tag->type = tag_type;
 		tag->id = global_id++;
-		tag->nest_id = Tag_Stack.size() == 0 ? 0 : Tag_Stack.top()->id;
+		tag->nest_id = Tag_Stack.size() == 0 ? 0 : Tag_Stack.back()->id;
 		tag->attributes = new std::list<Attribute*> ();
 
 		if(debug) print_section("process_tag() begin");
 		Tag_List.push_back(tag);
-		if(!is_tag("meta", tag_type)) Tag_Stack.push(tag);	// do not put meta on tag stack
+		//if(!is_tag("meta", tag_type) && !is_tag("br", tag_type))
+		Tag_Stack.push_back(tag);	// do not put meta on tag stack
 
 		if(tag_type == "!--")
 		{
@@ -200,8 +200,9 @@ private:
 		if (input[c] == '/' && input[c + 1] == '>')
 		{
 			c = c + 2;
-			if(debug) print_section("process_tag() closed " + Tag_Stack.top()->type);
-			Tag_Stack.pop();
+			if(debug) print_section("process_tag() finds closed " + Tag_Stack.back()->type);
+			if(debug) print_section("process_tag() calls stack_pop()");
+			stack_pop(tag);
 		}
 	}
 
@@ -220,26 +221,20 @@ private:
 		if(debug) print_section("close_tag() found \"" + tag_name + "\"");
 
 		// Check if this should be within a script or terminate the script
-		Tag *top_tag = Tag_Stack.top();
-		if (is_tag("script", tag_name) && is_tag("script", top_tag->type))
+		Tag *top_tag = Tag_Stack.back();
+		if (is_tag("script", tag_name) && !is_tag("script", top_tag->type))
 		{
 			return "";
 		}
 		c++;
-		if (top_tag->type == tag_name)
-		{
-			Tag_Stack.pop();
-		}
-		else
-		{
-			if(debug) print_section ("error: close tag \"" + tag_name + "\" isn't matched (expect " + top_tag->type);
-		}
+		if(debug) print_section("close_tag() calls stack_pop()");
+		stack_pop(tag_name);
 		return tag_name;
 	}
 
 	std::string process_content ()
 	{
-		Tag *tag = Tag_Stack.top();
+		Tag *tag = Tag_Stack.back();
 		if(debug) print_section("process_content() begin");
 		while (input[c] != '\0')
 		{
@@ -251,9 +246,8 @@ private:
 			//if(debug) print_section("process_content() for " + Tag_Stack.top().type);
 			tag->content[tag->content_size++] = input[c++];
 		}
-		std::cout << "CHECK " << Tag_Stack.size() << std::endl;
 		tag->content[tag->content_size] = 0;
-		std::cout << "CHECK" << std::endl;
+
 		if(debug)
 		{
 			if (is_tag("script", tag->type))
@@ -272,20 +266,20 @@ private:
 	{
 
 		if(debug) print_section ("process_comment() begin");
-		if (Tag_Stack.top()->type != "!--")
+		if (Tag_Stack.back()->type != "!--")
 		{
-			if(debug) print_section ("process_comment() Error: top is \"" + Tag_Stack.top()->type + "\"");
+			if(debug) print_section ("process_comment() Error: top is \"" + Tag_Stack.back()->type + "\"");
 			fprintf(stderr, "Error, comment tag is not Tag_Stack.top().\n");
 			exit(1);
 		}
-		Tag *tag = Tag_Stack.top();
+		Tag *tag = Tag_Stack.back();
 		while (input[c] != '\0')
 		{
 			if (input[c] == '-' && input[c] == '-' && input[c] =='>')
 			{
 				c = c + 3;
 				if(debug) print_section("process_comment() found comment: " + std::string (tag->content, tag->content + 1));
-				Tag_Stack.pop();
+				Tag_Stack.pop_back();
 			}
 			tag->content[tag->content_size] += input[c++];
 			tag->content_size = tag->content_size + 1;
@@ -302,6 +296,7 @@ private:
 		std::cout << "      " << comment << std::endl;
 	}
 
+
 	std::string char_string (int i)
 	{
 		std::string str;
@@ -317,6 +312,64 @@ private:
 			str = std::string(1, input[i]);
 		}
 		return str;
+	}
+
+	bool stack_pop(std::string tag_type)
+	{
+		if(debug) print_section("stack_pop() found stack size = " + static_cast<std::ostringstream*>(&(std::ostringstream() << Tag_Stack.size()))->str());
+		if (Tag_Stack.size() == 0)
+		{
+			return false;
+		}
+		if(tag_type == Tag_Stack.back()->type)
+		{
+			if(debug) print_section("stack_pop() pop stack top (" + Tag_Stack.back()->type + ")");
+			Tag_Stack.pop_back();
+		}
+		else
+		{
+			if(debug) print_section("stack_pop() tag not on top of stack");
+			for (std::list<Tag*>::iterator it = Tag_Stack.end(); it != Tag_Stack.begin();)
+			{
+				it--;
+				if((*it)->type == tag_type)
+				{
+					if(debug) print_section ("stack_pop() found the tag in stack");
+					Tag_Stack.erase(it);
+					return true;
+				}
+			}
+		}
+	}
+
+	bool stack_pop(Tag *tag)
+	{
+		if(debug) print_section("stack_pop() found stack size = " + static_cast<std::ostringstream*>(&(std::ostringstream() << Tag_Stack.size()))->str());
+		if (Tag_Stack.size() == 0)
+		{
+			return false;
+		}
+		if(tag == Tag_Stack.back())
+		{
+			if(debug) print_section("stack_pop() pop stack top (" + Tag_Stack.back()->type + ")");
+			Tag_Stack.pop_back();
+			return true;
+		}
+		else
+		{
+			if(debug) print_section("stack_pop() " + tag->type + " not on top of stack");
+			for (std::list<Tag*>::iterator it = Tag_Stack.end(); it != Tag_Stack.begin();)
+			{
+				it--;
+				if(*it == tag)
+				{
+					if(debug) print_section ("stack_pop() found the tag in stack");
+					Tag_Stack.erase(it);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 public:
