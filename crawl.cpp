@@ -286,25 +286,6 @@ int mCurl (std::string source_url, int nth_curl)
 		//	PERFORM THE CURL
 		res = curl_easy_perform(curl_handle);
 		
-		if (res != CURLE_OK)
-		{
-			fprintf(stdout, "[!]-> %s\n", curl_easy_strerror(res));
-
-			// 1. Block SIGINT
-			sigset_t old_mask, to_block;
-			sigemptyset(&to_block);
-			sigaddset(&to_block, SIGINT);
-			sigprocmask(SIG_BLOCK, &to_block, &old_mask);
-
-			fclose(header_data.file);
-			fclose(body_data.file);
-
-			// 3. Restore signal handling
-			sigprocmask(SIG_SETMASK, &old_mask, NULL);
-
-			remove(headerFilename.c_str());
-			remove(bodyFilename.c_str());
-		}
 		// 1. Block SIGINT
 		sigset_t old_mask, to_block;
 		sigemptyset(&to_block);
@@ -317,10 +298,20 @@ int mCurl (std::string source_url, int nth_curl)
 		// 3. Restore signal handling
 		sigprocmask(SIG_SETMASK, &old_mask, NULL);
 
+		if (res != CURLE_OK)
+		{
+			fprintf(stdout, "[!]-> %s\n", curl_easy_strerror(res));
+
+			remove(headerFilename.c_str());
+			remove(bodyFilename.c_str());
+
+			std::cerr << "[!] files removed." << std::endl;
+		}
+
 		curl_easy_cleanup(curl_handle);
 		
 		Parser Parser_((char *)body_data.buffer);
-		Parser_.set_debug(true);
+		Parser_.set_debug(false);
 		Parser_.process();
 		new_URLS = Parser_.get_attribute_values("href");
 		std::string new_url;

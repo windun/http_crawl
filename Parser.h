@@ -329,11 +329,18 @@ private:
 		Tag *tag = Tag_Stack.back();
 		while (input[c] != '\0')
 		{
-			if (input[c] == '-' && input[c] == '-' && input[c] =='>')
+			if (input[c] == '-')			// trying to avoid going out of boundary
 			{
-				c = c + 3;
-				if(debug) print_section("process_comment() found comment: " + tag->get_content());
-				Tag_Stack.pop_back();
+				if (input[c+1] == '-')		//
+				{
+					if(input[c+2] == '>')	//
+					{
+						c = c + 3;
+						if(debug) print_section("process_comment() found comment: " + tag->get_content());
+						Tag_Stack.pop_back();
+						break;
+					}
+				}
 			}
 			//tag->content[tag->content_size] += input[c++];
 			tag->add_content(input[c++]);
