@@ -335,7 +335,13 @@ private:
 				if((*it)->type == tag_type)
 				{
 					if(debug) print_section ("stack_pop() found the tag in stack");
-					Tag_Stack.erase(it);
+					while (Tag_Stack.back()->type != tag_type)
+					{
+						if(debug) print_section ("stack_pop() removed " + Tag_Stack.back()->type);
+						Tag_Stack.pop_back();
+					}
+					if(debug) print_section ("stack_pop() removed " + Tag_Stack.back()->type);
+					Tag_Stack.pop_back();
 					return true;
 				}
 			}
@@ -364,7 +370,13 @@ private:
 				if(*it == tag)
 				{
 					if(debug) print_section ("stack_pop() found the tag in stack");
-					Tag_Stack.erase(it);
+					while (Tag_Stack.back() != tag)
+					{
+						if(debug) print_section ("stack_pop() removed " + Tag_Stack.back()->type);
+						Tag_Stack.pop_back();
+					}
+					if(debug) print_section ("stack_pop() removed " + Tag_Stack.back()->type);
+					Tag_Stack.pop_back();
 					return true;
 				}
 			}
@@ -379,14 +391,21 @@ public:
 	}
 	~Parser ()
 	{
-		for (std::list<Tag*>::iterator it=Tag_List.begin(); it != Tag_List.end(); it++)
+		delete_tag_list(Tag_List);
+		//delete_tag_list(Tag_Stack);
+	}
+	void delete_tag_list (std::list<Tag*> List)
+	{
+		for (std::list<Tag*>::iterator it=List.begin(); it !=List.end(); it++)
 		{
 			for (std::list<Attribute*>::iterator attr_it = (*it)->attributes->begin(); attr_it != (*it)->attributes->end(); attr_it++)
 			{
-				delete *attr_it;
+				delete *attr_it;			// delete items in attributes list
 			}
-			delete *it;
+			delete (*it)->attributes;		// delete the attributes list
+			delete *it;						// delete the list item that contains this attributes list
 		}
+		List.clear();						// clear the list
 	}
 	void set_debug (bool show_debug)
 	{

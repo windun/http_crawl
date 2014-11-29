@@ -6,6 +6,7 @@
 #include <unordered_map>	// for URLS - data structure to track all urls, their source and destinations
 #include <unordered_set>	// for URLS
 #include <curl/curl.h>		// http gathering
+#include <fstream>			// write URL_directory, write_file ()
 #include <queue>
 #include <regex.h> 			// link recognition (vs. file)
 #include <utility>
@@ -27,14 +28,15 @@ class Directory
 private:
 	std::unordered_map<int, std::string> standard;
 	std::unordered_map<std::string, int> reverse;
+	std::ofstream ofile;
 public:
 	bool insert (int key, std::string value)
 	{
-		std::pair<int, std::string> entry (key, value);
-		if(standard.insert(entry).second)
+		std::pair<std::string, int> rev_entry (value, key);
+		if(reverse.insert(rev_entry).second)
 		{
-			std::pair<std::string, int> rev_entry (value, key);
-			reverse.insert(rev_entry);
+			std::pair<int, std::string> entry (key, value);
+			standard.insert(entry);
 			return true;
 		}
 		else return false;
@@ -53,6 +55,25 @@ public:
 	int size ()
 	{
 		return standard.size();
+	}
+
+	void write_file (std::string ofile_name)
+	{
+		ofile.open(ofile_name);
+		if(!ofile.is_open())
+		{
+			std::cerr << "[x] " << ofile_name << " did not open.\n";
+			return;
+		}
+		else
+		{
+			for (std::unordered_map<int, std::string>::iterator it = standard.begin(); it != standard.end(); it++)
+			{
+				ofile << it->first << " " << it->second << std::endl;
+			}
+		}
+		ofile.close();
+		std::cout << "[*] " << ofile_name << " written.\n";
 	}
 } URL_directory;
 
@@ -80,6 +101,39 @@ void print_column (const char * str, int width)
 	fprintf(stdout, "\n");
 }
 
+std::string fix_rel_url (std::string source_url, std::string new_url)
+{
+	//std::cout << "source: " << source_url << " new: " << new_url << std::endl;
+	if (new_url.front() == '/')
+	{
+		if (source_url.back() == '/')
+		{
+			new_url = source_url.substr(0,source_url.size() - 1) + new_url;
+		}
+		else
+		{
+			new_url = source_url + new_url;
+		}
+	}
+	else if (new_url.substr(0,3) == "../")
+	{
+		if (source_url.back() == '/') source_url = source_url.substr(0, source_url.size() - 1);
+		while (new_url.substr(0,3) == "../")
+		{
+			int pos = source_url.find_last_of("/");
+			source_url = source_url.substr(0, pos);
+			new_url = new_url.substr(3, new_url.size() - 3);
+		}
+		new_url = source_url + "/" + new_url;
+	}
+	else if (new_url.front() == '#')
+	{
+		if (source_url.back() == '/') new_url = source_url + new_url;
+		else new_url = source_url + "/" + new_url;
+	}
+	//std::cout << "end source: " << source_url << " new: " << new_url << std::endl;
+	return new_url;
+}
 
 bool is_link (char * str, int level)
 {
@@ -237,7 +291,7 @@ int mCurl (std::string source_url, int nth_curl)
 		curl_easy_cleanup(curl_handle);
 		
 		Parser Parser_((char *)body_data.buffer);
-		Parser_.set_debug(true);
+		Parser_.set_debug(false);
 		Parser_.process();
 
 		new_URLS = Parser_.get_attribute_values("href");
@@ -245,9 +299,13 @@ int mCurl (std::string source_url, int nth_curl)
 		for (std::list<std::string>::iterator it=new_URLS->begin(); it != new_URLS->end(); it++)
 		{
 			int new_id = URL_directory.size();
-			if (URL_directory.insert(new_id, *it))
+			if (URL_directory.insert(new_id, fix_rel_url(source_url, *it)))
 			{
 				target_URLS->insert(new_id);
+			}
+			else
+			{
+				//std::cout << "[x] already seen.\n";
 			}
 		}
 
@@ -280,4 +338,7 @@ int main (int argc, char* argv[])
 		if(mCurl(URL_queue.front(), n) == CURLE_OK) n++;
 		URL_queue.pop();
 	}
+	std::string ofile_name = DATA_DIR;
+	ofile_name += "directory.txt";
+	URL_directory.write_file(ofile_name);
 }
