@@ -8,6 +8,7 @@
 #include <curl/curl.h>		// http gathering
 #include <fstream>			// write URL_directory, write_file ()
 #include <queue>
+#include <signal.h>			// block sigterm
 #include <regex.h> 			// link recognition (vs. file)
 #include <utility>
 #include "Parser.h"
@@ -23,7 +24,7 @@ int TIME_LIMIT = 60;
 
 std::unordered_map<int, std::unordered_set<int>*> URLS;
 std::queue<std::string> URL_queue;
-
+int MAX_USED = 0;
 
 class Directory
 {
@@ -288,21 +289,40 @@ int mCurl (std::string source_url, int nth_curl)
 		if (res != CURLE_OK)
 		{
 			fprintf(stdout, "[!]-> %s\n", curl_easy_strerror(res));
+
+			// 1. Block SIGINT
+			sigset_t old_mask, to_block;
+			sigemptyset(&to_block);
+			sigaddset(&to_block, SIGINT);
+			sigprocmask(SIG_BLOCK, &to_block, &old_mask);
+
 			fclose(header_data.file);
 			fclose(body_data.file);
+
+			// 3. Restore signal handling
+			sigprocmask(SIG_SETMASK, &old_mask, NULL);
+
 			remove(headerFilename.c_str());
 			remove(bodyFilename.c_str());
 		}
+		// 1. Block SIGINT
+		sigset_t old_mask, to_block;
+		sigemptyset(&to_block);
+		sigaddset(&to_block, SIGINT);
+		sigprocmask(SIG_BLOCK, &to_block, &old_mask);
+
 		fclose(header_data.file);
 		fclose(body_data.file);
+
+		// 3. Restore signal handling
+		sigprocmask(SIG_SETMASK, &old_mask, NULL);
+
 		curl_easy_cleanup(curl_handle);
 		
 		Parser Parser_((char *)body_data.buffer);
-		Parser_.set_debug(false);
+		Parser_.set_debug(true);
 		Parser_.process();
-
 		new_URLS = Parser_.get_attribute_values("href");
-
 		std::string new_url;
 		std::string robots_url;
 		for (std::list<std::string>::iterator it=new_URLS->begin(); it != new_URLS->end(); it++)

@@ -9,6 +9,7 @@
 class Parser
 {
 	#define MAX_BUF_SIZE 1000000
+	#define MIN_BUF_SIZE 500000
 	#define PARSE_COLUMN_WIDTH 40			// process_content()
 
 private:
@@ -17,14 +18,65 @@ private:
 		std::string name;
 		std::string value;
 	};
-	struct Tag
+	class Tag
 	{
+	private:
+		char *content;
+
+	public:
 		int id;
 		int nest_id;
 		std::string type;
 		std::list<Attribute*>* attributes;
-		char content [MAX_BUF_SIZE];
 		int content_size = 0;
+		int content_limit = MIN_BUF_SIZE;
+
+		Tag()
+		{
+			content = new char [content_limit];
+			attributes = new std::list<Attribute*> ();
+		}
+		~Tag()
+		{
+			//std::cout << "~Tag() begin.";
+			for (std::list<Attribute*>::iterator attr_it = attributes->begin(); attr_it != attributes->end(); attr_it++)
+			{
+				delete *attr_it;			// delete items in attributes list
+			}
+			delete attributes;		// delete the attributes list
+
+			delete[] content;
+
+		}
+		void add_content (char c)
+		{
+			if (content_size >= content_limit)
+			{
+				std::cout << "[!] content size surpassed (" << content_size << "/" << content_limit << ")" << std::endl;
+				char *tmp;
+				char *old = content;
+				content_limit += 200;
+				tmp = new char [content_limit];
+				content = (char *)memcpy(tmp, content, content_size);
+				delete old;
+				std::cout << "[!] content size increased (" << content_size << "/" << content_limit << ")" << std::endl;
+			}
+			content[content_size++] = c;
+		}
+		void edit_content (char c, int index)
+		{
+			content[index] = c;
+		}
+
+		std::string get_content()
+		{
+			return std::string(content, content_size);
+		}
+
+		std::string get_content(int length)
+		{
+			return std::string(content, length);
+		}
 	};
 
 	int PRINT_WIDTH = 10;
@@ -65,11 +117,14 @@ private:
 	{
 		// Skip space (32), tab (9), newline
 		if(debug) print_section("skip_spaces(), before loop");
-		while (input[c] == 32 || input[c] == 9 || input[c] == '\n' || input[c] == 10 || input[c] == 13)
+		while ((input[c] == 32 || input[c] == 9 || input[c] == '\n' || input[c] == 10 || input[c] == 13) && input[c] != 0)
 		{
 			if(debug) print_section("skip_spaces(), loop");
 			c++;
+			//std::cout << (int)input[c] << "| (=0?" << (input[c] == 0) << ")";
 		}
+		if (debug) print_section("skip_spaces() finished.");
+		//std::cout << std::endl;
 	}
 	std::string open_tag ()
 	{
@@ -165,7 +220,6 @@ private:
 		tag->type = tag_type;
 		tag->id = global_id++;
 		tag->nest_id = Tag_Stack.size() == 0 ? 0 : Tag_Stack.back()->id;
-		tag->attributes = new std::list<Attribute*> ();
 
 		if(debug) print_section("process_tag() begin");
 		Tag_List.push_back(tag);
@@ -232,7 +286,7 @@ private:
 		return tag_name;
 	}
 
-	std::string process_content ()
+	void process_content ()
 	{
 		Tag *tag = Tag_Stack.back();
 		if(debug) print_section("process_content() begin");
@@ -243,22 +297,23 @@ private:
 				if(debug) print_section("process_content() break");
 				break;
 			}
-			//if(debug) print_section("process_content() for " + Tag_Stack.top().type);
-			tag->content[tag->content_size++] = input[c++];
+			if(debug) print_section("process_content() for " + Tag_Stack.back()->type);
+			//tag->content[tag->content_size++] = input[c++];
+			tag->add_content(input[c++]);
 		}
-		tag->content[tag->content_size] = 0;
+		//tag->content[tag->content_size] = 0;
+		tag->edit_content(0, tag->content_size);
 		if(debug)
 		{
 			if (is_tag("script", tag->type))
 			{
-				print_section("process_content() for " + tag->type + " found: " + std::string(tag->content, PARSE_COLUMN_WIDTH));
+				print_section("process_content() for " + tag->type + " found: " + tag->get_content(PARSE_COLUMN_WIDTH));
 			}
 			else
 			{
-				print_section("process_content() for " + tag->type + " found: " + std::string(tag->content, tag->content_size));
+				print_section("process_content() for " + tag->type + " found: " + tag->get_content());
 			}
 		}
-		return tag->content;
 	}
 
 	void process_comment ()
@@ -277,12 +332,13 @@ private:
 			if (input[c] == '-' && input[c] == '-' && input[c] =='>')
 			{
 				c = c + 3;
-				if(debug) print_section("process_comment() found comment: " + std::string (tag->content, tag->content + 1));
+				if(debug) print_section("process_comment() found comment: " + tag->get_content());
 				Tag_Stack.pop_back();
 			}
-			tag->content[tag->content_size] += input[c++];
-			tag->content_size = tag->content_size + 1;
-			tag->content[tag->content_size] = 0;
+			//tag->content[tag->content_size] += input[c++];
+			tag->add_content(input[c++]);
+			//tag->content[tag->content_size] = 0;
+			tag->edit_content(0, tag->content_size);
 		}
 	}
 
@@ -391,18 +447,15 @@ public:
 	~Parser ()
 	{
 		delete_tag_list(Tag_List);
-		//delete_tag_list(Tag_Stack);
+		Tag_Stack.clear();
+		//std::cout << "~Parser() Tag_List(" << Tag_List.size() << ") Tag_Stack(" << Tag_Stack.size() << ")" << std::endl;
 	}
-	void delete_tag_list (std::list<Tag*> List)
+	void delete_tag_list (std::list<Tag*> &List)
 	{
+		if(debug) print_section("delete_tag_list()");
 		for (std::list<Tag*>::iterator it=List.begin(); it !=List.end(); it++)
 		{
-			for (std::list<Attribute*>::iterator attr_it = (*it)->attributes->begin(); attr_it != (*it)->attributes->end(); attr_it++)
-			{
-				delete *attr_it;			// delete items in attributes list
-			}
-			delete (*it)->attributes;		// delete the attributes list
-			delete *it;						// delete the list item that contains this attributes list
+			delete *it;
 		}
 		List.clear();						// clear the list
 	}
@@ -414,6 +467,10 @@ public:
 	{
 		std::string tag_type;
 		if (input == 0 ) return;
+		Tag *base = new Tag ();
+		base->type = "base";
+		Tag_List.push_back(base);
+		Tag_Stack.push_back(base);
 		while (input[c] != '\0')
 		{
 			skip_spaces(); if(debug) print_section("process() skip_spaces");
@@ -444,16 +501,18 @@ public:
 			{
 				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value.substr(0, PARSE_COLUMN_WIDTH) << std::endl;
 			}
-			if ((*it)->content_size != 0) std::cout << "     content (" << (*it)->content_size << ") = \"" << std::string((*it)->content, PARSE_COLUMN_WIDTH) << "...\"" << std::endl;
+			if ((*it)->content_size != 0) std::cout << "     content (" << (*it)->content_size << ") = \"" << (*it)->get_content(PARSE_COLUMN_WIDTH) << "...\"" << std::endl;
 		}
 	}
 	std::list<std::string>* get_attribute_values (std::string attrib)
 	{
 		std::list<std::string> *result = new std::list<std::string> ();
+
 		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
 			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
 			{
+				//std::cout << "check" << std::endl;
 				if (is_tag(attrib, (*it_attr)->name))
 				{
 					result->push_back((*it_attr)->value);
@@ -461,6 +520,15 @@ public:
 			}
 		}
 		return result;
+	}
+	int get_max_buffer_size ()
+	{
+		int max = 0;
+		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
+		{
+			if((*it)->content_size > max) max = (*it)->content_size;
+		}
+		return max;
 	}
 };
 

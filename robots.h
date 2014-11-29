@@ -56,6 +56,15 @@ namespace robots
 	  return realsize;
 	}
 
+	void print_chars (std::string str)
+	{
+		for (int i = 0; i < str.size(); i++)
+		{
+			std::cout << (int)str[i] << "|";
+		}
+		std::cout << std::endl;
+	}
+
 	void update_blacklist (std::string domain, std::string str)
 	{
 		std::string residual = str;
@@ -68,16 +77,22 @@ namespace robots
 			i += 10;
 			residual = residual.substr(i, residual.size() - 10);
 			i_end = residual.find_first_of('\n');
-			entry = residual.substr(0, i_end);
-			//std::cout << "entry:" << entry << "(" << entry.size() << ") " << std::endl;
+			entry = residual.substr(0, i_end);		// defaults to remainder (e.g. no more newlines)
+			//std::cout << "entry:" << entry << "(" << entry.size() << ") i_end:" << i_end << std::endl;
 			std::cout << "[x] " << domain + entry << std::endl;
 			blacklist.insert(domain + entry);
-			if (residual[i_end + 1] == 0) break;
+
+			if (residual[i_end] == 0 || i_end <= 0) break;
+			//if (residual[i_end + 1] == 0) break;
+			//std::cout << "i_end:" << i_end << " residual.size():" << residual.size() << " entry.size():" << entry.size() << std::endl;
 			residual = residual.substr(i_end, residual.size() - entry.size());
-			//std::cout << "residual: " <<residual << " (" << residual.size()<< ") " << std::endl;
+			//std::cout << "residual: "; print_chars (residual); //<<residual << " (" << residual.size()<< ") " << std::endl;
 			i = residual.find("Disallow: ");
+			if (i == 0) break;
 		}
 	}
+
+
 
 	std::string check (std::string url)
 	{

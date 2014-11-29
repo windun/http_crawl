@@ -1,1 +1,1 @@
-rm /home/DSU/Dev/http_crawl/data/*
+rm /home/$USER/Dev/http_crawl/data/*
