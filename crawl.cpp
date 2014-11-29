@@ -11,6 +11,7 @@
 #include <regex.h> 			// link recognition (vs. file)
 #include <utility>
 #include "Parser.h"
+#include "robots.h"
 
 #define REGEX_PATTERN "[a-zA-Z0-9./]*(.bmp|.gif|.jpg|.pdf|.png)"	// link recognition - regex.h
 #define DATA_DIR "data/"		// fwrite () into this directory
@@ -22,6 +23,7 @@ int TIME_LIMIT = 1;
 
 std::unordered_map<int, std::unordered_set<int>*> URLS;
 std::queue<std::string> URL_queue;
+
 
 class Directory
 {
@@ -62,7 +64,7 @@ public:
 		ofile.open(ofile_name);
 		if(!ofile.is_open())
 		{
-			std::cerr << "[x] " << ofile_name << " did not open.\n";
+			std::cerr << "[!] " << ofile_name << " did not open.\n";
 			return;
 		}
 		else
@@ -134,6 +136,8 @@ std::string fix_rel_url (std::string source_url, std::string new_url)
 	//std::cout << "end source: " << source_url << " new: " << new_url << std::endl;
 	return new_url;
 }
+
+
 
 bool is_link (char * str, int level)
 {
@@ -282,7 +286,7 @@ int mCurl (std::string source_url, int nth_curl)
 		
 		if (res != CURLE_OK)
 		{
-			fprintf(stdout, "[x]-> %s\n", curl_easy_strerror(res));
+			fprintf(stdout, "[!]-> %s\n", curl_easy_strerror(res));
 			fclose(header_data.file);
 			fclose(body_data.file);
 			remove(headerFilename.c_str());
@@ -296,16 +300,25 @@ int mCurl (std::string source_url, int nth_curl)
 
 		new_URLS = Parser_.get_attribute_values("href");
 
+		std::string new_url;
+		std::string robots_url;
 		for (std::list<std::string>::iterator it=new_URLS->begin(); it != new_URLS->end(); it++)
 		{
 			int new_id = URL_directory.size();
-			if (URL_directory.insert(new_id, fix_rel_url(source_url, *it)))
+			new_url = fix_rel_url(source_url, *it);
+			std::cout << new_url << std::endl;
+			robots_url = robots::check(new_url);
+			if(robots_url != "")
 			{
-				target_URLS->insert(new_id);
+				URL_directory.insert(new_id, robots_url);
+				new_id++;
 			}
-			else
+			if (!robots::is_blacklisted(new_url))
 			{
-				//std::cout << "[x] already seen.\n";
+				if (URL_directory.insert(new_id, new_url))
+				{
+					target_URLS->insert(new_id);
+				}
 			}
 		}
 
@@ -320,7 +333,7 @@ int mCurl (std::string source_url, int nth_curl)
 	}	
 	else
 	{
-		fprintf(stderr, "[x] could not initialize curl.\n");
+		fprintf(stderr, "[!] could not initialize curl.\n");
 	}
 	return res;
 }
@@ -330,7 +343,9 @@ int main (int argc, char* argv[])
 	int max_curls;
 	std::stringstream ss; ss << argv[2];
 	ss >> max_curls;
-
+	std::string url = std::string(argv[1]);
+	robots::check(url);
+	if (robots::is_blacklisted(url)) return 0;
 	URL_directory.insert(0, argv[1]);
 	URL_queue.push(argv[1]);
 	while (URL_queue.size() > 0 && n <= max_curls)
