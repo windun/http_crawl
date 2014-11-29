@@ -17,7 +17,6 @@
 #define COLUMN_WIDTH 80			// print_column () - width of block to print
 #define HTML_BUF_SIZE 1000000	// for UrlData buffer (stores html data)
 #define MSG_BUF_SIZE 4096		// link recognition (regex.h) error
-#define MAX_CURLS 5		// limit depth of data gathering
 int TIME_LIMIT = 1;
 
 std::unordered_map<int, std::unordered_set<int>*> URLS;
@@ -218,9 +217,7 @@ int mCurl (std::string source_url, int nth_curl)
 		}
 
 		header_data.source = source_url;
-		//header_data.level = level;
 		body_data.source = source_url;
-		//body_data.level = level;
 
 		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, &header_data);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &body_data);
@@ -232,13 +229,15 @@ int mCurl (std::string source_url, int nth_curl)
 		if (res != CURLE_OK)
 		{
 			fprintf(stdout, "[x]-> %s\n", curl_easy_strerror(res));
+			fclose(header_data.file);
+			fclose(body_data.file);
 			remove(headerFilename.c_str());
 			remove(bodyFilename.c_str());
 		}
 		curl_easy_cleanup(curl_handle);
 		
 		Parser Parser_((char *)body_data.buffer);
-		Parser_.set_debug(false);
+		Parser_.set_debug(true);
 		Parser_.process();
 
 		new_URLS = Parser_.get_attribute_values("href");
@@ -260,21 +259,6 @@ int mCurl (std::string source_url, int nth_curl)
 			std::string url = URL_directory.get_value(*it);
 			URL_queue.push(url);
 		}
-
-//		for (std::unordered_set<int>::iterator it=URLS.at(source_url_id)->begin(); it != URLS.at(source_url_id)->end(); it++, n++)
-//		{
-//			std::string url = URL_directory.get_value(*it);
-//			if(level >= MAX_CURL_DEPTH)
-//			{
-//				print_indent(level * INDENT_STEP); print_column ("[x] max depth reached.\n", COLUMN_WIDTH);
-//				return 0;
-//			}
-//			else
-//			{
-//				mCurl(url, level + 1);
-//			}
-//			previous = *it;
-//		}
 	}	
 	else
 	{
@@ -285,9 +269,13 @@ int mCurl (std::string source_url, int nth_curl)
 int main (int argc, char* argv[])
 {
 	int n = 0;
+	int max_curls;
+	std::stringstream ss; ss << argv[2];
+	ss >> max_curls;
+
 	URL_directory.insert(0, argv[1]);
 	URL_queue.push(argv[1]);
-	while (URL_queue.size() > 0 && n <= MAX_CURLS)
+	while (URL_queue.size() > 0 && n <= max_curls)
 	{
 		if(mCurl(URL_queue.front(), n) == CURLE_OK) n++;
 		URL_queue.pop();

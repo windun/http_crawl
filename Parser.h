@@ -9,7 +9,7 @@
 
 class Parser
 {
-	#define MAX_BUF_SIZE 2000000
+	#define MAX_BUF_SIZE 100000
 	#define PARSE_COLUMN_WIDTH 40			// process_content()
 
 private:
@@ -251,8 +251,9 @@ private:
 			//if(debug) print_section("process_content() for " + Tag_Stack.top().type);
 			tag->content[tag->content_size++] = input[c++];
 		}
-
+		std::cout << "CHECK " << Tag_Stack.size() << std::endl;
 		tag->content[tag->content_size] = 0;
+		std::cout << "CHECK" << std::endl;
 		if(debug)
 		{
 			if (is_tag("script", tag->type))
