@@ -8,7 +8,7 @@
 
 class Parser
 {
-	#define MAX_BUF_SIZE 100000
+	#define MAX_BUF_SIZE 1000000
 	#define PARSE_COLUMN_WIDTH 40			// process_content()
 
 private:
@@ -247,7 +247,6 @@ private:
 			tag->content[tag->content_size++] = input[c++];
 		}
 		tag->content[tag->content_size] = 0;
-
 		if(debug)
 		{
 			if (is_tag("script", tag->type))

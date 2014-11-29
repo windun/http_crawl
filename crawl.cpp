@@ -17,9 +17,9 @@
 #define DATA_DIR "data/"		// fwrite () into this directory
 #define INDENT_STEP 5			// print_column () - indent columns
 #define COLUMN_WIDTH 80			// print_column () - width of block to print
-#define HTML_BUF_SIZE 1000000	// for UrlData buffer (stores html data)
+#define HTML_BUF_SIZE 2000000	// for UrlData buffer (stores html data)
 #define MSG_BUF_SIZE 4096		// link recognition (regex.h) error
-int TIME_LIMIT = 1;
+int TIME_LIMIT = 60;
 
 std::unordered_map<int, std::unordered_set<int>*> URLS;
 std::queue<std::string> URL_queue;
@@ -254,6 +254,7 @@ int mCurl (std::string source_url, int nth_curl)
 		//	SET UP CURL
 		std::string heading = "[" +  static_cast<std::ostringstream*>(&(std::ostringstream() << nth_curl))->str() + "]-> " + source_url + "(" + static_cast<std::ostringstream*>(&(std::ostringstream() << source_url_id))->str() + ")";
 		print_column (heading.c_str(), COLUMN_WIDTH);
+		curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPALIVE, 1L);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_HEADERFUNCTION, write_header);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_body);
@@ -292,6 +293,8 @@ int mCurl (std::string source_url, int nth_curl)
 			remove(headerFilename.c_str());
 			remove(bodyFilename.c_str());
 		}
+		fclose(header_data.file);
+		fclose(body_data.file);
 		curl_easy_cleanup(curl_handle);
 		
 		Parser Parser_((char *)body_data.buffer);
@@ -324,7 +327,6 @@ int mCurl (std::string source_url, int nth_curl)
 
 		std::string footer = "[+] " + static_cast<std::ostringstream*>(&(std::ostringstream() << URLS.at(source_url_id)->size()))->str() + " urls found.";
 		print_column (footer.c_str(), COLUMN_WIDTH);
-
 		for (std::unordered_set<int>::iterator it=URLS.at(source_url_id)->begin(); it != URLS.at(source_url_id)->end(); it++)
 		{
 			std::string url = URL_directory.get_value(*it);
