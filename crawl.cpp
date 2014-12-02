@@ -317,7 +317,7 @@ int mCurl (std::string source_url, int nth_curl)
 		{
 			int new_id = URL_directory.size();
 			new_url = fix_rel_url(source_url, *it);
-			std::cout << new_url << std::endl;
+			std::cout << "[+] " << new_url << std::endl;
 			robots_url = robots::check(new_url);			// get the proposed robots url: domain/robots.txt
 			if(robots_url != "")							// and perform curl on it (check())
 			{												// it will return "" if no robots url
