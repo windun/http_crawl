@@ -6,6 +6,33 @@ namespace robots
 	std::unordered_set<std::string> blacklist;
 	std::unordered_set<std::string> visited;
 
+	class Buffer
+	{
+	private:
+		char *buffer;
+		size_t buf_size;
+	public:
+		~Buffer()
+		{
+			free(buffer);
+		}
+		void insert (char *data, int size)
+		{
+			buffer = (char *)realloc(buffer, buf_size + size + 1);
+			if (buffer == NULL)
+			{
+				std::cerr << "[!] Not enough memory to check robots.\n";
+				exit(1);
+			}
+			memcpy(&(buffer[buf_size]), data, size);
+			buf_size += size;
+			buffer[buf_size] = 0;
+		}
+		std::string get_string ()
+		{
+			return std::string (buffer);
+		}
+	};
 	bool is_blacklisted (std::string url)
 	{
 		std::string adj_url = url;
@@ -49,10 +76,9 @@ namespace robots
 
 	static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *mem)
 	{
-		char * contents_ = (char *)contents;
 	  size_t realsize = size * nmemb;
-	  std::string *smem = (std::string *)mem;
-	  *smem += std::string((char *)contents);
+	  Buffer *buf = (Buffer *)mem;
+	  buf->insert((char *)contents, realsize);
 	  return realsize;
 	}
 
@@ -65,9 +91,9 @@ namespace robots
 		std::cout << std::endl;
 	}
 
-	void update_blacklist (std::string domain, std::string str)
+	void update_blacklist (std::string domain, Buffer *mem)
 	{
-		std::string residual = str;
+		std::string residual = mem->get_string();
 		std::string entry;
 		int i = residual.find("Disallow: ");
 		int i_end;
@@ -96,7 +122,8 @@ namespace robots
 
 	std::string check (std::string url)
 	{
-		std::string* mem = new std::string ();
+		//std::string* mem = new std::string ();
+		Buffer *mem = new Buffer ();
 
 		std::string domain = get_domain(url);
 		if(visited.count(domain) != 0) return "";
@@ -123,22 +150,18 @@ namespace robots
 		/* check for errors */
 		if(res != CURLE_OK)
 		{
-			fprintf(stderr, "[!] no robots.txt %s\n",
-			curl_easy_strerror(res));
+			delete mem;
+
+			fprintf(stderr, "[!] no robots.txt %s\n", curl_easy_strerror(res));
+			curl_easy_cleanup(curl_handle);
 			return "";
 		}
 
 		/* cleanup curl stuff */
+		update_blacklist(domain, mem);
+		delete mem;
+
 		curl_easy_cleanup(curl_handle);
-
-		update_blacklist(domain, *mem);
-//		std::cout << *mem << std::endl;
-//		for (int i = 0; (*mem)[i] != 0; i++)
-//		{
-//			std::cout << (*mem)[i] << "|";
-//		}
-
-		/* we're done with libcurl, so clean it up */
 		curl_global_cleanup();
 		return robots_url;
 	}

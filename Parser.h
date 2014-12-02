@@ -408,6 +408,7 @@ private:
 				}
 			}
 		}
+		return false;
 	}
 
 	bool stack_pop(Tag *tag)
@@ -511,10 +512,8 @@ public:
 			if ((*it)->content_size != 0) std::cout << "     content (" << (*it)->content_size << ") = \"" << (*it)->get_content(PARSE_COLUMN_WIDTH) << "...\"" << std::endl;
 		}
 	}
-	std::list<std::string>* get_attribute_values (std::string attrib)
+	void get_attribute_values (std::string attrib, std::list<std::string>* result)
 	{
-		std::list<std::string> *result = new std::list<std::string> ();
-
 		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
 			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
@@ -526,7 +525,6 @@ public:
 				}
 			}
 		}
-		return result;
 	}
 	int get_max_buffer_size ()
 	{

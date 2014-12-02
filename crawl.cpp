@@ -38,8 +38,9 @@ public:
 		std::pair<std::string, int> rev_entry (value, key);
 		if(reverse.insert(rev_entry).second)
 		{
-			std::pair<int, std::string> entry (key, value);
-			standard.insert(entry);
+			//std::pair<int, std::string> entry (key, value);
+			//standard.insert(entry);
+			standard[key] = value;
 			return true;
 		}
 		else return false;
@@ -95,13 +96,13 @@ struct UrlData
 //		fprintf(stdout, " ");
 //	}
 //}
-void print_column (const char * str, int width)
+void print_column (std::string str, int width)
 {
 	for (int i = 0; i < width && str[i] != '\0'; i++)
 	{
-		fprintf(stdout, "%c", str[i]);
+		std::cout << str[i];
 	}
-	fprintf(stdout, "\n");
+	std::cout << std::endl;
 }
 
 std::string fix_rel_url (std::string source_url, std::string new_url)
@@ -142,7 +143,6 @@ std::string fix_rel_url (std::string source_url, std::string new_url)
 
 bool is_link (char * str, int level)
 {
-	int indent = level * INDENT_STEP;
 	std::string url;
 	regex_t regex;
 	int reti;
@@ -223,27 +223,23 @@ int mCurl (std::string source_url, int nth_curl)
 {
 	int source_url_id = URL_directory.get_key(source_url);
 
-	struct UrlData header_data;
-	struct UrlData body_data;
+	UrlData header_data;
+	UrlData body_data;
 
 	CURL *curl_handle;
-	CURLcode res;
+	CURLcode res = CURLE_OK;
 
-	std::string headerFilename = DATA_DIR + static_cast<std::ostringstream*>(&(std::ostringstream() << source_url_id))->str() + "_head.out";
-	std::string bodyFilename = DATA_DIR + static_cast<std::ostringstream*>(&(std::ostringstream() << source_url_id))->str() + "_body.out";
+	std::string headerFilename = DATA_DIR + std::to_string(source_url_id) + "_head.out";
+	std::string bodyFilename = DATA_DIR + std::to_string(source_url_id) + "_body.out";
 
-	std::list<std::string> *new_URLS;
+
 	std::unordered_set<int> *target_URLS;
 
-	try
+	if (URLS.count(source_url_id) == 0)
 	{
-		target_URLS = URLS.at(source_url_id);
+		URLS[source_url_id] = new std::unordered_set<int> ();
 	}
-	catch (std::exception& e)
-	{
-		target_URLS = new std::unordered_set<int> ();
-		URLS.insert({{source_url_id, target_URLS}});
-	}
+	target_URLS = URLS[source_url_id];
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -253,8 +249,8 @@ int mCurl (std::string source_url, int nth_curl)
 
 		/////////////////////////////////////////////
 		//	SET UP CURL
-		std::string heading = "[" +  static_cast<std::ostringstream*>(&(std::ostringstream() << nth_curl))->str() + "]-> " + source_url + "(" + static_cast<std::ostringstream*>(&(std::ostringstream() << source_url_id))->str() + ")";
-		print_column (heading.c_str(), COLUMN_WIDTH);
+		std::string heading = std::string("[" +  std::to_string(nth_curl) + "]-> " + source_url + "(" + std::to_string(source_url_id) + ")");
+		print_column (heading, COLUMN_WIDTH);
 		curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPALIVE, 1L);
 		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url.c_str());
 		curl_easy_setopt(curl_handle, CURLOPT_HEADERFUNCTION, write_header);
@@ -307,13 +303,14 @@ int mCurl (std::string source_url, int nth_curl)
 
 			std::cerr << "[!] files removed." << std::endl;
 		}
-
 		curl_easy_cleanup(curl_handle);
-		
+
+		std::list<std::string> *new_URLS = new std::list<std::string>();
 		Parser Parser_((char *)body_data.buffer);
 		Parser_.set_debug(false);
 		Parser_.process();
-		new_URLS = Parser_.get_attribute_values("href");
+		Parser_.get_attribute_values("href", new_URLS);
+
 		std::string new_url;
 		std::string robots_url;
 		for (std::list<std::string>::iterator it=new_URLS->begin(); it != new_URLS->end(); it++)
@@ -321,22 +318,24 @@ int mCurl (std::string source_url, int nth_curl)
 			int new_id = URL_directory.size();
 			new_url = fix_rel_url(source_url, *it);
 			std::cout << new_url << std::endl;
-			robots_url = robots::check(new_url);
-			if(robots_url != "")
-			{
-				URL_directory.insert(new_id, robots_url);
-				new_id++;
+			robots_url = robots::check(new_url);			// get the proposed robots url: domain/robots.txt
+			if(robots_url != "")							// and perform curl on it (check())
+			{												// it will return "" if no robots url
+				URL_directory.insert(new_id, robots_url);	// if there is a robots url, insert the domain/robots.txt into the
+				new_id++;									// directory so we dont check() it again.
 			}
-			if (!robots::is_blacklisted(new_url))
+			if (!robots::is_blacklisted(new_url))			// if the new_url wasn't blacklisted in a robots.txt
 			{
-				if (URL_directory.insert(new_id, new_url))
+				if (URL_directory.insert(new_id, new_url))	// and if it is a new url (insert will return true)
 				{
-					target_URLS->insert(new_id);
+					target_URLS->insert(new_id);			// then add the new_id to the list of target_URLS
 				}
 			}
 		}
+		delete new_URLS;
+		target_URLS = NULL;
 
-		std::string footer = "[+] " + static_cast<std::ostringstream*>(&(std::ostringstream() << URLS.at(source_url_id)->size()))->str() + " urls found.";
+		std::string footer = "[+] " + std::to_string(source_url_id) + " urls found.";
 		print_column (footer.c_str(), COLUMN_WIDTH);
 		for (std::unordered_set<int>::iterator it=URLS.at(source_url_id)->begin(); it != URLS.at(source_url_id)->end(); it++)
 		{
@@ -349,6 +348,15 @@ int mCurl (std::string source_url, int nth_curl)
 		fprintf(stderr, "[!] could not initialize curl.\n");
 	}
 	return res;
+}
+
+void clean_up ()
+{
+	//std::unordered_map<int, std::unordered_set<int>*> URLS;
+	for (std::unordered_map<int, std::unordered_set<int>*>::iterator it = URLS.begin(); it != URLS.end(); it++)
+	{
+		delete it->second;
+	}
 }
 int main (int argc, char* argv[])
 {
@@ -369,4 +377,5 @@ int main (int argc, char* argv[])
 	std::string ofile_name = DATA_DIR;
 	ofile_name += "directory.txt";
 	URL_directory.write_file(ofile_name);
+	clean_up();
 }

@@ -1,0 +1,1 @@
+time valgrind --tool=memcheck --log-file=crawl.log --max-stackframe=9051448 --track-origins=yes --leak-check=yes ./crawl google.com 1
