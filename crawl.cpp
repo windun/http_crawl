@@ -229,8 +229,8 @@ int mCurl (std::string source_url, int nth_curl)
 	CURL *curl_handle;
 	CURLcode res = CURLE_OK;
 
-	std::string headerFilename = DATA_DIR + std::to_string(source_url_id) + "_head.out";
-	std::string bodyFilename = DATA_DIR + std::to_string(source_url_id) + "_body.out";
+	std::string headerFilename = DATA_DIR + std::to_string(source_url_id) + "_head.txt";
+	std::string bodyFilename = DATA_DIR + std::to_string(source_url_id) + "_body.txt";
 
 
 	std::unordered_set<int> *target_URLS;
@@ -309,6 +309,7 @@ int mCurl (std::string source_url, int nth_curl)
 		Parser Parser_((char *)body_data.buffer);
 		Parser_.set_debug(false);
 		Parser_.process();
+		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
 		Parser_.get_attribute_values("href", new_URLS);
 
 		std::string new_url;

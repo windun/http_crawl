@@ -42,7 +42,7 @@ namespace robots
 		}
 		void insert (char *data, int size)
 		{
-			std::cout << "insert()\n";
+			//std::cout << "insert()\n";
 			buffer = (char *)realloc(buffer, buf_size + size + 1);
 			if (buffer == NULL)
 			{
@@ -55,7 +55,7 @@ namespace robots
 		}
 		std::string get_string ()
 		{
-			print_chars(buffer);
+			//print_chars(buffer);
 			return std::string (buffer);
 		}
 	};
@@ -102,7 +102,7 @@ namespace robots
 
 	static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *mem)
 	{
-	  std::cout << "WriteMemoryCallback()\n";
+	  //std::cout << "WriteMemoryCallback()\n";
 	  size_t realsize = size * nmemb;
 	  Buffer *buf = (Buffer *)mem;
 	  buf->insert((char *)contents, realsize);
@@ -113,9 +113,9 @@ namespace robots
 
 	void update_blacklist (std::string domain, Buffer *mem)
 	{
-		std::cout << "update_blacklist()1" << std::endl;
+		//std::cout << "update_blacklist()1" << std::endl;
 		std::string residual = mem->get_string();
-		std::cout << "update_blacklist()2" << std::endl;
+		//std::cout << "update_blacklist()2" << std::endl;
 		std::string entry;
 		int i = residual.find("Disallow: ");
 		int i_end;
@@ -165,11 +165,11 @@ namespace robots
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)mem);
 		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-		std::cout << "check4" << std::endl;
+		//std::cout << "check4" << std::endl;
 
 		/* get it! */
 		res = curl_easy_perform(curl_handle);
-		std::cout << "check5" << std::endl;
+		//std::cout << "check5" << std::endl;
 		/* check for errors */
 		if(res != CURLE_OK)
 		{
@@ -179,7 +179,7 @@ namespace robots
 			curl_easy_cleanup(curl_handle);
 			return "";
 		}
-		std::cout << "check6" << std::endl;
+		//std::cout << "check6" << std::endl;
 		/* cleanup curl stuff */
 		update_blacklist(domain, mem);
 		delete mem;

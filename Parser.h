@@ -219,7 +219,7 @@ private:
 		Tag *tag = new Tag ();
 		tag->type = tag_type;
 		tag->id = global_id++;
-		tag->nest_id = Tag_Stack.size() == 0 ? 0 : Tag_Stack.back()->id;
+		tag->nest_id = Tag_Stack.back()->id;
 
 		if(debug) print_section("process_tag() begin");
 		Tag_List.push_back(tag);
@@ -477,6 +477,8 @@ public:
 		if (input == 0 ) return;
 		Tag *base = new Tag ();
 		base->type = "base";
+		base->id = 0;
+		base->nest_id = 0;
 		Tag_List.push_back(base);
 		Tag_Stack.push_back(base);
 		while (input[c] != '\0')
@@ -499,17 +501,24 @@ public:
 			skip_spaces();
 		}
 	}
-	void print_info ()
+	void print_info (std::string ofile_name)
 	{
-		std::cout << Tag_List.size () << " tags.\n";
-		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
+		std::ofstream ofile;
+		ofile.open(ofile_name);
+
+		if(ofile.is_open())
 		{
-			std::cout << (*it)->id << "," << (*it)->nest_id << "  " << (*it)->type << std::endl;
-			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
+			std::cout << Tag_List.size () << " tags.\n";
+			for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 			{
-				std::cout << "     " << (*it_attr)->name << " = " << (*it_attr)->value.substr(0, PARSE_COLUMN_WIDTH) << std::endl;
+				ofile << (*it)->id << "," << (*it)->nest_id << "  " << (*it)->type << std::endl;
+				for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
+				{
+					ofile << "     " << (*it_attr)->name << " = " << (*it_attr)->value << std::endl;
+				}
+				if ((*it)->content_size != 0) ofile << "     content (" << (*it)->content_size << ") = \"" << (*it)->get_content() << "...\"" << std::endl;
 			}
-			if ((*it)->content_size != 0) std::cout << "     content (" << (*it)->content_size << ") = \"" << (*it)->get_content(PARSE_COLUMN_WIDTH) << "...\"" << std::endl;
+			ofile.close();
 		}
 	}
 	void get_attribute_values (std::string attrib, std::list<std::string>* result)
