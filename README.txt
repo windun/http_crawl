@@ -82,4 +82,12 @@ the meta tag originally looked something like this:
 </HEAD>
 
 
+5. clear data
+
+user@host-$ ./clear
+
+
+
+
+
 
