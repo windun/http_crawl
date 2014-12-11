@@ -68,20 +68,22 @@ std::string POST (std::string post_msg, std::string url)
 	//headers = curl_slist_append(headers, "POST http://localhost:7474/db/data/transaction/commit");
 	headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
+	//headers = curl_slist_append(headers, data);
 
 	curl_handle = curl_easy_init();
 	if(curl_handle) {
 		curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());			// url set
-		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, post_msg.c_str());
+		
 		curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);		// send POST message
+		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data);
 		//curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);	// write response to memory
 		//curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);		// write response memory is &chunk
 		
     /* we want to use our own read function */ 
-    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
+    //curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
 
     /* pointer to pass to our read function */ 
-    curl_easy_setopt(curl_handle, CURLOPT_READDATA, &pooh);
+    //curl_easy_setopt(curl_handle, CURLOPT_READDATA, &pooh);
 
     /* get verbose debug output please */ 
     curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
