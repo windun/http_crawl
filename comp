@@ -1,4 +1,4 @@
 echo ". . . . . . . . . . . . . . . . . . . . . . . . . ."
 echo ". . . . . . . . . . . . . . . . . . . . . . . . . ."
-g++ crawl.cpp -o crawl -std=c++11 -lcurl -g -O0
-
+#g++ crawl.cpp -o crawl -std=c++11 -lcurl -g -O0
+g++ crawl.cpp -o crawl -std=c++11 -lcurl
