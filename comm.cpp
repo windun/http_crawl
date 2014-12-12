@@ -9,7 +9,6 @@ struct MemoryStruct {
   size_t size;
 };
 
-const char data[]="{\"statements\" : [{\"statement\" : \"CREATE (a) RETURN id(a)\"} ]}";
 
 static size_t
 WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -44,6 +43,13 @@ std::string POST (std::string post_msg, std::string url)
 
 	headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
+	const char data[]="{\"statements\" : [{\"statement\" : \"CREATE (a) RETURN id(a)\"} ]}";
+
+	Json::Value stmt;
+	Json::Value stmts; 
+	stmt["statement"] = "CREATE (a) RETURN id(a)";
+	stmts["statements"] = stmt;
+	std::cout << stmts.toStyledString() << std::endl;
 
 	curl_handle = curl_easy_init();
 	if(curl_handle) {

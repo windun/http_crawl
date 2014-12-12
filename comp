@@ -2,4 +2,4 @@ echo ". . . . . . . . . . . . . . . . . . . . . . . . . ."
 echo ". . . . . . . . . . . . . . . . . . . . . . . . . ."
 #g++ crawl.cpp -o crawl -std=c++11 -lcurl -g -O0
 g++ crawl.cpp -o crawl -std=c++11 -lcurl
-g++ comm.cpp -o comm -lcurl
+g++ -o comm comm.cpp -lcurl -ljsoncpp
