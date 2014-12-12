@@ -1,6 +1,7 @@
 #include <cstring>
 #include <iostream>	
 #include <curl/curl.h>	
+#include <json/json.h>
 #include <stdlib.h>	// realloc, malloc
 
 struct MemoryStruct {
