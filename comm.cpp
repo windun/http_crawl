@@ -4,13 +4,15 @@
 #include <json/json.h>
 #include <stdlib.h>	// realloc, malloc
 
-class Neo4jComm
+class Neo4jConn
 {
 private:
 	struct MemoryStruct {
 	  char *memory;
 	  size_t size;
 	};
+
+	Json::Value JSON_DATA;
 
 	void PrintStringChars (char * cstr)
 	{
@@ -56,7 +58,20 @@ private:
 		return realsize;
 	}
 public:
-	static std::string POST (Json::Value data, std::string url)
+	
+	void NewTransaction ()
+	{
+		JSON_DATA["statements"] = Json::Value(Json::arrayValue);
+	}
+
+	void AddTransactionStmt (std::string str_stmt)
+	{
+		Json::Value json_stmt;
+		json_stmt["statement"] = str_stmt.c_str();
+		JSON_DATA["statements"].append(json_stmt);
+	}
+
+	static std::string Post (Json::Value data, std::string url)
 	{
 		CURL *curl_handle;
 		CURLcode res;
@@ -99,16 +114,23 @@ public:
 		curl_global_cleanup();
 		return "";
 	}
+
+	static std::string PostTransactionCommit (Json::Value data)
+	{
+		return Post (data, "http://localhost:7474/db/data/transaction/commit");
+	}
+
+	std::string PostTransactionCommit ()
+	{
+		return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
+	}
 };
 
 int main(void)
 {
-	Json::Value stmt;
-	Json::Value stmts; 
-	stmt["statement"] = "CREATE (a) RETURN id(a)";
-	stmts["statements"] = Json::Value(Json::arrayValue);
-	stmts["statements"].append(stmt);
-
-	Neo4jComm::POST (stmts, "http://localhost:7474/db/data/transaction/commit");
+	Neo4jConn Connection;
+	Connection.NewTransaction();
+	Connection.AddTransactionStmt("CREATE (a) RETURN id(a)");
+	Connection.PostTransactionCommit();
 }
 
