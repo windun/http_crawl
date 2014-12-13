@@ -314,7 +314,7 @@ int mCurl (std::string source_url, int nth_curl)
 		Parser_.process();
 		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
 		Parser_.get_attribute_values("href", new_URLS);
-		std::cout << Parser_.getNeo4jCreate()->toStyledString() << std::endl;
+		std::cout << Parser_.getNeo4jCreate(source_url)->toStyledString() << std::endl;
 
 		std::string new_url;
 		std::string robots_url;

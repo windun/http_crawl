@@ -23,12 +23,12 @@ private:
 	#define MIN_BUF_SIZE 500000
 	private:
 		char *content;
-
+		std::list<Attribute*>* attributes;
 	public:
 		int id;
 		int nest_id;
 		std::string type;
-		std::list<Attribute*>* attributes;
+		
 		int content_size = 0;
 		int content_limit = MIN_BUF_SIZE;
 
@@ -68,7 +68,7 @@ private:
 		{
 			content[index] = c;
 		}
-
+	
 		std::string get_content()
 		{
 			return std::string(content, content_size);
@@ -78,12 +78,18 @@ private:
 		{
 			return std::string(content, length);
 		}
+
+		void addAttribute (Attribute *attrib)
+		{
+			attributes->push_back(attrib);
+		}
 	};
 	int PRINT_WIDTH = 10;
 	bool debug = false;
 	const char * input;
 	std::list<Tag*> Tag_List;
 	std::list<Tag*> Tag_Stack;
+	std::unordered_map<std::string, Json::Value> JsonTags;
 	int c = 0;
 	bool in_tag = false;
 	int global_id = 1;
@@ -193,19 +199,39 @@ public:
 		}
 	}
 	
-	Json::Value* getNeo4jCreate ()
+	std::unordered_map<std::string, Json::Value> JsonTags;
+	Json::Value* getNeo4jCreate (std::string source_url)
 	{	
 		Json::Value *json= new Json::Value ();
-		Json::Value props;// = new Json::Value ();
+		Json::Value props;
 		(*json)["query"] = "CREATE (n:URL{props}) RETURN n";
-
+		props["url"] = source_url;
+		(*json)["props"] = props;
+		// node:URL
+		//	url="google.com"
+		// | \__________________________
+		// |  	      			|
+		// node:head        		node:meta
+		//    attrib=value1,value2
+		//    attrib=balue
+				
+		Tag *_tag;
+		Attribute *_attribute;
 		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
+			_tag = (*it);
+			
 			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
 			{
-				result->push_back((*it_attr)->value);
+				_attribute = (*it_attr);
+				Json::Value json_attribute;
+				json_attribute[_attribute->name] = _attribute->value;
+				JsonTags[_tag->type].append(json_attribute);
 			}
 		}
+
+		for (std::unordered_map<std::string, Json::Value>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
+		{
 		(*json)["props"] = props;
 		return json;
 	}
@@ -331,7 +357,8 @@ void Parser::get_attribute (Tag *tag)
 		c++;
 	}
 	if(debug) print_section("get_attribute() stored \"" + attrib->name + "\" = \"" + attrib->value + "\"");
-	tag->attributes->push_back(attrib);
+	//tag->attributes->push_back(attrib);
+	tag->addAttribute(attrib);
 }
 
 // We are in a tag, now we need to fill in the  Tag struct.
