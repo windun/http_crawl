@@ -9,6 +9,29 @@ struct MemoryStruct {
   size_t size;
 };
 
+void PrintStringChars (char * cstr)
+{
+	for (int i = 0; cstr[i] != '\0'; i++)
+  	{
+		std::cout << (int)cstr[i] << "|";
+	}
+	std::cout << std::endl;
+}
+
+std::string Trim(char * cstr)
+{
+	std::string buffer = "";
+	int int_value;
+	for (int i = 0; cstr[i] != '\0'; i++)
+  	{
+		int_value = (int)cstr[i];
+		if (int_value >= 32)
+		{
+			buffer += cstr[i];
+		}
+	}
+	return buffer;
+}
 
 static size_t
 WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -43,19 +66,25 @@ std::string POST (std::string post_msg, std::string url)
 
 	headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
-	const char data[]="{\"statements\" : [{\"statement\" : \"CREATE (a) RETURN id(a)\"} ]}";
-
+	char data[]="{\"statements\" : [{\"statement\" : \"CREATE (a) RETURN id(a)\"} ]}";
+	std::cout << data << std::endl;
+	PrintStringChars(data);
 	Json::Value stmt;
 	Json::Value stmts; 
 	stmt["statement"] = "CREATE (a) RETURN id(a)";
-	stmts["statements"] = stmt;
-	std::cout << stmts.toStyledString() << std::endl;
-
+	stmts["statements"] = Json::Value(Json::arrayValue);
+	stmts["statements"].append(stmt);
+	//const char * stmts_char = Trim((char *)stmts.toStyledString().c_str());
+	//std::cout << stmts.c_str() << std::endl;
+	//std::cout << stmts_char << std::endl;
+	std::string stmt_string = stmts.toStyledString();	
+	//PrintStringChars((char *)stmts_char);
 	curl_handle = curl_easy_init();
 	if(curl_handle) {
 		curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());			// url set
 		curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);			// send POST message
-		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data);			
+		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, stmt_string.c_str());//data);//stmts.c_str());
+		curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, stmt_string.size());	// Will i need CURLOPT_POSTFIELDSIZE_LARGE?
 		//curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);	// write response to memory
 		//curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);		// write response memory is &chunk
 		
