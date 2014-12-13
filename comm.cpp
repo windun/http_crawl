@@ -67,18 +67,15 @@ std::string POST (std::string post_msg, std::string url)
 	headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 	headers = curl_slist_append(headers, "Content-Type: application/json");
 	char data[]="{\"statements\" : [{\"statement\" : \"CREATE (a) RETURN id(a)\"} ]}";
-	std::cout << data << std::endl;
-	PrintStringChars(data);
+
 	Json::Value stmt;
 	Json::Value stmts; 
 	stmt["statement"] = "CREATE (a) RETURN id(a)";
 	stmts["statements"] = Json::Value(Json::arrayValue);
 	stmts["statements"].append(stmt);
-	//const char * stmts_char = Trim((char *)stmts.toStyledString().c_str());
-	//std::cout << stmts.c_str() << std::endl;
-	//std::cout << stmts_char << std::endl;
+	
 	std::string stmt_string = stmts.toStyledString();	
-	//PrintStringChars((char *)stmts_char);
+
 	curl_handle = curl_easy_init();
 	if(curl_handle) {
 		curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());			// url set
