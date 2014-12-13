@@ -1,3 +1,6 @@
+#ifndef _dO_Ob_NEO4JCONN_H_
+#define _dO_Ob_NEO4JCONN_H_
+
 #include <cstring>
 #include <iostream>	
 #include <curl/curl.h>	
@@ -130,7 +133,8 @@ int main(void)
 {
 	Neo4jConn Connection;
 	Connection.NewTransaction();
-	Connection.AddTransactionStmt("CREATE (a) RETURN id(a)");
+	Connection.AddTransactionStmt("MATCH (a) RETURN id(a)");
 	Connection.PostTransactionCommit();
 }
 
+#endif
