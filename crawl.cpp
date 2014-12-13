@@ -13,6 +13,7 @@
 #include <utility>
 #include "Parser.h"
 #include "robots.h"
+#include "Neo4jConn.h"
 
 #define REGEX_PATTERN "[a-zA-Z0-9./]*(.bmp|.gif|.jpg|.pdf|.png)"	// link recognition - regex.h
 #define DATA_DIR "data/"		// fwrite () into this directory
@@ -379,4 +380,9 @@ int main (int argc, char* argv[])
 	ofile_name += "directory.txt";
 	URL_directory.write_file(ofile_name);
 	clean_up();
+
+	Neo4jConn Connection;
+	Connection.NewTransaction();
+	Connection.AddTransactionStmt("MATCH (a) RETURN id(a)");
+	Connection.PostTransactionCommit();
 }

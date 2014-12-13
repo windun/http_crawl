@@ -129,12 +129,4 @@ public:
 	}
 };
 
-int main(void)
-{
-	Neo4jConn Connection;
-	Connection.NewTransaction();
-	Connection.AddTransactionStmt("MATCH (a) RETURN id(a)");
-	Connection.PostTransactionCommit();
-}
-
 #endif
