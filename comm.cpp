@@ -6,6 +6,7 @@
 
 class Neo4jComm
 {
+private:
 	struct MemoryStruct {
 	  char *memory;
 	  size_t size;
@@ -54,7 +55,7 @@ class Neo4jComm
 
 		return realsize;
 	}
-
+public:
 	static std::string POST (Json::Value data, std::string url)
 	{
 		CURL *curl_handle;
@@ -69,14 +70,14 @@ class Neo4jComm
 		headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 		headers = curl_slist_append(headers, "Content-Type: application/json");
 	
-		std::string stmt_string = stmts.toStyledString();	
+		std::string data_str = data.toStyledString();	
 
 		curl_handle = curl_easy_init();
 		if(curl_handle) {
 			curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());			// url set
 			curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);			// send POST message
-			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data.c_str());//data);//stmts.c_str());
-			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, data.size());	// Will i need CURLOPT_POSTFIELDSIZE_LARGE?
+			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data_str.c_str());//data);//stmts.c_str());
+			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, data_str.size());	// Will i need CURLOPT_POSTFIELDSIZE_LARGE?
 			//curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);	// write response to memory
 			//curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);		// write response memory is &chunk
 		
@@ -108,6 +109,6 @@ int main(void)
 	stmts["statements"] = Json::Value(Json::arrayValue);
 	stmts["statements"].append(stmt);
 
-	Neo4jComm::POST ("POST http://localhost:7474/db/data/transaction/commit", "http://localhost:7474/db/data/transaction/commit");
+	Neo4jComm::POST (stmts, "http://localhost:7474/db/data/transaction/commit");
 }
 
