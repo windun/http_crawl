@@ -17,14 +17,6 @@ private:
 
 	Json::Value JSON_DATA;
 
-	void PrintStringChars (char * cstr)
-	{
-		for (int i = 0; cstr[i] != '\0'; i++)
-	  	{
-			std::cout << (int)cstr[i] << "|";
-		}
-		std::cout << std::endl;
-	}
 
 	std::string Trim(char * cstr)
 	{
@@ -61,6 +53,16 @@ private:
 		return realsize;
 	}
 public:
+
+	static void PrintStringChars (Json::Value data)
+	{
+		const char * cstr = data.toStyledString().c_str();
+		for (int i = 0; cstr[i] != '\0'; i++)
+	  	{
+			std::cout << (int)cstr[i] << "|";
+		}
+		std::cout << std::endl;
+	}
 	
 	void NewTransaction ()
 	{
@@ -89,6 +91,7 @@ public:
 		headers = curl_slist_append(headers, "Content-Type: application/json");
 	
 		std::string data_str = data.toStyledString();	
+		std::cout << "Sent data: \n" << data_str << std::endl;
 
 		curl_handle = curl_easy_init();
 		if(curl_handle) {
@@ -109,7 +112,11 @@ public:
 			}
 			else
 			{
-				std::cout << "Received " << chunk.size << " bytes:\n" << chunk.memory << std::endl;
+				std::cout << "Received " << chunk.size << " bytes:\n" << chunk.memory << "\n" << std::endl;
+				Json::Value json_reply;
+				Json::Reader reader;
+				bool parse_success = reader.parse(chunk.memory, json_reply);
+				std::cout << "Json: \n" << json_reply.toStyledString() << std::endl;
 			}
 			curl_easy_cleanup(curl_handle);	
 		}

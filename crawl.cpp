@@ -383,6 +383,6 @@ int main (int argc, char* argv[])
 
 	Neo4jConn Connection;
 	Connection.NewTransaction();
-	Connection.AddTransactionStmt("MATCH (a) RETURN id(a)");
+	Connection.AddTransactionStmt("MATCH (a) RETURN a");
 	Connection.PostTransactionCommit();
 }
