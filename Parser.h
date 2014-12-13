@@ -34,6 +34,7 @@ private:
 
 		Tag()
 		{
+			nest_id = 0;
 			content = new char [content_limit];
 			attributes = new std::list<Attribute*> ();
 		}
@@ -83,13 +84,71 @@ private:
 		{
 			attributes->push_back(attrib);
 		}
+
+		std::list<Attribute*>* getAttributes ()
+		{
+			return attributes;
+		}
 	};
+
+	class JsonBuilder
+	{
+	private:
+		// all appearance of a tag of specific type will
+		// be agglomerated into a single node in the following
+		// fashion:
+		//		tag
+		//			attribute1: value1, value2
+		//			attribute2: value1
+		//			etc.
+		std::unordered_map<std::string, Json::Value*> JsonTags;		// html -> Json
+	public:															// meta -> Json
+		void addTag (std::string tag_type)
+		{
+			Json::Value *tag_entry = new Json::Value();
+			if(JsonTags.count(tag_type) == 0)
+			{
+				std::cout << "[ ] " << tag_type << std::endl;
+				JsonTags[tag_type] = tag_entry;						// JsonTags[head]->tag_entry
+				(*tag_entry)["query"] = "CREATE (n:" + tag_type + " { props } ) RETURN n";						//						"type" = "head"
+				(*tag_entry)["params"] = Json::Value(Json::objectValue);
+				((*tag_entry)["params"])["props"] = Json::Value(Json::objectValue);
+			}
+		}
+
+		void addAttribute(std::string tag_type, Attribute *attrib)
+		{
+			Json::Value *tag_entry;
+			if(JsonTags.count(tag_type) == 0)
+			{
+				std::cerr << "[!] JsonTags entry doesn't exist for: " << tag_type << std::endl;
+			}
+			else
+			{
+				tag_entry = JsonTags[tag_type];
+			}
+			//Json::Value json_attribs = (*tag_entry)["params"];	//[attrib->name] = attrib->value;
+			//json_attribs[attrib->name].append(attrib->value);	// tag_entry
+			(((*tag_entry)["params"])["props"])[attrib->name].append(attrib->value);
+		}
+
+		std::list<std::string>* getJsonStatements ()
+		{
+			std::list<std::string> *statements = new std::list<std::string> ();
+			for (std::unordered_map<std::string, Json::Value*>::iterator it = JsonTags.begin(); it != JsonTags.end(); it++)
+			{
+				statements->push_back(it->second->toStyledString());
+			}
+			return statements;
+		}
+	};
+
 	int PRINT_WIDTH = 10;
 	bool debug = false;
 	const char * input;
 	std::list<Tag*> Tag_List;
 	std::list<Tag*> Tag_Stack;
-	std::unordered_map<std::string, Json::Value> JsonTags;
+	JsonBuilder JsonBuilder;
 	int c = 0;
 	bool in_tag = false;
 	int global_id = 1;
@@ -175,7 +234,7 @@ public:
 			for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 			{
 				ofile << (*it)->id << "," << (*it)->nest_id << "  " << (*it)->type << std::endl;
-				for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
+				for (std::list<Attribute*>::iterator it_attr = (*it)->getAttributes()->begin(); it_attr != (*it)->getAttributes()->end(); it_attr++)
 				{
 					ofile << "     " << (*it_attr)->name << " = " << (*it_attr)->value << std::endl;
 				}
@@ -188,7 +247,7 @@ public:
 	{
 		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
 		{
-			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
+			for (std::list<Attribute*>::iterator it_attr = (*it)->getAttributes()->begin(); it_attr != (*it)->getAttributes()->end(); it_attr++)
 			{
 				//std::cout << "check" << std::endl;
 				if (is_tag(attrib, (*it_attr)->name))
@@ -199,41 +258,9 @@ public:
 		}
 	}
 	
-	std::unordered_map<std::string, Json::Value> JsonTags;
-	Json::Value* getNeo4jCreate (std::string source_url)
-	{	
-		Json::Value *json= new Json::Value ();
-		Json::Value props;
-		(*json)["query"] = "CREATE (n:URL{props}) RETURN n";
-		props["url"] = source_url;
-		(*json)["props"] = props;
-		// node:URL
-		//	url="google.com"
-		// | \__________________________
-		// |  	      			|
-		// node:head        		node:meta
-		//    attrib=value1,value2
-		//    attrib=balue
-				
-		Tag *_tag;
-		Attribute *_attribute;
-		for (std::list<Tag*>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
-		{
-			_tag = (*it);
-			
-			for (std::list<Attribute*>::iterator it_attr = (*it)->attributes->begin(); it_attr != (*it)->attributes->end(); it_attr++)
-			{
-				_attribute = (*it_attr);
-				Json::Value json_attribute;
-				json_attribute[_attribute->name] = _attribute->value;
-				JsonTags[_tag->type].append(json_attribute);
-			}
-		}
-
-		for (std::unordered_map<std::string, Json::Value>::iterator it = Tag_List.begin(); it != Tag_List.end(); it++)
-		{
-		(*json)["props"] = props;
-		return json;
+	std::list<std::string>* getJsonStatements ()
+	{
+		return JsonBuilder.getJsonStatements();
 	}
 };
 
@@ -359,6 +386,7 @@ void Parser::get_attribute (Tag *tag)
 	if(debug) print_section("get_attribute() stored \"" + attrib->name + "\" = \"" + attrib->value + "\"");
 	//tag->attributes->push_back(attrib);
 	tag->addAttribute(attrib);
+	JsonBuilder.addAttribute(tag->type, attrib);
 }
 
 // We are in a tag, now we need to fill in the  Tag struct.
@@ -376,6 +404,7 @@ void Parser::process_tag (std::string tag_type)
 	Tag_List.push_back(tag);
 	//if(!is_tag("meta", tag_type) && !is_tag("br", tag_type))
 	Tag_Stack.push_back(tag);	// do not put meta on tag stack
+	JsonBuilder.addTag(tag_type);
 
 	if(tag_type == "!--")
 	{

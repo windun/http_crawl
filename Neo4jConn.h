@@ -16,6 +16,7 @@ private:
 	};
 
 	Json::Value JSON_DATA;
+	int transaction_id = 0;
 
 
 	std::string Trim(char * cstr)
