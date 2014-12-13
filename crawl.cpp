@@ -11,9 +11,11 @@
 #include <signal.h>			// block sigterm
 #include <regex.h> 			// link recognition (vs. file)
 #include <utility>
+#include <json/json.h>
 #include "Parser.h"
 #include "robots.h"
 #include "Neo4jConn.h"
+#include "WebJsonBuilder.h"
 
 #define REGEX_PATTERN "[a-zA-Z0-9./]*(.bmp|.gif|.jpg|.pdf|.png)"	// link recognition - regex.h
 #define DATA_DIR "data/"		// fwrite () into this directory
@@ -312,6 +314,7 @@ int mCurl (std::string source_url, int nth_curl)
 		Parser_.process();
 		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
 		Parser_.get_attribute_values("href", new_URLS);
+		std::cout << Parser_.getNeo4jCreate()->toStyledString() << std::endl;
 
 		std::string new_url;
 		std::string robots_url;
@@ -385,4 +388,7 @@ int main (int argc, char* argv[])
 	Connection.NewTransaction();
 	Connection.AddTransactionStmt("MATCH (a) RETURN a");
 	Connection.PostTransactionCommit();
+
+	WebJsonBuilder Builder;
+	Builder.NewWebsite("google.com");
 }
