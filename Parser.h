@@ -109,7 +109,7 @@ private:
 		{
 
 		}
-		void addUrlNode (std::string source_url_)
+		void addUrlNode (std::string origin_url, std::string source_url_)
 		{
 			source_url = source_url_;
 			source_node = new Json::Value ();
@@ -117,7 +117,14 @@ private:
 			props["props"] = Json::Value(Json::objectValue);
 			props["props"]["url"] = source_url;
 			(*source_node)["parameters"]=props;
-			(*source_node)["statement"] = "CREATE (a:URL{props}) RETURN a";
+			if (origin_url == "")
+			{
+				(*source_node)["statement"] = "CREATE (a:URL{props}) RETURN a";
+			}
+			else
+			{
+				(*source_node)["statement"] = "MATCH (s:URL{url:\"" + origin_url + "\"}) CREATE (a:URL{props}), (s)-[:LINK]->(a) RETURN a";
+			}
 		}												// meta -> Json
 		void addTag (std::string tag_type)
 		{
@@ -214,10 +221,10 @@ public:
 
 
 
-	Parser (std::string source_url, const char *input_)
+	Parser (std::string origin_url, std::string source_url, const char *input_)
 	{
 		input = input_;
-		JsonBuilder_.addUrlNode(source_url);
+		JsonBuilder_.addUrlNode(origin_url, source_url);
 	}
 	~Parser ()
 	{

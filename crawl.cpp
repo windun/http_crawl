@@ -23,9 +23,13 @@
 #define HTML_BUF_SIZE 2000000	// for UrlData buffer (stores html data)
 #define MSG_BUF_SIZE 4096		// link recognition (regex.h) error
 int TIME_LIMIT = 60;
-
+struct url_pair
+{
+	std::string origin;
+	std::string url;
+};
 std::unordered_map<int, std::unordered_set<int>*> URLS;
-std::queue<std::string> URL_queue;
+std::queue<url_pair*> URL_queue;	
 int MAX_USED = 0;
 
 class Directory
@@ -221,7 +225,7 @@ static size_t write_body (void *ptr, size_t size, size_t nmemb, void *data)
 	return written;
 }
 
-int mCurl (std::string source_url, int nth_curl)
+int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 {
 	int source_url_id = URL_directory.get_key(source_url);
 
@@ -308,7 +312,7 @@ int mCurl (std::string source_url, int nth_curl)
 		curl_easy_cleanup(curl_handle);
 
 		std::list<std::string> *new_URLS = new std::list<std::string>();
-		Parser Parser_(source_url, (char *)body_data.buffer);
+		Parser Parser_(origin_url, source_url, (char *)body_data.buffer);
 		Parser_.set_debug(false);
 		Parser_.process();
 		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
@@ -333,16 +337,16 @@ int mCurl (std::string source_url, int nth_curl)
 			new_url = fix_rel_url(source_url, *it);
 			std::cout << "[+] " << new_url << std::endl;
 			robots_url = robots::check(new_url);			// get the proposed robots url: domain/robots.txt
-			if(robots_url != "")							// and perform curl on it (check())
-			{												// it will return "" if no robots url
+			if(robots_url != "")					// and perform curl on it (check())
+			{							// it will return "" if no robots url
 				URL_directory.insert(new_id, robots_url);	// if there is a robots url, insert the domain/robots.txt into the
-				new_id++;									// directory so we dont check() it again.
+				new_id++;					// directory so we dont check() it again.
 			}
 			if (!robots::is_blacklisted(new_url))			// if the new_url wasn't blacklisted in a robots.txt
 			{
 				if (URL_directory.insert(new_id, new_url))	// and if it is a new url (insert will return true)
 				{
-					target_URLS->insert(new_id);			// then add the new_id to the list of target_URLS
+					target_URLS->insert(new_id);		// then add the new_id to the list of target_URLS
 				}
 			}
 		}
@@ -354,7 +358,10 @@ int mCurl (std::string source_url, int nth_curl)
 		for (std::unordered_set<int>::iterator it=URLS.at(source_url_id)->begin(); it != URLS.at(source_url_id)->end(); it++)
 		{
 			std::string url = URL_directory.get_value(*it);
-			URL_queue.push(url);
+			struct url_pair *url_pair_ = new url_pair ();
+			url_pair_->origin = source_url;
+			url_pair_->url = url;
+			URL_queue.push(url_pair_);
 		}
 	}	
 	else
@@ -382,10 +389,14 @@ int main (int argc, char* argv[])
 	robots::check(url);
 	if (robots::is_blacklisted(url)) return 0;
 	URL_directory.insert(0, argv[1]);
-	URL_queue.push(argv[1]);
+	struct url_pair *url_pair_ = new url_pair;
+	url_pair_->origin = "";
+	url_pair_->url = argv[1];
+	URL_queue.push(url_pair_);
 	while (URL_queue.size() > 0 && n <= max_curls)
 	{
-		if(mCurl(URL_queue.front(), n) == CURLE_OK) n++;
+		if(mCurl(URL_queue.front()->origin, URL_queue.front()->url, n) == CURLE_OK) n++;
+		delete URL_queue.front();
 		URL_queue.pop();
 	}
 	std::string ofile_name = DATA_DIR;
