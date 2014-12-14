@@ -77,10 +77,11 @@ public:
 		JSON_DATA["statements"].append(json_stmt);
 	}
 
-	void AddTransactionStmt (Json::Value json)
+	void AddTransactionStmt (Json::Value *json)
 	{
+		std::cout << "Neo4jConn sees:" << json->toStyledString() << std::endl;
 		Json::Value json_stmt;
-		json_stmt["statement"] = json;
+		json_stmt["statement"] = *json;
 		JSON_DATA["statements"].append(json_stmt);
 	}
 
@@ -99,7 +100,6 @@ public:
 		headers = curl_slist_append(headers, "Content-Type: application/json");
 	
 		std::string data_str = data.toStyledString();	
-		std::cout << "Sent data: \n" << data_str << std::endl;
 
 		curl_handle = curl_easy_init();
 		if(curl_handle) {

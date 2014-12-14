@@ -141,10 +141,10 @@ private:
 
 		std::list<Json::Value*>* getJson ()
 		{
-			std::list<Json::Value*>* json_list;
+			std::list<Json::Value*>* json_list = new std::list<Json::Value*> ();
 			for (std::unordered_map<std::string, Json::Value*>::iterator it = JsonTags.begin(); it != JsonTags.end(); it++)
 			{
-				std::cout << "JsonBuilder packing: \n" << it->second->toStyledString() << std::cout;
+				std::cout << "JsonBuilder packing: \n" << it->second->toStyledString() << std::endl;
 				json_list->push_back(it->second);
 			}
 			std::cout << "JsonBuilder done packing.\n";

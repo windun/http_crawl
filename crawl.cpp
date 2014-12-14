@@ -318,12 +318,12 @@ int mCurl (std::string source_url, int nth_curl)
 		Neo4jConn Connection;
 		for (std::list<Json::Value*>::iterator it = json_creates->begin(); it != json_creates->end(); it++)
 		{
-			std::cout << "crawler.cpp sees: " << (*it)->toStyledString() << std::endl;
 			Connection.NewTransaction();
-			Connection.AddTransactionStmt(*(*it));
+			Connection.AddTransactionStmt(*it);
 			Connection.PostTransactionCommit();
-			//std::cout << "create: " << (*it) << std::endl;
+			delete *it;
 		}
+		delete json_creates;
 
 		std::string new_url;
 		std::string robots_url;
