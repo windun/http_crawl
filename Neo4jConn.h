@@ -70,19 +70,15 @@ public:
 		JSON_DATA["statements"] = Json::Value(Json::arrayValue);
 	}
 
-	void AddTransactionStmt (std::string str_stmt)
+	void AddTransaction (std::string str_stmt)
 	{
-		Json::Value json_stmt;
-		json_stmt["statement"] = str_stmt.c_str();
-		JSON_DATA["statements"].append(json_stmt);
+		JSON_DATA["statements"].append(Json::Value(str_stmt));
 	}
 
-	void AddTransactionStmt (Json::Value *json)
+	void AddTransaction (Json::Value *json)
 	{
-		std::cout << "Neo4jConn sees:" << json->toStyledString() << std::endl;
-		Json::Value json_stmt;
-		json_stmt["statement"] = *json;
-		JSON_DATA["statements"].append(json_stmt);
+		//std::cout << "Neo4jConn sees:" << json->toStyledString() << std::endl;
+		JSON_DATA["statements"].append(*json);
 	}
 
 	static std::string Post (Json::Value data, std::string url)
@@ -99,7 +95,8 @@ public:
 		headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 		headers = curl_slist_append(headers, "Content-Type: application/json");
 	
-		std::string data_str = data.toStyledString();	
+		std::string data_str = data.toStyledString();
+		std::cout << "Sending " << data_str << std::endl;	
 
 		curl_handle = curl_easy_init();
 		if(curl_handle) {
@@ -120,11 +117,11 @@ public:
 			}
 			else
 			{
-				std::cout << "Received " << chunk.size << " bytes:\n" << chunk.memory << "\n" << std::endl;
+				std::cout << "Received " << chunk.size << " bytes:\n";// << chunk.memory << "\n" << std::endl;
 				Json::Value json_reply;
 				Json::Reader reader;
 				bool parse_success = reader.parse(chunk.memory, json_reply);
-				std::cout << "Json: \n" << json_reply.toStyledString() << std::endl;
+				std::cout << "Response: \n" << json_reply.toStyledString() << std::endl;
 			}
 			curl_easy_cleanup(curl_handle);	
 		}

@@ -102,30 +102,59 @@ private:
 		//			attribute2: value1
 		//			etc.
 		std::unordered_map<std::string, Json::Value*> JsonTags;		// html -> Json
-	public:															// meta -> Json
+		std::string source_url;
+		Json::Value *source_node;
+	public:			
+		~JsonBuilder()
+		{
+
+		}
+		void addUrlNode (std::string source_url_)
+		{
+			source_url = source_url_;
+			source_node = new Json::Value ();
+			Json::Value props;
+			props["props"] = Json::Value(Json::objectValue);
+			props["props"]["url"] = source_url;
+			(*source_node)["parameters"]=props;
+			(*source_node)["statement"] = "CREATE (a:URL{props}) RETURN a";
+		}												// meta -> Json
 		void addTag (std::string tag_type)
 		{
-			Json::Value *tag_entry = new Json::Value();
+			Json::Value *transaction = new Json::Value();
 			if(JsonTags.count(tag_type) == 0)
 			{
 				std::cout << "[ ] " << tag_type << std::endl;
-				JsonTags[tag_type] = tag_entry;						// JsonTags[head]->tag_entry
-				(*tag_entry)["query"] = "CREATE (n:" + tag_type + " { props } ) RETURN n";						//						"type" = "head"
-				(*tag_entry)["params"] = Json::Value(Json::objectValue);
-				((*tag_entry)["params"])["props"] = Json::Value(Json::objectValue);
+				JsonTags[tag_type] = transaction;					// JsonTags[head]->tag_entry
+																																								
+				//		     Json::Value		in Neo4jConn
+				// 		     ["statements"]--+-----+ ...
+				//				     |			
+ 				//    JsonTags[tag_type]------->Json::Value			done Here
+				//			      	["statement"] = "CREATE .."
+				//			      	["parameters"] --+
+				//						 |         
+				//					    Json::Value   
+				//					    ["props"]	  
+				//					    ["source_props"]
+				Json::Value props;
+				props["props"] = Json::Value(Json::objectValue);
+				(*transaction)["parameters"] = props;
+				(*transaction)["statement"] = "MATCH (s:URL{url:\"" + source_url + "\"}) CREATE (n:" + tag_type + " { props } ), (n)-[:IN]->(s) RETURN n";
 			}
+			std::cout << "addTag built: " << transaction->toStyledString() << std::endl;
 		}
 
 		void addAttribute(std::string tag_type, Attribute *attrib)
 		{
-			Json::Value *tag_entry;
+			Json::Value *transaction;
 			if(JsonTags.count(tag_type) == 0)
 			{
 				std::cerr << "[!] JsonTags entry doesn't exist for: " << tag_type << std::endl;
 			}
 			else
 			{
-				tag_entry = JsonTags[tag_type];
+				transaction = JsonTags[tag_type];
 			}
 			std::string attrib_value;
 			if(attrib->value == "") 
@@ -136,12 +165,19 @@ private:
 			{
 				attrib_value = attrib->value;
 			}
-			(((*tag_entry)["params"])["props"])[attrib->name].append(attrib_value);
+			(((*transaction)["parameters"])["props"])[attrib->name].append(attrib_value);
+			std::cout << "addAttribute built: " << transaction->toStyledString() << std::endl;
 		}
 
 		std::list<Json::Value*>* getJson ()
 		{
 			std::list<Json::Value*>* json_list = new std::list<Json::Value*> ();
+
+			// First add the URL node before we add
+			// its tags.
+			json_list->push_back(source_node);
+
+			// Add the json values for the html tags
 			for (std::unordered_map<std::string, Json::Value*>::iterator it = JsonTags.begin(); it != JsonTags.end(); it++)
 			{
 				std::cout << "JsonBuilder packing: \n" << it->second->toStyledString() << std::endl;
@@ -151,13 +187,12 @@ private:
 			return json_list;
 		}
 	};
-
 	int PRINT_WIDTH = 10;
 	bool debug = false;
 	const char * input;
 	std::list<Tag*> Tag_List;
 	std::list<Tag*> Tag_Stack;
-	JsonBuilder JsonBuilder;
+	JsonBuilder JsonBuilder_;
 	int c = 0;
 	bool in_tag = false;
 	int global_id = 1;
@@ -179,9 +214,10 @@ public:
 
 
 
-	Parser (const char *input_)
+	Parser (std::string source_url, const char *input_)
 	{
-			input = input_;
+		input = input_;
+		JsonBuilder_.addUrlNode(source_url);
 	}
 	~Parser ()
 	{
@@ -269,7 +305,7 @@ public:
 	
 	std::list<Json::Value*>* getJson ()
 	{
-		return JsonBuilder.getJson();
+		return JsonBuilder_.getJson();
 	}
 };
 
@@ -395,7 +431,7 @@ void Parser::get_attribute (Tag *tag)
 	if(debug) print_section("get_attribute() stored \"" + attrib->name + "\" = \"" + attrib->value + "\"");
 	//tag->attributes->push_back(attrib);
 	tag->addAttribute(attrib);
-	JsonBuilder.addAttribute(tag->type, attrib);
+	JsonBuilder_.addAttribute(tag->type, attrib);
 }
 
 // We are in a tag, now we need to fill in the  Tag struct.
@@ -413,7 +449,7 @@ void Parser::process_tag (std::string tag_type)
 	Tag_List.push_back(tag);
 	//if(!is_tag("meta", tag_type) && !is_tag("br", tag_type))
 	Tag_Stack.push_back(tag);	// do not put meta on tag stack
-	JsonBuilder.addTag(tag_type);
+	JsonBuilder_.addTag(tag_type);
 
 	if(tag_type == "!--")
 	{

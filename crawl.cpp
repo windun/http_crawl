@@ -308,7 +308,7 @@ int mCurl (std::string source_url, int nth_curl)
 		curl_easy_cleanup(curl_handle);
 
 		std::list<std::string> *new_URLS = new std::list<std::string>();
-		Parser Parser_((char *)body_data.buffer);
+		Parser Parser_(source_url, (char *)body_data.buffer);
 		Parser_.set_debug(false);
 		Parser_.process();
 		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
@@ -319,7 +319,7 @@ int mCurl (std::string source_url, int nth_curl)
 		for (std::list<Json::Value*>::iterator it = json_creates->begin(); it != json_creates->end(); it++)
 		{
 			Connection.NewTransaction();
-			Connection.AddTransactionStmt(*it);
+			Connection.AddTransaction(*it);
 			Connection.PostTransactionCommit();
 			delete *it;
 		}
