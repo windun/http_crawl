@@ -314,12 +314,13 @@ int mCurl (std::string source_url, int nth_curl)
 		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
 		Parser_.get_attribute_values("href", new_URLS);
 
-		std::list<std::string> *json_create_stmts = Parser_.getJsonStatements();
+		std::list<Json::Value*> *json_creates = Parser_.getJson();
 		Neo4jConn Connection;
-		for (std::list<std::string>::iterator it = json_create_stmts->begin(); it != json_create_stmts->end(); it++)
+		for (std::list<Json::Value*>::iterator it = json_creates->begin(); it != json_creates->end(); it++)
 		{
+			std::cout << "crawler.cpp sees: " << (*it)->toStyledString() << std::endl;
 			Connection.NewTransaction();
-			Connection.AddTransactionStmt(*it);
+			Connection.AddTransactionStmt(*(*it));
 			Connection.PostTransactionCommit();
 			//std::cout << "create: " << (*it) << std::endl;
 		}

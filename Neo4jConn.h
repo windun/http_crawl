@@ -77,6 +77,13 @@ public:
 		JSON_DATA["statements"].append(json_stmt);
 	}
 
+	void AddTransactionStmt (Json::Value json)
+	{
+		Json::Value json_stmt;
+		json_stmt["statement"] = json;
+		JSON_DATA["statements"].append(json_stmt);
+	}
+
 	static std::string Post (Json::Value data, std::string url)
 	{
 		CURL *curl_handle;

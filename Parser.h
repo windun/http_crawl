@@ -127,19 +127,28 @@ private:
 			{
 				tag_entry = JsonTags[tag_type];
 			}
-			//Json::Value json_attribs = (*tag_entry)["params"];	//[attrib->name] = attrib->value;
-			//json_attribs[attrib->name].append(attrib->value);	// tag_entry
-			(((*tag_entry)["params"])["props"])[attrib->name].append(attrib->value);
+			std::string attrib_value;
+			if(attrib->value == "") 
+			{
+				attrib_value = "null";
+			}
+			else
+			{
+				attrib_value = attrib->value;
+			}
+			(((*tag_entry)["params"])["props"])[attrib->name].append(attrib_value);
 		}
 
-		std::list<std::string>* getJsonStatements ()
+		std::list<Json::Value*>* getJson ()
 		{
-			std::list<std::string> *statements = new std::list<std::string> ();
+			std::list<Json::Value*>* json_list;
 			for (std::unordered_map<std::string, Json::Value*>::iterator it = JsonTags.begin(); it != JsonTags.end(); it++)
 			{
-				statements->push_back(it->second->toStyledString());
+				std::cout << "JsonBuilder packing: \n" << it->second->toStyledString() << std::cout;
+				json_list->push_back(it->second);
 			}
-			return statements;
+			std::cout << "JsonBuilder done packing.\n";
+			return json_list;
 		}
 	};
 
@@ -258,9 +267,9 @@ public:
 		}
 	}
 	
-	std::list<std::string>* getJsonStatements ()
+	std::list<Json::Value*>* getJson ()
 	{
-		return JsonBuilder.getJsonStatements();
+		return JsonBuilder.getJson();
 	}
 };
 
