@@ -70,9 +70,13 @@ public:
 		JSON_DATA["statements"] = Json::Value(Json::arrayValue);
 	}
 
-	void AddTransaction (std::string str_stmt)
+	void AddTransaction (std::string str_stmt, std::string format)
 	{
-		JSON_DATA["statements"].append(Json::Value(str_stmt));
+		Json::Value statement;
+		statement["statement"] = str_stmt;
+		statement["resultDataContents"] = Json::Value(Json::arrayValue);
+		statement["resultDataContents"].append(format);
+		JSON_DATA["statements"].append(statement);
 	}
 
 	void AddTransaction (Json::Value *json)

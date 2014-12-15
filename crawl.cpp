@@ -386,21 +386,31 @@ int main (int argc, char* argv[])
 	std::stringstream ss; ss << argv[2];
 	ss >> max_curls;
 	std::string url = std::string(argv[1]);
-	robots::check(url);
-	if (robots::is_blacklisted(url)) return 0;
-	URL_directory.insert(0, argv[1]);
-	struct url_pair *url_pair_ = new url_pair;
-	url_pair_->origin = "";
-	url_pair_->url = argv[1];
-	URL_queue.push(url_pair_);
-	while (URL_queue.size() > 0 && n <= max_curls)
+	if (url != "-c")
 	{
-		if(mCurl(URL_queue.front()->origin, URL_queue.front()->url, n) == CURLE_OK) n++;
-		delete URL_queue.front();
-		URL_queue.pop();
+		robots::check(url);
+		if (robots::is_blacklisted(url)) return 0;
+		URL_directory.insert(0, argv[1]);
+		struct url_pair *url_pair_ = new url_pair;
+		url_pair_->origin = "";
+		url_pair_->url = argv[1];
+		URL_queue.push(url_pair_);
+		while (URL_queue.size() > 0 && n <= max_curls)
+		{
+			if(mCurl(URL_queue.front()->origin, URL_queue.front()->url, n) == CURLE_OK) n++;
+			delete URL_queue.front();
+			URL_queue.pop();
+		}
+		std::string ofile_name = DATA_DIR;
+		ofile_name += "directory.txt";
+		URL_directory.write_file(ofile_name);
+		clean_up();
 	}
-	std::string ofile_name = DATA_DIR;
-	ofile_name += "directory.txt";
-	URL_directory.write_file(ofile_name);
-	clean_up();
+	else
+	{
+		Neo4jConn Connection;
+		Connection.NewTransaction();
+		Connection.AddTransaction(argv[2], argv[3]);
+		Connection.PostTransactionCommit();
+	}
 }
