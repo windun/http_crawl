@@ -190,10 +190,24 @@ public:
 						Json::Value row = data[i]["row"];
 						for (int rw = 0; rw < row.size(); rw++)
 						{
-							std::cout << "[=] "; //<< row[rw].toStyledString() << std::endl;
+							std::cout << "[=] "; 
 							for (Json::ValueIterator it = row[rw].begin(); it != row[rw].end(); it++)
 							{
-								std::cout << it.key() << it->toStyledString() << " | ";													
+								std::cout << it.key();
+								if (it->type() == Json::arrayValue)
+								{
+									std::cout << "[";
+									for (int e = 0; e < it->size(); e++)
+									{
+										std::cout << std::string((*it)[e]) << " ";
+									}
+									std::cout << "]";
+								}	
+								else
+								{
+									std::cout << *it;
+								}			
+								std::cout << " |";									
 							}		
 							std::cout << std::endl;
 						}
@@ -237,15 +251,15 @@ public:
 	static void PrintValue (Json::Value val)
 	{
 	    if( val.isString() ) {
-		printf( "string(%s)", val.asString().c_str() ); 
+		std::cout << val.asString();
 	    } else if( val.isBool() ) {
-		printf( "bool(%d)", val.asBool() ); 
+		std::cout << val.asBool(); 
 	    } else if( val.isInt() ) {
-		printf( "int(%d)", val.asInt() ); 
+		std::cout << val.asInt(); 
 	    } else if( val.isUInt() ) {
-		printf( "uint(%u)", val.asUInt() ); 
+		std::cout << val.asUInt(); 
 	    } else if( val.isDouble() ) {
-		printf( "double(%f)", val.asDouble() ); 
+		std::cout << val.asDouble(); 
 	    }
 	    else 
 	    {
