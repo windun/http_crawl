@@ -126,6 +126,8 @@ public:
 				Json::Reader reader;
 				bool parse_success = reader.parse(chunk.memory, json_reply);
 				std::cout << "Response: \n" << json_reply.toStyledString() << std::endl;
+				ProcessResult(json_reply);
+				
 			}
 			curl_easy_cleanup(curl_handle);	
 		}
@@ -142,6 +144,94 @@ public:
 	std::string PostTransactionCommit ()
 	{
 		return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
+	}
+
+	static void ProcessResult (Json::Value value)
+	{
+		std::cout << "Response (processed): \n";
+		//PrintJsonTree(value, 0);
+
+
+		// Print errors
+		Json::Value errors = value["errors"];
+		for (int i = 0; i < errors.size(); i++)
+		{
+			std::cout << "[!] " << errors[i] << std::endl;
+		}
+
+		Json::Value results = value["results"];
+
+
+		// Print columns
+		std::cout << "[c] " << std::endl;
+		for (int r = 0; r < results.size(); r++)
+		{
+		
+			Json::Value columns = results["columns"];
+			for (int i = 0; i < columns.size(); i++)
+			{
+				std::cout << columns[i] << " |";
+			}
+			std::cout << std::endl;
+
+	
+			// Print data
+			Json::Value data = results["data"];
+			for (int i = 0; i < data.size(); i++)
+			{
+				std::cout << "[" << i << "]" << data.toStyledString();
+			}
+		}
+	}
+
+	// http://stackoverflow.com/questions/4800605/iterating-through-objects-in-jsoncpp
+	static void PrintJsonTree (Json::Value root, int depth)
+	{ 
+		depth++;
+		if (root.size() > 0)
+		{
+			for (Json::ValueIterator it = root.begin(); it != root.end(); it++)
+			{
+				for (int d = 0; d < depth; d++)
+				{
+					std::cout << "   ";
+				}
+				PrintValue(it.key());
+				std::cout << std::endl;
+				PrintJsonTree(*it, depth);
+			}
+			return;
+		}
+		else
+		{
+			for (int d = 0; d < depth; d++)
+			{
+				std::cout << "   ";
+			}
+			PrintValue(root); 
+			std::cout << std::endl;
+		}
+		return;
+	}
+
+	// http://stackoverflow.com/questions/4800605/iterating-through-objects-in-jsoncpp
+	static void PrintValue (Json::Value val)
+	{
+	    if( val.isString() ) {
+		printf( "string(%s)", val.asString().c_str() ); 
+	    } else if( val.isBool() ) {
+		printf( "bool(%d)", val.asBool() ); 
+	    } else if( val.isInt() ) {
+		printf( "int(%d)", val.asInt() ); 
+	    } else if( val.isUInt() ) {
+		printf( "uint(%u)", val.asUInt() ); 
+	    } else if( val.isDouble() ) {
+		printf( "double(%f)", val.asDouble() ); 
+	    }
+	    else 
+	    {
+		printf( "unknown type=[%d]", val.type() ); 
+	    }
 	}
 };
 

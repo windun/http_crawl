@@ -1,13 +1,27 @@
+[?] google.com/robots.txt
+[0]-> google.com(0)
+[ ] html
+[ ] head
+[ ] meta
+[ ] title
+[ ] body
+[ ] h1
+[ ] a
+8 tags.
 Sending {
    "statements" : [
       {
-         "resultDataContents" : [ "graph" ],
-         "statement" : "MATCH (a) RETURN a"
+         "parameters" : {
+            "props" : {
+               "url" : "google.com"
+            }
+         },
+         "statement" : "CREATE (a:URL{props}) RETURN a"
       }
    ]
 }
 
-Received 13845 bytes:
+Received 83 bytes:
 Response: 
 {
    "errors" : [],
@@ -16,1110 +30,3258 @@ Response:
          "columns" : [ "a" ],
          "data" : [
             {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "105",
-                        "labels" : [ "URL" ],
-                        "properties" : {
-                           "url" : "google.com"
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "106",
-                        "labels" : [ "a" ],
-                        "properties" : {
-                           "HREF" : [ "http://www.google.com/" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "107",
-                        "labels" : [ "h1" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "108",
-                        "labels" : [ "body" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "109",
-                        "labels" : [ "title" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "110",
-                        "labels" : [ "meta" ],
-                        "properties" : {
-                           "content" : [ "text/html;charset=utf-8" ],
-                           "http-equiv" : [ "content-type" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "111",
-                        "labels" : [ "head" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "112",
-                        "labels" : [ "html" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "113",
-                        "labels" : [ "URL" ],
-                        "properties" : {
-                           "url" : "http://www.google.com/"
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "114",
-                        "labels" : [ "p" ],
-                        "properties" : {
-                           "style" : [ "color:#767676;font-size:8pt" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "115",
-                        "labels" : [ "a" ],
-                        "properties" : {
-                           "aria-haspopup" : [ "true", "true" ],
-                           "aria-owns" : [ "gbd", "gbd5" ],
-                           "class" : [
-                              "gbzt gbz0l gbp1",
-                              "gbzt",
-                              "gbzt",
-                              "gbzt",
-                              "gbzt",
-                              "gbzt",
-                              "gbzt",
-                              "gbzt",
-                              "gbgt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbmt",
-                              "gbgt",
-                              "gbgt",
-                              "gbmt",
-                              "gbmt"
-                           ],
-                           "href" : [
-                              "https://www.google.com/webhp?tab=ww",
-                              "http://www.google.com/imghp?hl=en&tab=wi",
-                              "http://maps.google.com/maps?hl=en&tab=wl",
-                              "https://play.google.com/?hl=en&tab=w8",
-                              "http://www.youtube.com/?tab=w1",
-                              "http://news.google.com/nwshp?hl=en&tab=wn",
-                              "https://mail.google.com/mail/?tab=wm",
-                              "https://drive.google.com/?tab=wo",
-                              "http://www.google.com/intl/en/options/",
-                              "https://www.google.com/calendar?tab=wc",
-                              "http://translate.google.com/?hl=en&tab=wT",
-                              "http://www.google.com/mobile/?hl=en&tab=wD",
-                              "http://books.google.com/bkshp?hl=en&tab=wp",
-                              "https://wallet.google.com/manage/?tab=wa",
-                              "http://www.google.com/shopping?hl=en&tab=wf",
-                              "http://www.blogger.com/?tab=wj",
-                              "http://www.google.com/finance?tab=we",
-                              "https://plus.google.com/photos?tab=wq",
-                              "http://video.google.com/?hl=en&tab=wv",
-                              "http://www.google.com/intl/en/options/",
-                              "https://accounts.google.com/ServiceLogin?hl=en&continue=http://www.google.com/",
-                              "http://www.google.com/preferences?hl=en",
-                              "/preferences?hl=en",
-                              "http://www.google.com/history/optout?hl=en",
-                              "/chrome/index.html?hl=en&amp;brand=CHNG&amp;utm_source=en-hpp&amp;utm_medium=hpp&amp;utm_campaign=en",
-                              "/advanced_search?hl=en&amp;authuser=0",
-                              "/language_tools?hl=en&amp;authuser=0",
-                              "/intl/en/ads/",
-                              "/services/",
-                              "https://plus.google.com/116899029375914044550",
-                              "/intl/en/about.html",
-                              "/intl/en/policies/privacy/",
-                              "/intl/en/policies/terms/"
-                           ],
-                           "id" : [
-                              "gb_1",
-                              "gb_2",
-                              "gb_8",
-                              "gb_78",
-                              "gb_36",
-                              "gb_5",
-                              "gb_23",
-                              "gb_49",
-                              "gbztm",
-                              "gb_24",
-                              "gb_51",
-                              "gb_17",
-                              "gb_10",
-                              "gb_212",
-                              "gb_6",
-                              "gb_30",
-                              "gb_27",
-                              "gb_31",
-                              "gb_12",
-                              "gb_70",
-                              "gbg5"
-                           ],
-                           "onclick" : [
-                              "gbar.logger.il(1,{t:1});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:2});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:8});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:78});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:36});",
-                              "gbar.logger.il(1,{t:5});",
-                              "gbar.logger.il(1,{t:23});",
-                              "gbar.logger.il(1,{t:49});",
-                              "gbar.tg(event,this)",
-                              "gbar.logger.il(1,{t:24});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:51});",
-                              "gbar.logger.il(1,{t:17});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:10});",
-                              "gbar.logger.il(1,{t:212});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:6});",
-                              "gbar.logger.il(1,{t:30});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:27});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:31});",
-                              "gbar.qs(this);gbar.logger.il(1,{t:12});",
-                              "gbar.logger.il(1,{t:66});",
-                              "gbar.logger.il(9,{l:'i'})",
-                              "gbar.tg(event,this)",
-                              "google.promos&&google.promos.toast&& google.promos.toast.cl()"
-                           ],
-                           "rel" : [ "publisher" ],
-                           "target" : [ "_top" ],
-                           "title" : [ "Options" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "116",
-                        "labels" : [ "html" ],
-                        "properties" : {
-                           "itemscope" : [ "null" ],
-                           "itemtype" : [ "http://schema.org/WebPage" ],
-                           "lang" : [ "en" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "117",
-                        "labels" : [ "head" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "118",
-                        "labels" : [ "br" ],
-                        "properties" : {
-                           "clear" : [ "all" ],
-                           "id" : [ "lgpd" ],
-                           "style" : [ "line-height:0" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "119",
-                        "labels" : [ "meta" ],
-                        "properties" : {
-                           "content" : [
-                              "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.",
-                              "noodp",
-                              "/images/google_favicon_128.png"
-                           ],
-                           "itemprop" : [ "image" ],
-                           "name" : [ "description", "robots" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "120",
-                        "labels" : [ "h2" ],
-                        "properties" : {
-                           "class" : [ "gbxx" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "121",
-                        "labels" : [ "table" ],
-                        "properties" : {
-                           "border" : [ "0" ],
-                           "cellpadding" : [ "0" ],
-                           "cellspacing" : [ "0" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "122",
-                        "labels" : [ "script" ],
-                        "properties" : {
-                           "type" : [ "text/javascript", "text/javascript" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "123",
-                        "labels" : [ "textarea" ],
-                        "properties" : {
-                           "name" : [ "',e,'" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "124",
-                        "labels" : [ "style" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "125",
-                        "labels" : [ "body" ],
-                        "properties" : {
-                           "bgcolor" : [ "#fff" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "126",
-                        "labels" : [ "input" ],
-                        "properties" : {
-                           "autocomplete" : [ "off" ],
-                           "class" : [ "lst", "lsb", "lsb" ],
-                           "id" : [ "gbv" ],
-                           "maxlength" : [ "2048" ],
-                           "name" : [ "ie", "hl", "source", "q", "btnG", "btnI", "gbv" ],
-                           "onclick" : [ "if(this.form.q.value)this.checked=1; else top.location='/doodles/'" ],
-                           "size" : [ "57" ],
-                           "style" : [ "color:#000;margin:0;padding:5px 8px 0 6px;vertical-align:top" ],
-                           "title" : [ "Google Search" ],
-                           "type" : [ "hidden", "hidden", "hidden", "submit", "submit", "hidden" ],
-                           "value" : [
-                              "ISO-8859-1",
-                              "en",
-                              "hp",
-                              "null",
-                              "Google Search",
-                              "I'm Feeling Lucky",
-                              "1"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "127",
-                        "labels" : [ "ol" ],
-                        "properties" : {
-                           "class" : [ "gbtc", "gbmcc gbsbic", "gbtc", "gbmcc" ],
-                           "id" : [ "gbzc", "gbmm", "gbom" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "128",
-                        "labels" : [ "li" ],
-                        "properties" : {
-                           "class" : [
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbt",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbmtc",
-                              "gbt",
-                              "gbt gbtb",
-                              "gbt",
-                              "gbkc gbmtc",
-                              "gbmtc",
-                              "gbkp gbmtc"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "129",
-                        "labels" : [ "title" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "130",
-                        "labels" : [ "div" ],
-                        "properties" : {
-                           "aria-owner" : [ "gbztm", "gbg5" ],
-                           "class" : [
-                              "gbm",
-                              "gbmc gbsb gbsbis",
-                              "gbmt gbmh",
-                              "gbsbt",
-                              "gbsbb",
-                              "gbm",
-                              "gbmc",
-                              "gbmt gbmh",
-                              "pmoabs",
-                              "xbtn",
-                              "kd-button-submit",
-                              "ds"
-                           ],
-                           "data-jiis" : [ "bp" ],
-                           "id" : [
-                              "mngb",
-                              "gb",
-                              "gbw",
-                              "gbz",
-                              "gbd",
-                              "gbmmb",
-                              "gbg",
-                              "gbd5",
-                              "gbx3",
-                              "gbx4",
-                              "pmocntr2",
-                              "pmolnk",
-                              "lga",
-                              "gac_scont",
-                              "fll",
-                              "xjsd",
-                              "xjsi"
-                           ],
-                           "onclick" : [ "google.promos&&google.promos.toast&& google.promos.toast.cpc()" ],
-                           "style" : [
-                              "behavior:url(#default#userdata);display:none",
-                              "float:right",
-                              "height:32px;margin:4px 0",
-                              "font-size:83%;min-height:3.5em",
-                              "font-size:10pt",
-                              "margin:19px auto;text-align:center"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "131",
-                        "labels" : [ "img" ],
-                        "properties" : {
-                           "alt" : [ "Google" ],
-                           "height" : [ "95" ],
-                           "id" : [ "hplogo" ],
-                           "onload" : [ "window.lol&&lol()" ],
-                           "src" : [ "/images/icons/product/chrome-48.png", "/images/srpr/logo9w.png" ],
-                           "style" : [ "padding:28px 0 14px" ],
-                           "width" : [ "269" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "132",
-                        "labels" : [ "span" ],
-                        "properties" : {
-                           "class" : [
-                              "gbtcb",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "gbtb2",
-                              "gbts gbtsa",
-                              "gbma",
-                              "gbtcb",
-                              "gbtb2",
-                              "gbts",
-                              "gbts",
-                              "gbtb2",
-                              "gbts",
-                              "ds",
-                              "lsbb",
-                              "ds",
-                              "lsbb"
-                           ],
-                           "id" : [
-                              "gbztms",
-                              "gbztms1",
-                              "gbgs4",
-                              "gbi4s1",
-                              "gbgs5",
-                              "gbi5",
-                              "prt",
-                              "footer"
-                           ],
-                           "style" : [ "display:block" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "133",
-                        "labels" : [ "tr" ],
-                        "properties" : {
-                           "valign" : [ "top" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "134",
-                        "labels" : [ "center" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "135",
-                        "labels" : [ "td" ],
-                        "properties" : {
-                           "align" : [ "center", "left" ],
-                           "class" : [ "padi", "pads", "padt", "fl sblc" ],
-                           "colspan" : [ "2" ],
-                           "nowrap" : [ "null", "null" ],
-                           "rowspan" : [ "2" ],
-                           "width" : [ "25%", "25%" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "136",
-                        "labels" : [ "form" ],
-                        "properties" : {
-                           "action" : [ "',d,'", "/search" ],
-                           "method" : [ "POST" ],
-                           "name" : [ "f" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "137",
-                        "labels" : [ "URL" ],
-                        "properties" : {
-                           "url" : "http://www.google.com/intl/en/policies/terms/"
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "138",
-                        "labels" : [ "option" ],
-                        "properties" : {
-                           "selected" : [ "null" ],
-                           "value" : [
-                              "/intl/af/policies/terms/",
-                              "/intl/id/policies/terms/",
-                              "/intl/ms/policies/terms/",
-                              "/intl/ca/policies/terms/",
-                              "/intl/cs/policies/terms/",
-                              "/intl/da/policies/terms/",
-                              "/intl/de/policies/terms/",
-                              "/intl/et/policies/terms/",
-                              "/intl/en/policies/terms/",
-                              "/intl/en-GB/policies/terms/",
-                              "/intl/es/policies/terms/",
-                              "/intl/es-419/policies/terms/",
-                              "/intl/eu/policies/terms/",
-                              "/intl/fil/policies/terms/",
-                              "/intl/fr/policies/terms/",
-                              "/intl/fr-CA/policies/terms/",
-                              "/intl/gl/policies/terms/",
-                              "/intl/hr/policies/terms/",
-                              "/intl/zu/policies/terms/",
-                              "/intl/is/policies/terms/",
-                              "/intl/it/policies/terms/",
-                              "/intl/sw/policies/terms/",
-                              "/intl/lv/policies/terms/",
-                              "/intl/lt/policies/terms/",
-                              "/intl/hu/policies/terms/",
-                              "/intl/nl/policies/terms/",
-                              "/intl/no/policies/terms/",
-                              "/intl/pl/policies/terms/",
-                              "/intl/pt-BR/policies/terms/",
-                              "/intl/pt-PT/policies/terms/",
-                              "/intl/ro/policies/terms/",
-                              "/intl/sk/policies/terms/",
-                              "/intl/sl/policies/terms/",
-                              "/intl/fi/policies/terms/",
-                              "/intl/sv/policies/terms/",
-                              "/intl/vi/policies/terms/",
-                              "/intl/tr/policies/terms/",
-                              "/intl/el/policies/terms/",
-                              "/intl/bg/policies/terms/",
-                              "/intl/ru/policies/terms/",
-                              "/intl/sr/policies/terms/",
-                              "/intl/uk/policies/terms/",
-                              "/intl/iw/policies/terms/",
-                              "/intl/ur/policies/terms/",
-                              "/intl/ar/policies/terms/",
-                              "/intl/fa/policies/terms/",
-                              "/intl/am/policies/terms/",
-                              "/intl/mr/policies/terms/",
-                              "/intl/hi/policies/terms/",
-                              "/intl/bn/policies/terms/",
-                              "/intl/gu/policies/terms/",
-                              "/intl/ta/policies/terms/",
-                              "/intl/te/policies/terms/",
-                              "/intl/kn/policies/terms/",
-                              "/intl/ml/policies/terms/",
-                              "/intl/th/policies/terms/",
-                              "/intl/ko/policies/terms/",
-                              "/intl/zh-HK/policies/terms/",
-                              "/intl/zh-CN/policies/terms/",
-                              "/intl/zh-TW/policies/terms/",
-                              "/intl/ja/policies/terms/"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "139",
-                        "labels" : [ "h3" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "140",
-                        "labels" : [ "p" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "141",
-                        "labels" : [ "li" ],
-                        "properties" : {
-                           "class" : [ "active" ],
-                           "data-g-label" : [
-                              "Overview",
-                              "Privacy Policy",
-                              "Terms of Service",
-                              "Privacy in our technology",
-                              "FAQ"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "142",
-                        "labels" : [ "ul" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "143",
-                        "labels" : [ "img" ],
-                        "properties" : {
-                           "alt" : [ "Google" ],
-                           "src" : [ "//www.google.com/images/logos/google_logo_41.png" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "144",
-                        "labels" : [ "h1" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "145",
-                        "labels" : [ "span" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "146",
-                        "labels" : [ "div" ],
-                        "properties" : {
-                           "class" : [
-                              "maia-header",
-                              "maia-aux",
-                              "maia-nav",
-                              "maia-aux",
-                              "maia-nav",
-                              "maia-article",
-                              "maia-teleport",
-                              "maia-footer",
-                              "maia-aux",
-                              "policy-footer-sitemap",
-                              "maia-cols",
-                              "maia-col-3",
-                              "maia-col-3",
-                              "maia-col-6",
-                              "maia-aux",
-                              "maia-locales"
-                           ],
-                           "id" : [
-                              "maia-header",
-                              "maia-nav-x",
-                              "maia-main",
-                              "maia-nav-y",
-                              "content",
-                              "maia-signature",
-                              "maia-footer",
-                              "maia-footer-local",
-                              "maia-footer-global"
-                           ],
-                           "role" : [ "banner", "navigation", "main", "navigation", "article" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "147",
-                        "labels" : [ "link" ],
-                        "properties" : {
-                           "href" : [
-                              "//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&amp;lang=en",
-                              "/policies/css/default.css"
-                           ],
-                           "rel" : [ "stylesheet", "stylesheet" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "148",
-                        "labels" : [ "title" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "149",
-                        "labels" : [ "h2" ],
-                        "properties" : {
-                           "id" : [
-                              "toc-services",
-                              "toc-account",
-                              "toc-protection",
-                              "toc-content",
-                              "toc-software",
-                              "toc-modification",
-                              "toc-warranties-disclaimers",
-                              "toc-liability",
-                              "toc-business-uses",
-                              "toc-about"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "150",
-                        "labels" : [ "meta" ],
-                        "properties" : {
-                           "charset" : [ "utf-8" ],
-                           "content" : [ "initial-scale=1, minimum-scale=1, width=device-width" ],
-                           "name" : [ "viewport" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "151",
-                        "labels" : [ "select" ],
-                        "properties" : {
-                           "onchange" : [
-                              "var href=this[this.selectedIndex].value;if(href!=''){window.location.href=href};"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "152",
-                        "labels" : [ "script" ],
-                        "properties" : {
-                           "src" : [ "//www.google.com/js/google.js", "//www.google.com/js/maia.js" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "153",
-                        "labels" : [ "label" ],
-                        "properties" : {}
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "154",
-                        "labels" : [ "html" ],
-                        "properties" : {
-                           "class" : [ "google" ],
-                           "lang" : [ "en" ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
-            },
-            {
-               "graph" : {
-                  "nodes" : [
-                     {
-                        "id" : "155",
-                        "labels" : [ "a" ],
-                        "properties" : {
-                           "class" : [ "maia-teleport" ],
-                           "href" : [
-                              "/",
-                              "../../policies/",
-                              "#content",
-                              "../../policies/",
-                              "../../policies/privacy/",
-                              "../../policies/terms/",
-                              "../../policies/technologies/",
-                              "../../policies/faq/",
-                              "../../policies/terms/archive/",
-                              "../../policies/terms/archive/",
-                              "http://support.google.com/accounts/bin/answer.py?hl=en&amp;answer=58585",
-                              "../../policies/privacy/",
-                              "http://support.google.com/bin/static.py?hl=en&amp;ts=1114905&amp;page=ts.cs",
-                              "../../contact/",
-                              "/safetycenter/families/start/",
-                              "../../policies/privacy/",
-                              "../../policies/faq/",
-                              "../../policies/technologies/",
-                              "../../policies/technologies/ads/",
-                              "../../policies/technologies/cookies/",
-                              "../../policies/technologies/pattern-recognition/",
-                              "../../policies/technologies/location-data/",
-                              "../../policies/technologies/wallet/",
-                              "../../policies/technologies/voice/",
-                              "../../policies/privacy/partners/",
-                              "/",
-                              "/intl/en/about/",
-                              "/intl/en/policies/"
-                           ]
-                        }
-                     }
-                  ],
-                  "relationships" : []
-               }
+               "row" : [
+                  {
+                     "url" : "google.com"
+                  }
+               ]
             }
          ]
       }
    ]
 }
 
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "HREF" : [ "http://www.google.com/" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:a { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 98 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "HREF" : [ "http://www.google.com/" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:h1 { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:body { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:title { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "content" : [ "text/html;charset=utf-8" ],
+               "http-equiv" : [ "content-type" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:meta { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 132 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "content" : [ "text/html;charset=utf-8" ],
+                     "http-equiv" : [ "content-type" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:head { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (n:html { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+[+] http://www.google.com/
+[?] www.google.com/robots.txt
+[x] www.google.com/search
+[x] www.google.com/sdch
+[x] www.google.com/groups
+[x] www.google.com/images
+[x] www.google.com/catalogs
+[x] www.google.com/catalogues
+[x] www.google.com/news
+[x] www.google.com/nwshp
+[x] www.google.com/setnewsprefs?
+[x] www.google.com/index.html?
+[x] www.google.com/?
+[x] www.google.com/?hl=*&
+[x] www.google.com/?hl=*&*&gws_rd=ssl
+[x] www.google.com/addurl/image?
+[x] www.google.com/mail/
+[x] www.google.com/pagead/
+[x] www.google.com/relpage/
+[x] www.google.com/relcontent
+[x] www.google.com/imgres
+[x] www.google.com/imglanding
+[x] www.google.com/sbd
+[x] www.google.com/keyword/
+[x] www.google.com/u/
+[x] www.google.com/univ/
+[x] www.google.com/cobrand
+[x] www.google.com/custom
+[x] www.google.com/advanced_group_search
+[x] www.google.com/googlesite
+[x] www.google.com/preferences
+[x] www.google.com/setprefs
+[x] www.google.com/swr
+[x] www.google.com/url
+[x] www.google.com/default
+[x] www.google.com/m?
+[x] www.google.com/m/
+[x] www.google.com/wml?
+[x] www.google.com/wml/?
+[x] www.google.com/wml/search?
+[x] www.google.com/xhtml?
+[x] www.google.com/xhtml/?
+[x] www.google.com/xhtml/search?
+[x] www.google.com/xml?
+[x] www.google.com/imode?
+[x] www.google.com/imode/?
+[x] www.google.com/imode/search?
+[x] www.google.com/jsky?
+[x] www.google.com/jsky/?
+[x] www.google.com/jsky/search?
+[x] www.google.com/pda?
+[x] www.google.com/pda/?
+[x] www.google.com/pda/search?
+[x] www.google.com/sprint_xhtml
+[x] www.google.com/sprint_wml
+[x] www.google.com/pqa
+[x] www.google.com/palm
+[x] www.google.com/gwt/
+[x] www.google.com/purchases
+[x] www.google.com/hws
+[x] www.google.com/bsd?
+[x] www.google.com/linux?
+[x] www.google.com/mac?
+[x] www.google.com/microsoft?
+[x] www.google.com/unclesam?
+[x] www.google.com/answers/search?q=
+[x] www.google.com/local?
+[x] www.google.com/local_url
+[x] www.google.com/shihui?
+[x] www.google.com/shihui/
+[x] www.google.com/froogle?
+[x] www.google.com/products?
+[x] www.google.com/froogle_
+[x] www.google.com/product_
+[x] www.google.com/products_
+[x] www.google.com/products;
+[x] www.google.com/print
+[x] www.google.com/books/
+[x] www.google.com/bkshp?*q=*
+[x] www.google.com/books?*q=*
+[x] www.google.com/books?*output=*
+[x] www.google.com/books?*pg=*
+[x] www.google.com/books?*jtp=*
+[x] www.google.com/books?*jscmd=*
+[x] www.google.com/books?*buy=*
+[x] www.google.com/books?*zoom=*
+[x] www.google.com/ebooks/
+[x] www.google.com/ebooks?*q=*
+[x] www.google.com/ebooks?*output=*
+[x] www.google.com/ebooks?*pg=*
+[x] www.google.com/ebooks?*jscmd=*
+[x] www.google.com/ebooks?*buy=*
+[x] www.google.com/ebooks?*zoom=*
+[x] www.google.com/patents?
+[x] www.google.com/patents/download/
+[x] www.google.com/patents/pdf/
+[x] www.google.com/patents/related/
+[x] www.google.com/scholar
+[x] www.google.com/citations?
+[x] www.google.com/citations?*cstart=
+[x] www.google.com/complete
+[x] www.google.com/s?
+[x] www.google.com/sponsoredlinks
+[x] www.google.com/videosearch?
+[x] www.google.com/videopreview?
+[x] www.google.com/videoprograminfo?
+[x] www.google.com/maps?
+[x] www.google.com/mapstt?
+[x] www.google.com/mapslt?
+[x] www.google.com/maps/stk/
+[x] www.google.com/maps/br?
+[x] www.google.com/mapabcpoi?
+[x] www.google.com/maphp?
+[x] www.google.com/mapprint?
+[x] www.google.com/maps/api/js/
+[x] www.google.com/maps/api/staticmap?
+[x] www.google.com/mld?
+[x] www.google.com/staticmap?
+[x] www.google.com/places/
+[x] www.google.com/maps/preview
+[x] www.google.com/maps/place
+[x] www.google.com/help/maps/streetview/partners/welcome/
+[x] www.google.com/help/maps/indoormaps/partners/
+[x] www.google.com/lochp?
+[x] www.google.com/center
+[x] www.google.com/ie?
+[x] www.google.com/sms/demo?
+[x] www.google.com/katrina?
+[x] www.google.com/blogsearch?
+[x] www.google.com/blogsearch/
+[x] www.google.com/blogsearch_feeds
+[x] www.google.com/advanced_blog_search
+[x] www.google.com/uds/
+[x] www.google.com/chart?
+[x] www.google.com/transit?
+[x] www.google.com/mbd?
+[x] www.google.com/extern_js/
+[x] www.google.com/xjs/
+[x] www.google.com/calendar/feeds/
+[x] www.google.com/calendar/ical/
+[x] www.google.com/cl2/feeds/
+[x] www.google.com/cl2/ical/
+[x] www.google.com/coop/directory
+[x] www.google.com/coop/manage
+[x] www.google.com/trends?
+[x] www.google.com/trends/music?
+[x] www.google.com/trends/hottrends?
+[x] www.google.com/trends/viz?
+[x] www.google.com/trends/embed.js?
+[x] www.google.com/trends/fetchComponent?
+[x] www.google.com/notebook/search?
+[x] www.google.com/musica
+[x] www.google.com/musicad
+[x] www.google.com/musicas
+[x] www.google.com/musicl
+[x] www.google.com/musics
+[x] www.google.com/musicsearch
+[x] www.google.com/musicsp
+[x] www.google.com/musiclp
+[x] www.google.com/browsersync
+[x] www.google.com/call
+[x] www.google.com/archivesearch?
+[x] www.google.com/archivesearch/url
+[x] www.google.com/archivesearch/advanced_search
+[x] www.google.com/base/reportbadoffer
+[x] www.google.com/urchin_test/
+[x] www.google.com/movies?
+[x] www.google.com/codesearch?
+[x] www.google.com/codesearch/feeds/search?
+[x] www.google.com/wapsearch?
+[x] www.google.com/safebrowsing
+[x] www.google.com/reviews/search?
+[x] www.google.com/orkut/albums
+[x] www.google.com/views?
+[x] www.google.com/c/
+[x] www.google.com/cbk
+[x] www.google.com/recharge/dashboard/car
+[x] www.google.com/recharge/dashboard/static/
+[x] www.google.com/translate_a/
+[x] www.google.com/translate_c
+[x] www.google.com/translate_f
+[x] www.google.com/translate_static/
+[x] www.google.com/translate_suggestion
+[x] www.google.com/profiles/me
+[x] www.google.com/s2/profiles/me
+[x] www.google.com/s2
+[x] www.google.com/transconsole/portal/
+[x] www.google.com/gcc/
+[x] www.google.com/aclk
+[x] www.google.com/cse?
+[x] www.google.com/cse/home
+[x] www.google.com/cse/panel
+[x] www.google.com/cse/manage
+[x] www.google.com/tbproxy/
+[x] www.google.com/imesync/
+[x] www.google.com/shenghuo/search?
+[x] www.google.com/support/forum/search?
+[x] www.google.com/reviews/polls/
+[x] www.google.com/hosted/images/
+[x] www.google.com/ppob/?
+[x] www.google.com/ppob?
+[x] www.google.com/adwordsresellers
+[x] www.google.com/accounts/ClientLogin
+[x] www.google.com/accounts/ClientAuth
+[x] www.google.com/accounts/o8
+[x] www.google.com/topicsearch?q=
+[x] www.google.com/xfx7/
+[x] www.google.com/squared/api
+[x] www.google.com/squared/search
+[x] www.google.com/squared/table
+[x] www.google.com/toolkit/
+[x] www.google.com/globalmarketfinder/
+[x] www.google.com/qnasearch?
+[x] www.google.com/app/updates
+[x] www.google.com/sidewiki/entry/
+[x] www.google.com/quality_form?
+[x] www.google.com/labs/popgadget/search
+[x] www.google.com/buzz/post
+[x] www.google.com/compressiontest/
+[x] www.google.com/analytics/reporting/
+[x] www.google.com/analytics/admin/
+[x] www.google.com/analytics/web/
+[x] www.google.com/analytics/feeds/
+[x] www.google.com/analytics/settings/
+[x] www.google.com/alerts/
+[x] www.google.com/ads/search?
+[x] www.google.com/ads/plan/action_plan?
+[x] www.google.com/ads/plan/api/
+[x] www.google.com/phone/compare/?
+[x] www.google.com/travel/clk
+[x] www.google.com/hotelfinder/rpc
+[x] www.google.com/hotels/rpc
+[x] www.google.com/flights/rpc
+[x] www.google.com/commercesearch/services/
+[x] www.google.com/evaluation/
+[x] www.google.com/chrome/browser/mobile/tour
+[x] www.google.com/compare/*/apply*
+[x] www.google.com/forms/perks/
+[x] www.google.com/baraza/*/search
+[x] www.google.com/baraza/*/report
+[x] www.google.com/shopping/suppliers/search
+[x] www.google.com/ct/
+[x] www.google.com/edu/cs4hs/
+[x] www.google.com/trustedstores/s/
+[x] www.google.com/trustedstores/tm2
+[x] www.google.com/trustedstores/verify
+[x] www.google.com/adwords/proposal
+[x] www.google.com/shopping/product/
+[x] www.google.com/shopping/seller
+[x] www.google.com/shopping/reviewer
+[x] www.google.com/about/careers/apply/
+[x] www.google.com/about/careers/applications/
+[x] www.google.com/landing/signout.html
+[+] 0 urls found.
+[1]-> http://www.google.com/(2)
+[ ] !doctype
+[ ] html
+[ ] head
+[ ] meta
+[ ] title
+[ ] script
+[ ] style
+[ ] body
+[ ] div
+[ ] span
+[ ] ol
+[ ] li
+[ ] a
+[ ] h2
+[ ] center
+[ ] table
+[ ] tr
+[ ] td
+[ ] img
+[ ] form
+[ ] textarea
+[ ] d&&a.k.q(b,c,e,f)
+[ ] br
+[ ] input
+[ ] p
+181 tags.
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "url" : "http://www.google.com/"
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"google.com\"}) CREATE (a:URL{props}), (s)-[:LINK]->(a) RETURN a"
+      }
+   ]
+}
+
+Received 95 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "a" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "url" : "http://www.google.com/"
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "style" : [ "color:#767676;font-size:8pt" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:p { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 104 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "style" : [ "color:#767676;font-size:8pt" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "html" : [ "null" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:!doctype { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 291 bytes:
+Response: 
+{
+   "errors" : [
+      {
+         "code" : "Neo.ClientError.Statement.InvalidSyntax",
+         "message" : "Invalid input '!' (line 1, column 55)\n\"MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:!doctype { props } ), (n)-[:IN]->(s) RETURN n\"\n                                                       ^"
+      }
+   ],
+   "results" : []
+}
+
+Response (processed): 
+[!] 
+{
+	"code" : "Neo.ClientError.Statement.InvalidSyntax",
+	"message" : "Invalid input '!' (line 1, column 55)\n\"MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:!doctype { props } ), (n)-[:IN]->(s) RETURN n\"\n                                                       ^"
+}
+
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "aria-haspopup" : [ "true", "true" ],
+               "aria-owns" : [ "gbd", "gbd5" ],
+               "class" : [
+                  "gbzt gbz0l gbp1",
+                  "gbzt",
+                  "gbzt",
+                  "gbzt",
+                  "gbzt",
+                  "gbzt",
+                  "gbzt",
+                  "gbzt",
+                  "gbgt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbmt",
+                  "gbgt",
+                  "gbgt",
+                  "gbmt",
+                  "gbmt"
+               ],
+               "href" : [
+                  "https://www.google.com/webhp?tab=ww",
+                  "http://www.google.com/imghp?hl=en&tab=wi",
+                  "http://maps.google.com/maps?hl=en&tab=wl",
+                  "https://play.google.com/?hl=en&tab=w8",
+                  "http://www.youtube.com/?tab=w1",
+                  "http://news.google.com/nwshp?hl=en&tab=wn",
+                  "https://mail.google.com/mail/?tab=wm",
+                  "https://drive.google.com/?tab=wo",
+                  "http://www.google.com/intl/en/options/",
+                  "https://www.google.com/calendar?tab=wc",
+                  "http://translate.google.com/?hl=en&tab=wT",
+                  "http://www.google.com/mobile/?hl=en&tab=wD",
+                  "http://books.google.com/bkshp?hl=en&tab=wp",
+                  "https://wallet.google.com/manage/?tab=wa",
+                  "http://www.google.com/shopping?hl=en&tab=wf",
+                  "http://www.blogger.com/?tab=wj",
+                  "http://www.google.com/finance?tab=we",
+                  "https://plus.google.com/photos?tab=wq",
+                  "http://video.google.com/?hl=en&tab=wv",
+                  "http://www.google.com/intl/en/options/",
+                  "https://accounts.google.com/ServiceLogin?hl=en&continue=http://www.google.com/",
+                  "http://www.google.com/preferences?hl=en",
+                  "/preferences?hl=en",
+                  "http://www.google.com/history/optout?hl=en",
+                  "/chrome/index.html?hl=en&amp;brand=CHNG&amp;utm_source=en-hpp&amp;utm_medium=hpp&amp;utm_campaign=en",
+                  "/advanced_search?hl=en&amp;authuser=0",
+                  "/language_tools?hl=en&amp;authuser=0",
+                  "/intl/en/ads/",
+                  "/services/",
+                  "https://plus.google.com/116899029375914044550",
+                  "/intl/en/about.html",
+                  "/intl/en/policies/privacy/",
+                  "/intl/en/policies/terms/"
+               ],
+               "id" : [
+                  "gb_1",
+                  "gb_2",
+                  "gb_8",
+                  "gb_78",
+                  "gb_36",
+                  "gb_5",
+                  "gb_23",
+                  "gb_49",
+                  "gbztm",
+                  "gb_24",
+                  "gb_51",
+                  "gb_17",
+                  "gb_10",
+                  "gb_212",
+                  "gb_6",
+                  "gb_30",
+                  "gb_27",
+                  "gb_31",
+                  "gb_12",
+                  "gb_70",
+                  "gbg5"
+               ],
+               "onclick" : [
+                  "gbar.logger.il(1,{t:1});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:2});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:8});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:78});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:36});",
+                  "gbar.logger.il(1,{t:5});",
+                  "gbar.logger.il(1,{t:23});",
+                  "gbar.logger.il(1,{t:49});",
+                  "gbar.tg(event,this)",
+                  "gbar.logger.il(1,{t:24});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:51});",
+                  "gbar.logger.il(1,{t:17});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:10});",
+                  "gbar.logger.il(1,{t:212});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:6});",
+                  "gbar.logger.il(1,{t:30});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:27});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:31});",
+                  "gbar.qs(this);gbar.logger.il(1,{t:12});",
+                  "gbar.logger.il(1,{t:66});",
+                  "gbar.logger.il(9,{l:'i'})",
+                  "gbar.tg(event,this)",
+                  "google.promos&&google.promos.toast&& google.promos.toast.cl()"
+               ],
+               "rel" : [ "publisher" ],
+               "target" : [ "_top" ],
+               "title" : [ "Options" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:a { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 2704 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "aria-haspopup" : [ "true", "true" ],
+                     "aria-owns" : [ "gbd", "gbd5" ],
+                     "class" : [
+                        "gbzt gbz0l gbp1",
+                        "gbzt",
+                        "gbzt",
+                        "gbzt",
+                        "gbzt",
+                        "gbzt",
+                        "gbzt",
+                        "gbzt",
+                        "gbgt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbmt",
+                        "gbgt",
+                        "gbgt",
+                        "gbmt",
+                        "gbmt"
+                     ],
+                     "href" : [
+                        "https://www.google.com/webhp?tab=ww",
+                        "http://www.google.com/imghp?hl=en&tab=wi",
+                        "http://maps.google.com/maps?hl=en&tab=wl",
+                        "https://play.google.com/?hl=en&tab=w8",
+                        "http://www.youtube.com/?tab=w1",
+                        "http://news.google.com/nwshp?hl=en&tab=wn",
+                        "https://mail.google.com/mail/?tab=wm",
+                        "https://drive.google.com/?tab=wo",
+                        "http://www.google.com/intl/en/options/",
+                        "https://www.google.com/calendar?tab=wc",
+                        "http://translate.google.com/?hl=en&tab=wT",
+                        "http://www.google.com/mobile/?hl=en&tab=wD",
+                        "http://books.google.com/bkshp?hl=en&tab=wp",
+                        "https://wallet.google.com/manage/?tab=wa",
+                        "http://www.google.com/shopping?hl=en&tab=wf",
+                        "http://www.blogger.com/?tab=wj",
+                        "http://www.google.com/finance?tab=we",
+                        "https://plus.google.com/photos?tab=wq",
+                        "http://video.google.com/?hl=en&tab=wv",
+                        "http://www.google.com/intl/en/options/",
+                        "https://accounts.google.com/ServiceLogin?hl=en&continue=http://www.google.com/",
+                        "http://www.google.com/preferences?hl=en",
+                        "/preferences?hl=en",
+                        "http://www.google.com/history/optout?hl=en",
+                        "/chrome/index.html?hl=en&amp;brand=CHNG&amp;utm_source=en-hpp&amp;utm_medium=hpp&amp;utm_campaign=en",
+                        "/advanced_search?hl=en&amp;authuser=0",
+                        "/language_tools?hl=en&amp;authuser=0",
+                        "/intl/en/ads/",
+                        "/services/",
+                        "https://plus.google.com/116899029375914044550",
+                        "/intl/en/about.html",
+                        "/intl/en/policies/privacy/",
+                        "/intl/en/policies/terms/"
+                     ],
+                     "id" : [
+                        "gb_1",
+                        "gb_2",
+                        "gb_8",
+                        "gb_78",
+                        "gb_36",
+                        "gb_5",
+                        "gb_23",
+                        "gb_49",
+                        "gbztm",
+                        "gb_24",
+                        "gb_51",
+                        "gb_17",
+                        "gb_10",
+                        "gb_212",
+                        "gb_6",
+                        "gb_30",
+                        "gb_27",
+                        "gb_31",
+                        "gb_12",
+                        "gb_70",
+                        "gbg5"
+                     ],
+                     "onclick" : [
+                        "gbar.logger.il(1,{t:1});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:2});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:8});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:78});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:36});",
+                        "gbar.logger.il(1,{t:5});",
+                        "gbar.logger.il(1,{t:23});",
+                        "gbar.logger.il(1,{t:49});",
+                        "gbar.tg(event,this)",
+                        "gbar.logger.il(1,{t:24});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:51});",
+                        "gbar.logger.il(1,{t:17});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:10});",
+                        "gbar.logger.il(1,{t:212});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:6});",
+                        "gbar.logger.il(1,{t:30});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:27});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:31});",
+                        "gbar.qs(this);gbar.logger.il(1,{t:12});",
+                        "gbar.logger.il(1,{t:66});",
+                        "gbar.logger.il(9,{l:'i'})",
+                        "gbar.tg(event,this)",
+                        "google.promos&&google.promos.toast&& google.promos.toast.cl()"
+                     ],
+                     "rel" : [ "publisher" ],
+                     "target" : [ "_top" ],
+                     "title" : [ "Options" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "itemscope" : [ "null" ],
+               "itemtype" : [ "http://schema.org/WebPage" ],
+               "lang" : [ "en" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:html { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 140 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "itemscope" : [ "null" ],
+                     "itemtype" : [ "http://schema.org/WebPage" ],
+                     "lang" : [ "en" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:head { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "clear" : [ "all" ],
+               "id" : [ "lgpd" ],
+               "style" : [ "line-height:0" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:br { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 120 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "clear" : [ "all" ],
+                     "id" : [ "lgpd" ],
+                     "style" : [ "line-height:0" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "content" : [
+                  "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.",
+                  "noodp",
+                  "/images/google_favicon_128.png"
+               ],
+               "itemprop" : [ "image" ],
+               "name" : [ "description", "robots" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:meta { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 332 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "content" : [
+                        "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking for.",
+                        "noodp",
+                        "/images/google_favicon_128.png"
+                     ],
+                     "itemprop" : [ "image" ],
+                     "name" : [ "description", "robots" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "class" : [ "gbxx" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:h2 { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 81 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "class" : [ "gbxx" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "border" : [ "0" ],
+               "cellpadding" : [ "0" ],
+               "cellspacing" : [ "0" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:table { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 119 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "border" : [ "0" ],
+                     "cellpadding" : [ "0" ],
+                     "cellspacing" : [ "0" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "type" : [ "text/javascript", "text/javascript" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:script { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 109 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "type" : [ "text/javascript", "text/javascript" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "name" : [ "',e,'" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:textarea { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 81 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "name" : [ "',e,'" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:style { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "bgcolor" : [ "#fff" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:body { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 83 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "bgcolor" : [ "#fff" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "autocomplete" : [ "off" ],
+               "class" : [ "lst", "lsb", "lsb" ],
+               "id" : [ "gbv" ],
+               "maxlength" : [ "2048" ],
+               "name" : [ "ie", "hl", "source", "q", "btnG", "btnI", "gbv" ],
+               "onclick" : [ "if(this.form.q.value)this.checked=1; else top.location='/doodles/'" ],
+               "size" : [ "57" ],
+               "style" : [ "color:#000;margin:0;padding:5px 8px 0 6px;vertical-align:top" ],
+               "title" : [ "Google Search" ],
+               "type" : [ "hidden", "hidden", "hidden", "submit", "submit", "hidden" ],
+               "value" : [
+                  "ISO-8859-1",
+                  "en",
+                  "hp",
+                  "null",
+                  "Google Search",
+                  "I'm Feeling Lucky",
+                  "1"
+               ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:input { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 538 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "autocomplete" : [ "off" ],
+                     "class" : [ "lst", "lsb", "lsb" ],
+                     "id" : [ "gbv" ],
+                     "maxlength" : [ "2048" ],
+                     "name" : [ "ie", "hl", "source", "q", "btnG", "btnI", "gbv" ],
+                     "onclick" : [ "if(this.form.q.value)this.checked=1; else top.location='/doodles/'" ],
+                     "size" : [ "57" ],
+                     "style" : [ "color:#000;margin:0;padding:5px 8px 0 6px;vertical-align:top" ],
+                     "title" : [ "Google Search" ],
+                     "type" : [ "hidden", "hidden", "hidden", "submit", "submit", "hidden" ],
+                     "value" : [
+                        "ISO-8859-1",
+                        "en",
+                        "hp",
+                        "null",
+                        "Google Search",
+                        "I'm Feeling Lucky",
+                        "1"
+                     ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "class" : [ "gbtc", "gbmcc gbsbic", "gbtc", "gbmcc" ],
+               "id" : [ "gbzc", "gbmm", "gbom" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:ol { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 139 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "class" : [ "gbtc", "gbmcc gbsbic", "gbtc", "gbmcc" ],
+                     "id" : [ "gbzc", "gbmm", "gbom" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "class" : [
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbt",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbmtc",
+                  "gbt",
+                  "gbt gbtb",
+                  "gbt",
+                  "gbkc gbmtc",
+                  "gbmtc",
+                  "gbkp gbmtc"
+               ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:li { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 281 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "class" : [
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbt",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbmtc",
+                        "gbt",
+                        "gbt gbtb",
+                        "gbt",
+                        "gbkc gbmtc",
+                        "gbmtc",
+                        "gbkp gbmtc"
+                     ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:title { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "aria-owner" : [ "gbztm", "gbg5" ],
+               "class" : [
+                  "gbm",
+                  "gbmc gbsb gbsbis",
+                  "gbmt gbmh",
+                  "gbsbt",
+                  "gbsbb",
+                  "gbm",
+                  "gbmc",
+                  "gbmt gbmh",
+                  "pmoabs",
+                  "xbtn",
+                  "kd-button-submit",
+                  "ds"
+               ],
+               "data-jiis" : [ "bp" ],
+               "id" : [
+                  "mngb",
+                  "gb",
+                  "gbw",
+                  "gbz",
+                  "gbd",
+                  "gbmmb",
+                  "gbg",
+                  "gbd5",
+                  "gbx3",
+                  "gbx4",
+                  "pmocntr2",
+                  "pmolnk",
+                  "lga",
+                  "gac_scont",
+                  "fll",
+                  "xjsd",
+                  "xjsi"
+               ],
+               "onclick" : [ "google.promos&&google.promos.toast&& google.promos.toast.cpc()" ],
+               "style" : [
+                  "behavior:url(#default#userdata);display:none",
+                  "float:right",
+                  "height:32px;margin:4px 0",
+                  "font-size:83%;min-height:3.5em",
+                  "font-size:10pt",
+                  "margin:19px auto;text-align:center"
+               ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:div { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 633 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "aria-owner" : [ "gbztm", "gbg5" ],
+                     "class" : [
+                        "gbm",
+                        "gbmc gbsb gbsbis",
+                        "gbmt gbmh",
+                        "gbsbt",
+                        "gbsbb",
+                        "gbm",
+                        "gbmc",
+                        "gbmt gbmh",
+                        "pmoabs",
+                        "xbtn",
+                        "kd-button-submit",
+                        "ds"
+                     ],
+                     "data-jiis" : [ "bp" ],
+                     "id" : [
+                        "mngb",
+                        "gb",
+                        "gbw",
+                        "gbz",
+                        "gbd",
+                        "gbmmb",
+                        "gbg",
+                        "gbd5",
+                        "gbx3",
+                        "gbx4",
+                        "pmocntr2",
+                        "pmolnk",
+                        "lga",
+                        "gac_scont",
+                        "fll",
+                        "xjsd",
+                        "xjsi"
+                     ],
+                     "onclick" : [ "google.promos&&google.promos.toast&& google.promos.toast.cpc()" ],
+                     "style" : [
+                        "behavior:url(#default#userdata);display:none",
+                        "float:right",
+                        "height:32px;margin:4px 0",
+                        "font-size:83%;min-height:3.5em",
+                        "font-size:10pt",
+                        "margin:19px auto;text-align:center"
+                     ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "alt" : [ "Google" ],
+               "height" : [ "95" ],
+               "id" : [ "hplogo" ],
+               "onload" : [ "window.lol&&lol()" ],
+               "src" : [ "/images/icons/product/chrome-48.png", "/images/srpr/logo9w.png" ],
+               "style" : [ "padding:28px 0 14px" ],
+               "width" : [ "269" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:img { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 264 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "alt" : [ "Google" ],
+                     "height" : [ "95" ],
+                     "id" : [ "hplogo" ],
+                     "onload" : [ "window.lol&&lol()" ],
+                     "src" : [ "/images/icons/product/chrome-48.png", "/images/srpr/logo9w.png" ],
+                     "style" : [ "padding:28px 0 14px" ],
+                     "width" : [ "269" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "class" : [
+                  "gbtcb",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "gbtb2",
+                  "gbts gbtsa",
+                  "gbma",
+                  "gbtcb",
+                  "gbtb2",
+                  "gbts",
+                  "gbts",
+                  "gbtb2",
+                  "gbts",
+                  "ds",
+                  "lsbb",
+                  "ds",
+                  "lsbb"
+               ],
+               "id" : [
+                  "gbztms",
+                  "gbztms1",
+                  "gbgs4",
+                  "gbi4s1",
+                  "gbgs5",
+                  "gbi5",
+                  "prt",
+                  "footer"
+               ],
+               "style" : [ "display:block" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:span { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 398 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "class" : [
+                        "gbtcb",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "gbtb2",
+                        "gbts gbtsa",
+                        "gbma",
+                        "gbtcb",
+                        "gbtb2",
+                        "gbts",
+                        "gbts",
+                        "gbtb2",
+                        "gbts",
+                        "ds",
+                        "lsbb",
+                        "ds",
+                        "lsbb"
+                     ],
+                     "id" : [
+                        "gbztms",
+                        "gbztms1",
+                        "gbgs4",
+                        "gbi4s1",
+                        "gbgs5",
+                        "gbi5",
+                        "prt",
+                        "footer"
+                     ],
+                     "style" : [ "display:block" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "valign" : [ "top" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:tr { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 81 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "valign" : [ "top" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:center { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 65 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [ {} ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "align" : [ "center", "left" ],
+               "class" : [ "padi", "pads", "padt", "fl sblc" ],
+               "colspan" : [ "2" ],
+               "nowrap" : [ "null", "null" ],
+               "rowspan" : [ "2" ],
+               "width" : [ "25%", "25%" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:td { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 210 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "align" : [ "center", "left" ],
+                     "class" : [ "padi", "pads", "padt", "fl sblc" ],
+                     "colspan" : [ "2" ],
+                     "nowrap" : [ "null", "null" ],
+                     "rowspan" : [ "2" ],
+                     "width" : [ "25%", "25%" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {
+               "action" : [ "',d,'", "/search" ],
+               "method" : [ "POST" ],
+               "name" : [ "f" ]
+            }
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:form { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 124 bytes:
+Response: 
+{
+   "errors" : [],
+   "results" : [
+      {
+         "columns" : [ "n" ],
+         "data" : [
+            {
+               "row" : [
+                  {
+                     "action" : [ "',d,'", "/search" ],
+                     "method" : [ "POST" ],
+                     "name" : [ "f" ]
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
+
+Response (processed): 
+Sending {
+   "statements" : [
+      {
+         "parameters" : {
+            "props" : {}
+         },
+         "statement" : "MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:d&&a.k.q(b,c,e,f) { props } ), (n)-[:IN]->(s) RETURN n"
+      }
+   ]
+}
+
+Received 405 bytes:
+Response: 
+{
+   "errors" : [
+      {
+         "code" : "Neo.ClientError.Statement.InvalidSyntax",
+         "message" : "Invalid input '&': expected an identifier character, whitespace, NodeLabel, a property map, ')' or a relationship pattern (line 1, column 56)\n\"MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:d&&a.k.q(b,c,e,f) { props } ), (n)-[:IN]->(s) RETURN n\"\n                                                        ^"
+      }
+   ],
+   "results" : []
+}
+
+Response (processed): 
+[!] 
+{
+	"code" : "Neo.ClientError.Statement.InvalidSyntax",
+	"message" : "Invalid input '&': expected an identifier character, whitespace, NodeLabel, a property map, ')' or a relationship pattern (line 1, column 56)\n\"MATCH (s:URL{url:\"http://www.google.com/\"}) CREATE (n:d&&a.k.q(b,c,e,f) { props } ), (n)-[:IN]->(s) RETURN n\"\n                                                        ^"
+}
+
+[+] https://www.google.com/webhp?tab=ww
+[+] http://www.google.com/imghp?hl=en&tab=wi
+[+] http://maps.google.com/maps?hl=en&tab=wl
+[?] maps.google.com/robots.txt
+[x] maps.google.com/search
+[x] maps.google.com/sdch
+[x] maps.google.com/groups
+[x] maps.google.com/images
+[x] maps.google.com/catalogs
+[x] maps.google.com/catalogues
+[x] maps.google.com/news
+[x] maps.google.com/nwshp
+[x] maps.google.com/setnewsprefs?
+[x] maps.google.com/index.html?
+[x] maps.google.com/?
+[x] maps.google.com/?hl=*&
+[x] maps.google.com/?hl=*&*&gws_rd=ssl
+[x] maps.google.com/addurl/image?
+[x] maps.google.com/mail/
+[x] maps.google.com/pagead/
+[x] maps.google.com/relpage/
+[x] maps.google.com/relcontent
+[x] maps.google.com/imgres
+[x] maps.google.com/imglanding
+[x] maps.google.com/sbd
+[x] maps.google.com/keyword/
+[x] maps.google.com/u/
+[x] maps.google.com/univ/
+[x] maps.google.com/cobrand
+[x] maps.google.com/custom
+[x] maps.google.com/advanced_group_search
+[x] maps.google.com/googlesite
+[x] maps.google.com/preferences
+[x] maps.google.com/setprefs
+[x] maps.google.com/swr
+[x] maps.google.com/url
+[x] maps.google.com/default
+[x] maps.google.com/m?
+[x] maps.google.com/m/
+[x] maps.google.com/wml?
+[x] maps.google.com/wml/?
+[x] maps.google.com/wml/search?
+[x] maps.google.com/xhtml?
+[x] maps.google.com/xhtml/?
+[x] maps.google.com/xhtml/search?
+[x] maps.google.com/xml?
+[x] maps.google.com/imode?
+[x] maps.google.com/imode/?
+[x] maps.google.com/imode/search?
+[x] maps.google.com/jsky?
+[x] maps.google.com/jsky/?
+[x] maps.google.com/jsky/search?
+[x] maps.google.com/pda?
+[x] maps.google.com/pda/?
+[x] maps.google.com/pda/search?
+[x] maps.google.com/sprint_xhtml
+[x] maps.google.com/sprint_wml
+[x] maps.google.com/pqa
+[x] maps.google.com/palm
+[x] maps.google.com/gwt/
+[x] maps.google.com/purchases
+[x] maps.google.com/hws
+[x] maps.google.com/bsd?
+[x] maps.google.com/linux?
+[x] maps.google.com/mac?
+[x] maps.google.com/microsoft?
+[x] maps.google.com/unclesam?
+[x] maps.google.com/answers/search?q=
+[x] maps.google.com/local?
+[x] maps.google.com/local_url
+[x] maps.google.com/shihui?
+[x] maps.google.com/shihui/
+[x] maps.google.com/froogle?
+[x] maps.google.com/products?
+[x] maps.google.com/froogle_
+[x] maps.google.com/product_
+[x] maps.google.com/products_
+[x] maps.google.com/products;
+[x] maps.google.com/print
+[x] maps.google.com/books/
+[x] maps.google.com/bkshp?*q=*
+[x] maps.google.com/books?*q=*
+[x] maps.google.com/books?*output=*
+[x] maps.google.com/books?*pg=*
+[x] maps.google.com/books?*jtp=*
+[x] maps.google.com/books?*jscmd=*
+[x] maps.google.com/books?*buy=*
+[x] maps.google.com/books?*zoom=*
+[x] maps.google.com/ebooks/
+[x] maps.google.com/ebooks?*q=*
+[x] maps.google.com/ebooks?*output=*
+[x] maps.google.com/ebooks?*pg=*
+[x] maps.google.com/ebooks?*jscmd=*
+[x] maps.google.com/ebooks?*buy=*
+[x] maps.google.com/ebooks?*zoom=*
+[x] maps.google.com/patents?
+[x] maps.google.com/patents/download/
+[x] maps.google.com/patents/pdf/
+[x] maps.google.com/patents/related/
+[x] maps.google.com/scholar
+[x] maps.google.com/citations?
+[x] maps.google.com/citations?*cstart=
+[x] maps.google.com/complete
+[x] maps.google.com/s?
+[x] maps.google.com/sponsoredlinks
+[x] maps.google.com/videosearch?
+[x] maps.google.com/videopreview?
+[x] maps.google.com/videoprograminfo?
+[x] maps.google.com/maps?
+[x] maps.google.com/mapstt?
+[x] maps.google.com/mapslt?
+[x] maps.google.com/maps/stk/
+[x] maps.google.com/maps/br?
+[x] maps.google.com/mapabcpoi?
+[x] maps.google.com/maphp?
+[x] maps.google.com/mapprint?
+[x] maps.google.com/maps/api/js/
+[x] maps.google.com/maps/api/staticmap?
+[x] maps.google.com/mld?
+[x] maps.google.com/staticmap?
+[x] maps.google.com/places/
+[x] maps.google.com/maps/preview
+[x] maps.google.com/maps/place
+[x] maps.google.com/help/maps/streetview/partners/welcome/
+[x] maps.google.com/help/maps/indoormaps/partners/
+[x] maps.google.com/lochp?
+[x] maps.google.com/center
+[x] maps.google.com/ie?
+[x] maps.google.com/sms/demo?
+[x] maps.google.com/katrina?
+[x] maps.google.com/blogsearch?
+[x] maps.google.com/blogsearch/
+[x] maps.google.com/blogsearch_feeds
+[x] maps.google.com/advanced_blog_search
+[x] maps.google.com/uds/
+[x] maps.google.com/chart?
+[x] maps.google.com/transit?
+[x] maps.google.com/mbd?
+[x] maps.google.com/extern_js/
+[x] maps.google.com/xjs/
+[x] maps.google.com/calendar/feeds/
+[x] maps.google.com/calendar/ical/
+[x] maps.google.com/cl2/feeds/
+[x] maps.google.com/cl2/ical/
+[x] maps.google.com/coop/directory
+[x] maps.google.com/coop/manage
+[x] maps.google.com/trends?
+[x] maps.google.com/trends/music?
+[x] maps.google.com/trends/hottrends?
+[x] maps.google.com/trends/viz?
+[x] maps.google.com/trends/embed.js?
+[x] maps.google.com/trends/fetchComponent?
+[x] maps.google.com/notebook/search?
+[x] maps.google.com/musica
+[x] maps.google.com/musicad
+[x] maps.google.com/musicas
+[x] maps.google.com/musicl
+[x] maps.google.com/musics
+[x] maps.google.com/musicsearch
+[x] maps.google.com/musicsp
+[x] maps.google.com/musiclp
+[x] maps.google.com/browsersync
+[x] maps.google.com/call
+[x] maps.google.com/archivesearch?
+[x] maps.google.com/archivesearch/url
+[x] maps.google.com/archivesearch/advanced_search
+[x] maps.google.com/base/reportbadoffer
+[x] maps.google.com/urchin_test/
+[x] maps.google.com/movies?
+[x] maps.google.com/codesearch?
+[x] maps.google.com/codesearch/feeds/search?
+[x] maps.google.com/wapsearch?
+[x] maps.google.com/safebrowsing
+[x] maps.google.com/reviews/search?
+[x] maps.google.com/orkut/albums
+[x] maps.google.com/views?
+[x] maps.google.com/c/
+[x] maps.google.com/cbk
+[x] maps.google.com/recharge/dashboard/car
+[x] maps.google.com/recharge/dashboard/static/
+[x] maps.google.com/translate_a/
+[x] maps.google.com/translate_c
+[x] maps.google.com/translate_f
+[x] maps.google.com/translate_static/
+[x] maps.google.com/translate_suggestion
+[x] maps.google.com/profiles/me
+[x] maps.google.com/s2/profiles/me
+[x] maps.google.com/s2
+[x] maps.google.com/transconsole/portal/
+[x] maps.google.com/gcc/
+[x] maps.google.com/aclk
+[x] maps.google.com/cse?
+[x] maps.google.com/cse/home
+[x] maps.google.com/cse/panel
+[x] maps.google.com/cse/manage
+[x] maps.google.com/tbproxy/
+[x] maps.google.com/imesync/
+[x] maps.google.com/shenghuo/search?
+[x] maps.google.com/support/forum/search?
+[x] maps.google.com/reviews/polls/
+[x] maps.google.com/hosted/images/
+[x] maps.google.com/ppob/?
+[x] maps.google.com/ppob?
+[x] maps.google.com/adwordsresellers
+[x] maps.google.com/accounts/ClientLogin
+[x] maps.google.com/accounts/ClientAuth
+[x] maps.google.com/accounts/o8
+[x] maps.google.com/topicsearch?q=
+[x] maps.google.com/xfx7/
+[x] maps.google.com/squared/api
+[x] maps.google.com/squared/search
+[x] maps.google.com/squared/table
+[x] maps.google.com/toolkit/
+[x] maps.google.com/globalmarketfinder/
+[x] maps.google.com/qnasearch?
+[x] maps.google.com/app/updates
+[x] maps.google.com/sidewiki/entry/
+[x] maps.google.com/quality_form?
+[x] maps.google.com/labs/popgadget/search
+[x] maps.google.com/buzz/post
+[x] maps.google.com/compressiontest/
+[x] maps.google.com/analytics/reporting/
+[x] maps.google.com/analytics/admin/
+[x] maps.google.com/analytics/web/
+[x] maps.google.com/analytics/feeds/
+[x] maps.google.com/analytics/settings/
+[x] maps.google.com/alerts/
+[x] maps.google.com/ads/search?
+[x] maps.google.com/ads/plan/action_plan?
+[x] maps.google.com/ads/plan/api/
+[x] maps.google.com/phone/compare/?
+[x] maps.google.com/travel/clk
+[x] maps.google.com/hotelfinder/rpc
+[x] maps.google.com/hotels/rpc
+[x] maps.google.com/flights/rpc
+[x] maps.google.com/commercesearch/services/
+[x] maps.google.com/evaluation/
+[x] maps.google.com/chrome/browser/mobile/tour
+[x] maps.google.com/compare/*/apply*
+[x] maps.google.com/forms/perks/
+[x] maps.google.com/baraza/*/search
+[x] maps.google.com/baraza/*/report
+[x] maps.google.com/shopping/suppliers/search
+[x] maps.google.com/ct/
+[x] maps.google.com/edu/cs4hs/
+[x] maps.google.com/trustedstores/s/
+[x] maps.google.com/trustedstores/tm2
+[x] maps.google.com/trustedstores/verify
+[x] maps.google.com/adwords/proposal
+[x] maps.google.com/shopping/product/
+[x] maps.google.com/shopping/seller
+[x] maps.google.com/shopping/reviewer
+[x] maps.google.com/about/careers/apply/
+[x] maps.google.com/about/careers/applications/
+[x] maps.google.com/landing/signout.html
+[+] https://play.google.com/?hl=en&tab=w8
+[?] play.google.com/robots.txt
+[x] play.google.com/books/css
+[x] play.google.com/books/javascript
+[x] play.google.com/books/reader
+[x] play.google.com/books/volumes
+[x] play.google.com/googlebooks/images
+[x] play.google.com/apps
+[x] play.google.com/books
+[x] play.google.com/devices
+[x] play.google.com/newsstand
+[x] play.google.com/store/merch
+[x] play.google.com/movies
+[x] play.google.com/store/xhr
+[x] play.google.com/wishlist
+[x] play.google.com/store/people/details
+[x] play.google.com/store/xhr/accepttos
+[x] play.google.com/store/account
+[x] play.google.com/store/addtocart
+[x] play.google.com/store/approveitem
+[x] play.google.com/store/licenses/apps
+[x] play.google.com/store/buy
+[x] play.google.com/store/xhr/buynoco
+[x] play.google.com/store/xhr/canceldeviceorder
+[x] play.google.com/store/cancelpreorder
+[x] play.google.com/store/xhr/cancelsub
+[x] play.google.com/store/cart
+[x] play.google.com/store/checkoutcallback
+[x] play.google.com/xhr/ce
+[x] play.google.com/ct
+[x] play.google.com/store/xhr/crosssellapps
+[x] play.google.com/store/xhr/deletereview
+[x] play.google.com/xhr/details
+[x] play.google.com/store/xhr/devicepermissions
+[x] play.google.com/unsub
+[x] play.google.com/store/getdevicepermissions
+[x] play.google.com/store/getpurchaseoutcome
+[x] play.google.com/store/getreviews
+[x] play.google.com/store/xhr/topupopts
+[x] play.google.com/store/xhr/getuseraddress
+[x] play.google.com/store/install
+[x] play.google.com/internalPref
+[x] play.google.com/logout
+[x] play.google.com/lsoinstall
+[x] play.google.com/store/movie-device
+[x] play.google.com/xhr/myappslibrary
+[x] play.google.com/store/mylibrary
+[x] play.google.com/plusinstall
+[x] play.google.com/store/xhr/rapcategories
+[x] play.google.com/store/xhr/rapsubmit
+[x] play.google.com/store/ratereview
+[x] play.google.com/store/xhr/ratesugg
+[x] play.google.com/store/recommended
+[x] play.google.com/remotelogout
+[x] play.google.com/store/search
+[x] play.google.com/store/setuserdata
+[x] play.google.com/store/submitreview
+[x] play.google.com/store/thankyou
+[x] play.google.com/store/xhr/seasonselector
+[x] play.google.com/store/watch
+[x] play.google.com/store/unapproveitem
+[x] play.google.com/store/xhr/uninstall
+[x] play.google.com/store/updatecart
+[x] play.google.com/store/xhr/updatecart
+[x] play.google.com/settings
+[x] play.google.com/xhr
+[x] play.google.com/*?*psid=2*
+[+] http://www.youtube.com/?tab=w1
+[?] www.youtube.com/robots.txt
+[x] www.youtube.com/comment
+[x] www.youtube.com/get_video
+[x] www.youtube.com/get_video_info
+[x] www.youtube.com/login
+[x] www.youtube.com/results
+[x] www.youtube.com/signup
+[x] www.youtube.com/t/terms
+[x] www.youtube.com/verify_age
+[x] www.youtube.com/watch_ajax
+[x] www.youtube.com/watch_popup
+[x] www.youtube.com/watch_queue_ajax
+[+] http://news.google.com/nwshp?hl=en&tab=wn
+[?] news.google.com/robots.txt
+[x] news.google.com/search
+[x] news.google.com/sdch
+[x] news.google.com/groups
+[x] news.google.com/images
+[x] news.google.com/catalogs
+[x] news.google.com/catalogues
+[x] news.google.com/news
+[x] news.google.com/nwshp
+[x] news.google.com/setnewsprefs?
+[x] news.google.com/index.html?
+[x] news.google.com/?
+[x] news.google.com/?hl=*&
+[x] news.google.com/?hl=*&*&gws_rd=ssl
+[x] news.google.com/addurl/image?
+[x] news.google.com/mail/
+[x] news.google.com/pagead/
+[x] news.google.com/relpage/
+[x] news.google.com/relcontent
+[x] news.google.com/imgres
+[x] news.google.com/imglanding
+[x] news.google.com/sbd
+[x] news.google.com/keyword/
+[x] news.google.com/u/
+[x] news.google.com/univ/
+[x] news.google.com/cobrand
+[x] news.google.com/custom
+[x] news.google.com/advanced_group_search
+[x] news.google.com/googlesite
+[x] news.google.com/preferences
+[x] news.google.com/setprefs
+[x] news.google.com/swr
+[x] news.google.com/url
+[x] news.google.com/default
+[x] news.google.com/m?
+[x] news.google.com/m/
+[x] news.google.com/wml?
+[x] news.google.com/wml/?
+[x] news.google.com/wml/search?
+[x] news.google.com/xhtml?
+[x] news.google.com/xhtml/?
+[x] news.google.com/xhtml/search?
+[x] news.google.com/xml?
+[x] news.google.com/imode?
+[x] news.google.com/imode/?
+[x] news.google.com/imode/search?
+[x] news.google.com/jsky?
+[x] news.google.com/jsky/?
+[x] news.google.com/jsky/search?
+[x] news.google.com/pda?
+[x] news.google.com/pda/?
+[x] news.google.com/pda/search?
+[x] news.google.com/sprint_xhtml
+[x] news.google.com/sprint_wml
+[x] news.google.com/pqa
+[x] news.google.com/palm
+[x] news.google.com/gwt/
+[x] news.google.com/purchases
+[x] news.google.com/hws
+[x] news.google.com/bsd?
+[x] news.google.com/linux?
+[x] news.google.com/mac?
+[x] news.google.com/microsoft?
+[x] news.google.com/unclesam?
+[x] news.google.com/answers/search?q=
+[x] news.google.com/local?
+[x] news.google.com/local_url
+[x] news.google.com/shihui?
+[x] news.google.com/shihui/
+[x] news.google.com/froogle?
+[x] news.google.com/products?
+[x] news.google.com/froogle_
+[x] news.google.com/product_
+[x] news.google.com/products_
+[x] news.google.com/products;
+[x] news.google.com/print
+[x] news.google.com/books/
+[x] news.google.com/bkshp?*q=*
+[x] news.google.com/books?*q=*
+[x] news.google.com/books?*output=*
+[x] news.google.com/books?*pg=*
+[x] news.google.com/books?*jtp=*
+[x] news.google.com/books?*jscmd=*
+[x] news.google.com/books?*buy=*
+[x] news.google.com/books?*zoom=*
+[x] news.google.com/ebooks/
+[x] news.google.com/ebooks?*q=*
+[x] news.google.com/ebooks?*output=*
+[x] news.google.com/ebooks?*pg=*
+[x] news.google.com/ebooks?*jscmd=*
+[x] news.google.com/ebooks?*buy=*
+[x] news.google.com/ebooks?*zoom=*
+[x] news.google.com/patents?
+[x] news.google.com/patents/download/
+[x] news.google.com/patents/pdf/
+[x] news.google.com/patents/related/
+[x] news.google.com/scholar
+[x] news.google.com/citations?
+[x] news.google.com/citations?*cstart=
+[x] news.google.com/complete
+[x] news.google.com/s?
+[x] news.google.com/sponsoredlinks
+[x] news.google.com/videosearch?
+[x] news.google.com/videopreview?
+[x] news.google.com/videoprograminfo?
+[x] news.google.com/maps?
+[x] news.google.com/mapstt?
+[x] news.google.com/mapslt?
+[x] news.google.com/maps/stk/
+[x] news.google.com/maps/br?
+[x] news.google.com/mapabcpoi?
+[x] news.google.com/maphp?
+[x] news.google.com/mapprint?
+[x] news.google.com/maps/api/js/
+[x] news.google.com/maps/api/staticmap?
+[x] news.google.com/mld?
+[x] news.google.com/staticmap?
+[x] news.google.com/places/
+[x] news.google.com/maps/preview
+[x] news.google.com/maps/place
+[x] news.google.com/help/maps/streetview/partners/welcome/
+[x] news.google.com/help/maps/indoormaps/partners/
+[x] news.google.com/lochp?
+[x] news.google.com/center
+[x] news.google.com/ie?
+[x] news.google.com/sms/demo?
+[x] news.google.com/katrina?
+[x] news.google.com/blogsearch?
+[x] news.google.com/blogsearch/
+[x] news.google.com/blogsearch_feeds
+[x] news.google.com/advanced_blog_search
+[x] news.google.com/uds/
+[x] news.google.com/chart?
+[x] news.google.com/transit?
+[x] news.google.com/mbd?
+[x] news.google.com/extern_js/
+[x] news.google.com/xjs/
+[x] news.google.com/calendar/feeds/
+[x] news.google.com/calendar/ical/
+[x] news.google.com/cl2/feeds/
+[x] news.google.com/cl2/ical/
+[x] news.google.com/coop/directory
+[x] news.google.com/coop/manage
+[x] news.google.com/trends?
+[x] news.google.com/trends/music?
+[x] news.google.com/trends/hottrends?
+[x] news.google.com/trends/viz?
+[x] news.google.com/trends/embed.js?
+[x] news.google.com/trends/fetchComponent?
+[x] news.google.com/notebook/search?
+[x] news.google.com/musica
+[x] news.google.com/musicad
+[x] news.google.com/musicas
+[x] news.google.com/musicl
+[x] news.google.com/musics
+[x] news.google.com/musicsearch
+[x] news.google.com/musicsp
+[x] news.google.com/musiclp
+[x] news.google.com/browsersync
+[x] news.google.com/call
+[x] news.google.com/archivesearch?
+[x] news.google.com/archivesearch/url
+[x] news.google.com/archivesearch/advanced_search
+[x] news.google.com/base/reportbadoffer
+[x] news.google.com/urchin_test/
+[x] news.google.com/movies?
+[x] news.google.com/codesearch?
+[x] news.google.com/codesearch/feeds/search?
+[x] news.google.com/wapsearch?
+[x] news.google.com/safebrowsing
+[x] news.google.com/reviews/search?
+[x] news.google.com/orkut/albums
+[x] news.google.com/views?
+[x] news.google.com/c/
+[x] news.google.com/cbk
+[x] news.google.com/recharge/dashboard/car
+[x] news.google.com/recharge/dashboard/static/
+[x] news.google.com/translate_a/
+[x] news.google.com/translate_c
+[x] news.google.com/translate_f
+[x] news.google.com/translate_static/
+[x] news.google.com/translate_suggestion
+[x] news.google.com/profiles/me
+[x] news.google.com/s2/profiles/me
+[x] news.google.com/s2
+[x] news.google.com/transconsole/portal/
+[x] news.google.com/gcc/
+[x] news.google.com/aclk
+[x] news.google.com/cse?
+[x] news.google.com/cse/home
+[x] news.google.com/cse/panel
+[x] news.google.com/cse/manage
+[x] news.google.com/tbproxy/
+[x] news.google.com/imesync/
+[x] news.google.com/shenghuo/search?
+[x] news.google.com/support/forum/search?
+[x] news.google.com/reviews/polls/
+[x] news.google.com/hosted/images/
+[x] news.google.com/ppob/?
+[x] news.google.com/ppob?
+[x] news.google.com/adwordsresellers
+[x] news.google.com/accounts/ClientLogin
+[x] news.google.com/accounts/ClientAuth
+[x] news.google.com/accounts/o8
+[x] news.google.com/topicsearch?q=
+[x] news.google.com/xfx7/
+[x] news.google.com/squared/api
+[x] news.google.com/squared/search
+[x] news.google.com/squared/table
+[x] news.google.com/toolkit/
+[x] news.google.com/globalmarketfinder/
+[x] news.google.com/qnasearch?
+[x] news.google.com/app/updates
+[x] news.google.com/sidewiki/entry/
+[x] news.google.com/quality_form?
+[x] news.google.com/labs/popgadget/search
+[x] news.google.com/buzz/post
+[x] news.google.com/compressiontest/
+[x] news.google.com/analytics/reporting/
+[x] news.google.com/analytics/admin/
+[x] news.google.com/analytics/web/
+[x] news.google.com/analytics/feeds/
+[x] news.google.com/analytics/settings/
+[x] news.google.com/alerts/
+[x] news.google.com/ads/search?
+[x] news.google.com/ads/plan/action_plan?
+[x] news.google.com/ads/plan/api/
+[x] news.google.com/phone/compare/?
+[x] news.google.com/travel/clk
+[x] news.google.com/hotelfinder/rpc
+[x] news.google.com/hotels/rpc
+[x] news.google.com/flights/rpc
+[x] news.google.com/commercesearch/services/
+[x] news.google.com/evaluation/
+[x] news.google.com/chrome/browser/mobile/tour
+[x] news.google.com/compare/*/apply*
+[x] news.google.com/forms/perks/
+[x] news.google.com/baraza/*/search
+[x] news.google.com/baraza/*/report
+[x] news.google.com/shopping/suppliers/search
+[x] news.google.com/ct/
+[x] news.google.com/edu/cs4hs/
+[x] news.google.com/trustedstores/s/
+[x] news.google.com/trustedstores/tm2
+[x] news.google.com/trustedstores/verify
+[x] news.google.com/adwords/proposal
+[x] news.google.com/shopping/product/
+[x] news.google.com/shopping/seller
+[x] news.google.com/shopping/reviewer
+[x] news.google.com/about/careers/apply/
+[x] news.google.com/about/careers/applications/
+[x] news.google.com/landing/signout.html
+[+] https://mail.google.com/mail/?tab=wm
+[?] mail.google.com/robots.txt
+[x] mail.google.com/search
+[x] mail.google.com/sdch
+[x] mail.google.com/groups
+[x] mail.google.com/images
+[x] mail.google.com/catalogs
+[x] mail.google.com/catalogues
+[x] mail.google.com/news
+[x] mail.google.com/nwshp
+[x] mail.google.com/setnewsprefs?
+[x] mail.google.com/index.html?
+[x] mail.google.com/?
+[x] mail.google.com/?hl=*&
+[x] mail.google.com/?hl=*&*&gws_rd=ssl
+[x] mail.google.com/addurl/image?
+[x] mail.google.com/mail/
+[x] mail.google.com/pagead/
+[x] mail.google.com/relpage/
+[x] mail.google.com/relcontent
+[x] mail.google.com/imgres
+[x] mail.google.com/imglanding
+[x] mail.google.com/sbd
+[x] mail.google.com/keyword/
+[x] mail.google.com/u/
+[x] mail.google.com/univ/
+[x] mail.google.com/cobrand
+[x] mail.google.com/custom
+[x] mail.google.com/advanced_group_search
+[x] mail.google.com/googlesite
+[x] mail.google.com/preferences
+[x] mail.google.com/setprefs
+[x] mail.google.com/swr
+[x] mail.google.com/url
+[x] mail.google.com/default
+[x] mail.google.com/m?
+[x] mail.google.com/m/
+[x] mail.google.com/wml?
+[x] mail.google.com/wml/?
+[x] mail.google.com/wml/search?
+[x] mail.google.com/xhtml?
+[x] mail.google.com/xhtml/?
+[x] mail.google.com/xhtml/search?
+[x] mail.google.com/xml?
+[x] mail.google.com/imode?
+[x] mail.google.com/imode/?
+[x] mail.google.com/imode/search?
+[x] mail.google.com/jsky?
+[x] mail.google.com/jsky/?
+[x] mail.google.com/jsky/search?
+[x] mail.google.com/pda?
+[x] mail.google.com/pda/?
+[x] mail.google.com/pda/search?
+[x] mail.google.com/sprint_xhtml
+[x] mail.google.com/sprint_wml
+[x] mail.google.com/pqa
+[x] mail.google.com/palm
+[x] mail.google.com/gwt/
+[x] mail.google.com/purchases
+[x] mail.google.com/hws
+[x] mail.google.com/bsd?
+[x] mail.google.com/linux?
+[x] mail.google.com/mac?
+[x] mail.google.com/microsoft?
+[x] mail.google.com/unclesam?
+[x] mail.google.com/answers/search?q=
+[x] mail.google.com/local?
+[x] mail.google.com/local_url
+[x] mail.google.com/shihui?
+[x] mail.google.com/shihui/
+[x] mail.google.com/froogle?
+[x] mail.google.com/products?
+[x] mail.google.com/froogle_
+[x] mail.google.com/product_
+[x] mail.google.com/products_
+[x] mail.google.com/products;
+[x] mail.google.com/print
+[x] mail.google.com/books/
+[x] mail.google.com/bkshp?*q=*
+[x] mail.google.com/books?*q=*
+[x] mail.google.com/books?*output=*
+[x] mail.google.com/books?*pg=*
+[x] mail.google.com/books?*jtp=*
+[x] mail.google.com/books?*jscmd=*
+[x] mail.google.com/books?*buy=*
+[x] mail.google.com/books?*zoom=*
+[x] mail.google.com/ebooks/
+[x] mail.google.com/ebooks?*q=*
+[x] mail.google.com/ebooks?*output=*
+[x] mail.google.com/ebooks?*pg=*
+[x] mail.google.com/ebooks?*jscmd=*
+[x] mail.google.com/ebooks?*buy=*
+[x] mail.google.com/ebooks?*zoom=*
+[x] mail.google.com/patents?
+[x] mail.google.com/patents/download/
+[x] mail.google.com/patents/pdf/
+[x] mail.google.com/patents/related/
+[x] mail.google.com/scholar
+[x] mail.google.com/citations?
+[x] mail.google.com/citations?*cstart=
+[x] mail.google.com/complete
+[x] mail.google.com/s?
+[x] mail.google.com/sponsoredlinks
+[x] mail.google.com/videosearch?
+[x] mail.google.com/videopreview?
+[x] mail.google.com/videoprograminfo?
+[x] mail.google.com/maps?
+[x] mail.google.com/mapstt?
+[x] mail.google.com/mapslt?
+[x] mail.google.com/maps/stk/
+[x] mail.google.com/maps/br?
+[x] mail.google.com/mapabcpoi?
+[x] mail.google.com/maphp?
+[x] mail.google.com/mapprint?
+[x] mail.google.com/maps/api/js/
+[x] mail.google.com/maps/api/staticmap?
+[x] mail.google.com/mld?
+[x] mail.google.com/staticmap?
+[x] mail.google.com/places/
+[x] mail.google.com/maps/preview
+[x] mail.google.com/maps/place
+[x] mail.google.com/help/maps/streetview/partners/welcome/
+[x] mail.google.com/help/maps/indoormaps/partners/
+[x] mail.google.com/lochp?
+[x] mail.google.com/center
+[x] mail.google.com/ie?
+[x] mail.google.com/sms/demo?
+[x] mail.google.com/katrina?
+[x] mail.google.com/blogsearch?
+[x] mail.google.com/blogsearch/
+[x] mail.google.com/blogsearch_feeds
+[x] mail.google.com/advanced_blog_search
+[x] mail.google.com/uds/
+[x] mail.google.com/chart?
+[x] mail.google.com/transit?
+[x] mail.google.com/mbd?
+[x] mail.google.com/extern_js/
+[x] mail.google.com/xjs/
+[x] mail.google.com/calendar/feeds/
+[x] mail.google.com/calendar/ical/
+[x] mail.google.com/cl2/feeds/
+[x] mail.google.com/cl2/ical/
+[x] mail.google.com/coop/directory
+[x] mail.google.com/coop/manage
+[x] mail.google.com/trends?
+[x] mail.google.com/trends/music?
+[x] mail.google.com/trends/hottrends?
+[x] mail.google.com/trends/viz?
+[x] mail.google.com/trends/embed.js?
+[x] mail.google.com/trends/fetchComponent?
+[x] mail.google.com/notebook/search?
+[x] mail.google.com/musica
+[x] mail.google.com/musicad
+[x] mail.google.com/musicas
+[x] mail.google.com/musicl
+[x] mail.google.com/musics
+[x] mail.google.com/musicsearch
+[x] mail.google.com/musicsp
+[x] mail.google.com/musiclp
+[x] mail.google.com/browsersync
+[x] mail.google.com/call
+[x] mail.google.com/archivesearch?
+[x] mail.google.com/archivesearch/url
+[x] mail.google.com/archivesearch/advanced_search
+[x] mail.google.com/base/reportbadoffer
+[x] mail.google.com/urchin_test/
+[x] mail.google.com/movies?
+[x] mail.google.com/codesearch?
+[x] mail.google.com/codesearch/feeds/search?
+[x] mail.google.com/wapsearch?
+[x] mail.google.com/safebrowsing
+[x] mail.google.com/reviews/search?
+[x] mail.google.com/orkut/albums
+[x] mail.google.com/views?
+[x] mail.google.com/c/
+[x] mail.google.com/cbk
+[x] mail.google.com/recharge/dashboard/car
+[x] mail.google.com/recharge/dashboard/static/
+[x] mail.google.com/translate_a/
+[x] mail.google.com/translate_c
+[x] mail.google.com/translate_f
+[x] mail.google.com/translate_static/
+[x] mail.google.com/translate_suggestion
+[x] mail.google.com/profiles/me
+[x] mail.google.com/s2/profiles/me
+[x] mail.google.com/s2
+[x] mail.google.com/transconsole/portal/
+[x] mail.google.com/gcc/
+[x] mail.google.com/aclk
+[x] mail.google.com/cse?
+[x] mail.google.com/cse/home
+[x] mail.google.com/cse/panel
+[x] mail.google.com/cse/manage
+[x] mail.google.com/tbproxy/
+[x] mail.google.com/imesync/
+[x] mail.google.com/shenghuo/search?
+[x] mail.google.com/support/forum/search?
+[x] mail.google.com/reviews/polls/
+[x] mail.google.com/hosted/images/
+[x] mail.google.com/ppob/?
+[x] mail.google.com/ppob?
+[x] mail.google.com/adwordsresellers
+[x] mail.google.com/accounts/ClientLogin
+[x] mail.google.com/accounts/ClientAuth
+[x] mail.google.com/accounts/o8
+[x] mail.google.com/topicsearch?q=
+[x] mail.google.com/xfx7/
+[x] mail.google.com/squared/api
+[x] mail.google.com/squared/search
+[x] mail.google.com/squared/table
+[x] mail.google.com/toolkit/
+[x] mail.google.com/globalmarketfinder/
+[x] mail.google.com/qnasearch?
+[x] mail.google.com/app/updates
+[x] mail.google.com/sidewiki/entry/
+[x] mail.google.com/quality_form?
+[x] mail.google.com/labs/popgadget/search
+[x] mail.google.com/buzz/post
+[x] mail.google.com/compressiontest/
+[x] mail.google.com/analytics/reporting/
+[x] mail.google.com/analytics/admin/
+[x] mail.google.com/analytics/web/
+[x] mail.google.com/analytics/feeds/
+[x] mail.google.com/analytics/settings/
+[x] mail.google.com/alerts/
+[x] mail.google.com/ads/search?
+[x] mail.google.com/ads/plan/action_plan?
+[x] mail.google.com/ads/plan/api/
+[x] mail.google.com/phone/compare/?
+[x] mail.google.com/travel/clk
+[x] mail.google.com/hotelfinder/rpc
+[x] mail.google.com/hotels/rpc
+[x] mail.google.com/flights/rpc
+[x] mail.google.com/commercesearch/services/
+[x] mail.google.com/evaluation/
+[x] mail.google.com/chrome/browser/mobile/tour
+[x] mail.google.com/compare/*/apply*
+[x] mail.google.com/forms/perks/
+[x] mail.google.com/baraza/*/search
+[x] mail.google.com/baraza/*/report
+[x] mail.google.com/shopping/suppliers/search
+[x] mail.google.com/ct/
+[x] mail.google.com/edu/cs4hs/
+[x] mail.google.com/trustedstores/s/
+[x] mail.google.com/trustedstores/tm2
+[x] mail.google.com/trustedstores/verify
+[x] mail.google.com/adwords/proposal
+[x] mail.google.com/shopping/product/
+[x] mail.google.com/shopping/seller
+[x] mail.google.com/shopping/reviewer
+[x] mail.google.com/about/careers/apply/
+[x] mail.google.com/about/careers/applications/
+[x] mail.google.com/landing/signout.html
+[+] https://drive.google.com/?tab=wo
+[?] drive.google.com/robots.txt
+[x] drive.google.com/?hl=*&
+[x] drive.google.com/templateabuse
+[x] drive.google.com/
+[+] http://www.google.com/intl/en/options/
+[+] https://www.google.com/calendar?tab=wc
+[+] http://translate.google.com/?hl=en&tab=wT
+[?] translate.google.com/robots.txt
+[x] translate.google.com/?
+[x] translate.google.com/?hl=*&
+[x] translate.google.com/?hl=*&sl=*&
+[x] translate.google.com/?sl=*&
+[x] translate.google.com/search
+[x] translate.google.com/groups
+[x] translate.google.com/images
+[x] translate.google.com/catalogs
+[x] translate.google.com/catalogues
+[x] translate.google.com/news
+[x] translate.google.com/questions
+[x] translate.google.com/nwshp
+[x] translate.google.com/setnewsprefs?
+[x] translate.google.com/index.html?
+[x] translate.google.com/addurl/image?
+[x] translate.google.com/pagead/
+[x] translate.google.com/relpage/
+[x] translate.google.com/relcontent
+[x] translate.google.com/imgres
+[x] translate.google.com/imglanding
+[x] translate.google.com/keyword/
+[x] translate.google.com/u/
+[x] translate.google.com/univ/
+[x] translate.google.com/cobrand
+[x] translate.google.com/custom
+[x] translate.google.com/advanced_group_search
+[x] translate.google.com/googlesite
+[x] translate.google.com/preferences
+[x] translate.google.com/setprefs
+[x] translate.google.com/swr
+[x] translate.google.com/url
+[x] translate.google.com/default
+[x] translate.google.com/m?
+[x] translate.google.com/m/?
+[x] translate.google.com/m/blogs?
+[x] translate.google.com/m/ig
+[x] translate.google.com/m/images?
+[x] translate.google.com/m/local?
+[x] translate.google.com/m/movies?
+[x] translate.google.com/m/news?
+[x] translate.google.com/m/news/i?
+[x] translate.google.com/m/place?
+[x] translate.google.com/m/setnewsprefs?
+[x] translate.google.com/m/search?
+[x] translate.google.com/m/swmloptin?
+[x] translate.google.com/m/trends
+[x] translate.google.com/wml?
+[x] translate.google.com/wml/?
+[x] translate.google.com/wml/search?
+[x] translate.google.com/xhtml?
+[x] translate.google.com/xhtml/?
+[x] translate.google.com/xhtml/search?
+[x] translate.google.com/xml?
+[x] translate.google.com/imode?
+[x] translate.google.com/imode/?
+[x] translate.google.com/imode/search?
+[x] translate.google.com/jsky?
+[x] translate.google.com/jsky/?
+[x] translate.google.com/jsky/search?
+[x] translate.google.com/pda?
+[x] translate.google.com/pda/?
+[x] translate.google.com/pda/search?
+[x] translate.google.com/sprint_xhtml
+[x] translate.google.com/sprint_wml
+[x] translate.google.com/pqa
+[x] translate.google.com/palm
+[x] translate.google.com/gwt/
+[x] translate.google.com/purchases
+[x] translate.google.com/hws
+[x] translate.google.com/bsd?
+[x] translate.google.com/linux?
+[x] translate.google.com/mac?
+[x] translate.google.com/microsoft?
+[x] translate.google.com/unclesam?
+[x] translate.google.com/answers/search?q=
+[x] translate.google.com/local?
+[x] translate.google.com/local_url
+[x] translate.google.com/froogle?
+[x] translate.google.com/products?
+[x] translate.google.com/products/
+[x] translate.google.com/froogle_
+[x] translate.google.com/product_
+[x] translate.google.com/products_
+[x] translate.google.com/print
+[x] translate.google.com/books
+[x] translate.google.com/bkshp?q=
+[x] translate.google.com/patents?
+[x] translate.google.com/patents/
+[x] translate.google.com/scholar
+[x] translate.google.com/complete
+[x] translate.google.com/sponsoredlinks
+[x] translate.google.com/videosearch?
+[x] translate.google.com/videopreview?
+[x] translate.google.com/videoprograminfo?
+[x] translate.google.com/maps?
+[x] translate.google.com/mapstt?
+[x] translate.google.com/mapslt?
+[x] translate.google.com/maps/stk/
+[x] translate.google.com/maps/br?
+[x] translate.google.com/mapabcpoi?
+[x] translate.google.com/maphp?
+[x] translate.google.com/places/
+[x] translate.google.com/maps/place
+[x] translate.google.com/help/maps/streetview/partners/welcome/
+[x] translate.google.com/lochp?
+[x] translate.google.com/center
+[x] translate.google.com/ie?
+[x] translate.google.com/sms/demo?
+[x] translate.google.com/katrina?
+[x] translate.google.com/blogsearch?
+[x] translate.google.com/blogsearch/
+[x] translate.google.com/blogsearch_feeds
+[x] translate.google.com/advanced_blog_search
+[x] translate.google.com/reader/
+[x] translate.google.com/uds/
+[x] translate.google.com/chart?
+[x] translate.google.com/transit?
+[x] translate.google.com/mbd?
+[x] translate.google.com/extern_js/
+[x] translate.google.com/calendar/feeds/
+[x] translate.google.com/calendar/ical/
+[x] translate.google.com/cl2/feeds/
+[x] translate.google.com/cl2/ical/
+[x] translate.google.com/coop/directory
+[x] translate.google.com/coop/manage
+[x] translate.google.com/trends?
+[x] translate.google.com/trends/music?
+[x] translate.google.com/notebook/search?
+[x] translate.google.com/musica
+[x] translate.google.com/musicad
+[x] translate.google.com/musicas
+[x] translate.google.com/musicl
+[x] translate.google.com/musics
+[x] translate.google.com/musicsearch
+[x] translate.google.com/musicsp
+[x] translate.google.com/musiclp
+[x] translate.google.com/browsersync
+[x] translate.google.com/call
+[x] translate.google.com/archivesearch?
+[x] translate.google.com/archivesearch/url
+[x] translate.google.com/archivesearch/advanced_search
+[x] translate.google.com/base/search?
+[x] translate.google.com/base/reportbadoffer
+[x] translate.google.com/base/s2
+[x] translate.google.com/urchin_test/
+[x] translate.google.com/movies?
+[x] translate.google.com/codesearch?
+[x] translate.google.com/codesearch/feeds/search?
+[x] translate.google.com/wapsearch?
+[x] translate.google.com/safebrowsing
+[x] translate.google.com/reviews/search?
+[x] translate.google.com/orkut/albums
+[x] translate.google.com/jsapi
+[x] translate.google.com/views?
+[x] translate.google.com/c/
+[x] translate.google.com/cbk
+[x] translate.google.com/recharge/dashboard/car
+[x] translate.google.com/recharge/dashboard/static/
+[x] translate.google.com/translate_a/
+[x] translate.google.com/translate_c
+[x] translate.google.com/translate_dict
+[x] translate.google.com/translate_f
+[x] translate.google.com/translate_static/
+[x] translate.google.com/translate_suggestion
+[x] translate.google.com/translate_t
+[x] translate.google.com/profiles/me
+[x] translate.google.com/s2/profiles/me
+[x] translate.google.com/s2
+[x] translate.google.com/transconsole/portal/
+[x] translate.google.com/gcc/
+[x] translate.google.com/aclk
+[x] translate.google.com/cse?
+[x] translate.google.com/cse/panel
+[x] translate.google.com/cse/manage
+[x] translate.google.com/tbproxy/
+[x] translate.google.com/comparisonads/
+[x] translate.google.com/imesync/
+[x] translate.google.com/shenghuo/search?
+[x] translate.google.com/support/forum/search?
+[x] translate.google.com/reviews/polls/
+[x] translate.google.com/hosted/images/
+[x] translate.google.com/hosted/life/
+[x] translate.google.com/ppob/?
+[x] translate.google.com/ppob?
+[x] translate.google.com/ig/add?
+[x] translate.google.com/adwordsresellers
+[x] translate.google.com/accounts/o8
+[x] translate.google.com/topicsearch?q=
+[x] translate.google.com/xfx7/
+[x] translate.google.com/squared/api
+[x] translate.google.com/squared/search
+[x] translate.google.com/squared/table
+[x] translate.google.com/toolkit/apps/
+[x] translate.google.com/manager/
+[x] translate.google.com/globalmarketfinder/
+[x] translate.google.com/qnasearch?
+[x] translate.google.com/errors/
+[x] translate.google.com/app/updates
+[x] translate.google.com/sidewiki/entry/
+[x] translate.google.com/quality_form?
+[x] translate.google.com/labs/popgadget/search
+[+] http://www.google.com/mobile/?hl=en&tab=wD
+[+] http://books.google.com/bkshp?hl=en&tab=wp
+[?] books.google.com/robots.txt
+[x] books.google.com/search
+[x] books.google.com/sdch
+[x] books.google.com/groups
+[x] books.google.com/images
+[x] books.google.com/catalogs
+[x] books.google.com/catalogues
+[x] books.google.com/news
+[x] books.google.com/nwshp
+[x] books.google.com/setnewsprefs?
+[x] books.google.com/index.html?
+[x] books.google.com/?
+[x] books.google.com/?hl=*&
+[x] books.google.com/?hl=*&*&gws_rd=ssl
+[x] books.google.com/addurl/image?
+[x] books.google.com/mail/
+[x] books.google.com/pagead/
+[x] books.google.com/relpage/
+[x] books.google.com/relcontent
+[x] books.google.com/imgres
+[x] books.google.com/imglanding
+[x] books.google.com/sbd
+[x] books.google.com/keyword/
+[x] books.google.com/u/
+[x] books.google.com/univ/
+[x] books.google.com/cobrand
+[x] books.google.com/custom
+[x] books.google.com/advanced_group_search
+[x] books.google.com/googlesite
+[x] books.google.com/preferences
+[x] books.google.com/setprefs
+[x] books.google.com/swr
+[x] books.google.com/url
+[x] books.google.com/default
+[x] books.google.com/m?
+[x] books.google.com/m/
+[x] books.google.com/wml?
+[x] books.google.com/wml/?
+[x] books.google.com/wml/search?
+[x] books.google.com/xhtml?
+[x] books.google.com/xhtml/?
+[x] books.google.com/xhtml/search?
+[x] books.google.com/xml?
+[x] books.google.com/imode?
+[x] books.google.com/imode/?
+[x] books.google.com/imode/search?
+[x] books.google.com/jsky?
+[x] books.google.com/jsky/?
+[x] books.google.com/jsky/search?
+[x] books.google.com/pda?
+[x] books.google.com/pda/?
+[x] books.google.com/pda/search?
+[x] books.google.com/sprint_xhtml
+[x] books.google.com/sprint_wml
+[x] books.google.com/pqa
+[x] books.google.com/palm
+[x] books.google.com/gwt/
+[x] books.google.com/purchases
+[x] books.google.com/hws
+[x] books.google.com/bsd?
+[x] books.google.com/linux?
+[x] books.google.com/mac?
+[x] books.google.com/microsoft?
+[x] books.google.com/unclesam?
+[x] books.google.com/answers/search?q=
+[x] books.google.com/local?
+[x] books.google.com/local_url
+[x] books.google.com/shihui?
+[x] books.google.com/shihui/
+[x] books.google.com/froogle?
+[x] books.google.com/products?
+[x] books.google.com/froogle_
+[x] books.google.com/product_
+[x] books.google.com/products_
+[x] books.google.com/products;
+[x] books.google.com/print
+[x] books.google.com/books/
+[x] books.google.com/bkshp?*q=*
+[x] books.google.com/books?*q=*
+[x] books.google.com/books?*output=*
+[x] books.google.com/books?*pg=*
+[x] books.google.com/books?*jtp=*
+[x] books.google.com/books?*jscmd=*
+[x] books.google.com/books?*buy=*
+[x] books.google.com/books?*zoom=*
+[x] books.google.com/ebooks/
+[x] books.google.com/ebooks?*q=*
+[x] books.google.com/ebooks?*output=*
+[x] books.google.com/ebooks?*pg=*
+[x] books.google.com/ebooks?*jscmd=*
+[x] books.google.com/ebooks?*buy=*
+[x] books.google.com/ebooks?*zoom=*
+[x] books.google.com/patents?
+[x] books.google.com/patents/download/
+[x] books.google.com/patents/pdf/
+[x] books.google.com/patents/related/
+[x] books.google.com/scholar
+[x] books.google.com/citations?
+[x] books.google.com/citations?*cstart=
+[x] books.google.com/complete
+[x] books.google.com/s?
+[x] books.google.com/sponsoredlinks
+[x] books.google.com/videosearch?
+[x] books.google.com/videopreview?
+[x] books.google.com/videoprograminfo?
+[x] books.google.com/maps?
+[x] books.google.com/mapstt?
+[x] books.google.com/mapslt?
+[x] books.google.com/maps/stk/
+[x] books.google.com/maps/br?
+[x] books.google.com/mapabcpoi?
+[x] books.google.com/maphp?
+[x] books.google.com/mapprint?
+[x] books.google.com/maps/api/js/
+[x] books.google.com/maps/api/staticmap?
+[x] books.google.com/mld?
+[x] books.google.com/staticmap?
+[x] books.google.com/places/
+[x] books.google.com/maps/preview
+[x] books.google.com/maps/place
+[x] books.google.com/help/maps/streetview/partners/welcome/
+[x] books.google.com/help/maps/indoormaps/partners/
+[x] books.google.com/lochp?
+[x] books.google.com/center
+[x] books.google.com/ie?
+[x] books.google.com/sms/demo?
+[x] books.google.com/katrina?
+[x] books.google.com/blogsearch?
+[x] books.google.com/blogsearch/
+[x] books.google.com/blogsearch_feeds
+[x] books.google.com/advanced_blog_search
+[x] books.google.com/uds/
+[x] books.google.com/chart?
+[x] books.google.com/transit?
+[x] books.google.com/mbd?
+[x] books.google.com/extern_js/
+[x] books.google.com/xjs/
+[x] books.google.com/calendar/feeds/
+[x] books.google.com/calendar/ical/
+[x] books.google.com/cl2/feeds/
+[x] books.google.com/cl2/ical/
+[x] books.google.com/coop/directory
+[x] books.google.com/coop/manage
+[x] books.google.com/trends?
+[x] books.google.com/trends/music?
+[x] books.google.com/trends/hottrends?
+[x] books.google.com/trends/viz?
+[x] books.google.com/trends/embed.js?
+[x] books.google.com/trends/fetchComponent?
+[x] books.google.com/notebook/search?
+[x] books.google.com/musica
+[x] books.google.com/musicad
+[x] books.google.com/musicas
+[x] books.google.com/musicl
+[x] books.google.com/musics
+[x] books.google.com/musicsearch
+[x] books.google.com/musicsp
+[x] books.google.com/musiclp
+[x] books.google.com/browsersync
+[x] books.google.com/call
+[x] books.google.com/archivesearch?
+[x] books.google.com/archivesearch/url
+[x] books.google.com/archivesearch/advanced_search
+[x] books.google.com/base/reportbadoffer
+[x] books.google.com/urchin_test/
+[x] books.google.com/movies?
+[x] books.google.com/codesearch?
+[x] books.google.com/codesearch/feeds/search?
+[x] books.google.com/wapsearch?
+[x] books.google.com/safebrowsing
+[x] books.google.com/reviews/search?
+[x] books.google.com/orkut/albums
+[x] books.google.com/views?
+[x] books.google.com/c/
+[x] books.google.com/cbk
+[x] books.google.com/recharge/dashboard/car
+[x] books.google.com/recharge/dashboard/static/
+[x] books.google.com/translate_a/
+[x] books.google.com/translate_c
+[x] books.google.com/translate_f
+[x] books.google.com/translate_static/
+[x] books.google.com/translate_suggestion
+[x] books.google.com/profiles/me
+[x] books.google.com/s2/profiles/me
+[x] books.google.com/s2
+[x] books.google.com/transconsole/portal/
+[x] books.google.com/gcc/
+[x] books.google.com/aclk
+[x] books.google.com/cse?
+[x] books.google.com/cse/home
+[x] books.google.com/cse/panel
+[x] books.google.com/cse/manage
+[x] books.google.com/tbproxy/
+[x] books.google.com/imesync/
+[x] books.google.com/shenghuo/search?
+[x] books.google.com/support/forum/search?
+[x] books.google.com/reviews/polls/
+[x] books.google.com/hosted/images/
+[x] books.google.com/ppob/?
+[x] books.google.com/ppob?
+[x] books.google.com/adwordsresellers
+[x] books.google.com/accounts/ClientLogin
+[x] books.google.com/accounts/ClientAuth
+[x] books.google.com/accounts/o8
+[x] books.google.com/topicsearch?q=
+[x] books.google.com/xfx7/
+[x] books.google.com/squared/api
+[x] books.google.com/squared/search
+[x] books.google.com/squared/table
+[x] books.google.com/toolkit/
+[x] books.google.com/globalmarketfinder/
+[x] books.google.com/qnasearch?
+[x] books.google.com/app/updates
+[x] books.google.com/sidewiki/entry/
+[x] books.google.com/quality_form?
+[x] books.google.com/labs/popgadget/search
+[x] books.google.com/buzz/post
+[x] books.google.com/compressiontest/
+[x] books.google.com/analytics/reporting/
+[x] books.google.com/analytics/admin/
+[x] books.google.com/analytics/web/
+[x] books.google.com/analytics/feeds/
+[x] books.google.com/analytics/settings/
+[x] books.google.com/alerts/
+[x] books.google.com/ads/search?
+[x] books.google.com/ads/plan/action_plan?
+[x] books.google.com/ads/plan/api/
+[x] books.google.com/phone/compare/?
+[x] books.google.com/travel/clk
+[x] books.google.com/hotelfinder/rpc
+[x] books.google.com/hotels/rpc
+[x] books.google.com/flights/rpc
+[x] books.google.com/commercesearch/services/
+[x] books.google.com/evaluation/
+[x] books.google.com/chrome/browser/mobile/tour
+[x] books.google.com/compare/*/apply*
+[x] books.google.com/forms/perks/
+[x] books.google.com/baraza/*/search
+[x] books.google.com/baraza/*/report
+[x] books.google.com/shopping/suppliers/search
+[x] books.google.com/ct/
+[x] books.google.com/edu/cs4hs/
+[x] books.google.com/trustedstores/s/
+[x] books.google.com/trustedstores/tm2
+[x] books.google.com/trustedstores/verify
+[x] books.google.com/adwords/proposal
+[x] books.google.com/shopping/product/
+[x] books.google.com/shopping/seller
+[x] books.google.com/shopping/reviewer
+[x] books.google.com/about/careers/apply/
+[x] books.google.com/about/careers/applications/
+[x] books.google.com/landing/signout.html
+[+] https://wallet.google.com/manage/?tab=wa
+[?] wallet.google.com/robots.txt
+[x] wallet.google.com/seller/pdfs/
+[x] wallet.google.com/view/
+[x] wallet.google.com/error/purchases/
+[x] wallet.google.com/api/
+[x] wallet.google.com/cws/
+[x] wallet.google.com/inapp/
+[+] http://www.google.com/shopping?hl=en&tab=wf
+[+] http://www.blogger.com/?tab=wj
+[?] www.blogger.com/robots.txt
+[x] www.blogger.com/blog_this.pyra
+[x] www.blogger.com/comment.g
+[x] www.blogger.com/comment-iframe.g
+[x] www.blogger.com/create-blog.g
+[x] www.blogger.com/delete-backlink.g
+[x] www.blogger.com/delete-comment.g
+[x] www.blogger.com/email-post.g
+[x] www.blogger.com/post-edit.g
+[x] www.blogger.com/profile-find.g
+[x] www.blogger.com/rearrange
+[x] www.blogger.com/share-post.g
+[x] www.blogger.com/share-post-menu.g
+[+] http://www.google.com/finance?tab=we
+[+] https://plus.google.com/photos?tab=wq
+[?] plus.google.com/robots.txt
+[x] plus.google.com/_/
+[x] plus.google.com/s/
+[+] http://video.google.com/?hl=en&tab=wv
+[?] video.google.com/robots.txt
+[+] http://www.google.com/intl/en/options/
+[+] https://accounts.google.com/ServiceLogin?hl=en&continue=http://www.google.com/
+[?] accounts.google.com/robots.txt
+[x] accounts.google.com/accounts/ClientAuth
+[x] accounts.google.com/accounts/ClientLogin
+[x] accounts.google.com/AccountDisavow?
+[x] accounts.google.com/ClientAuth
+[x] accounts.google.com/ClientLogin
+[x] accounts.google.com/ReportBug
+[+] http://www.google.com/preferences?hl=en
+[+] http://www.google.com/preferences?hl=en
+[+] http://www.google.com/history/optout?hl=en
+[+] http://www.google.com/chrome/index.html?hl=en&amp;brand=CHNG&amp;utm_source=en-hpp&amp;utm_medium=hpp&amp;utm_campaign=en
+[+] http://www.google.com/advanced_search?hl=en&amp;authuser=0
+[+] http://www.google.com/language_tools?hl=en&amp;authuser=0
+[+] http://www.google.com/intl/en/ads/
+[+] http://www.google.com/services/
+[+] https://plus.google.com/116899029375914044550
+[+] http://www.google.com/intl/en/about.html
+[+] http://www.google.com/intl/en/policies/privacy/
+[+] http://www.google.com/intl/en/policies/terms/
+[+] 2 urls found.
+[*] data/directory.txt written.

@@ -149,7 +149,7 @@ private:
 				(*transaction)["parameters"] = props;
 				(*transaction)["statement"] = "MATCH (s:URL{url:\"" + source_url + "\"}) CREATE (n:" + tag_type + " { props } ), (n)-[:IN]->(s) RETURN n";
 			}
-			std::cout << "addTag built: " << transaction->toStyledString() << std::endl;
+			//std::cout << "addTag built: " << transaction->toStyledString() << std::endl;
 		}
 
 		void addAttribute(std::string tag_type, Attribute *attrib)
@@ -173,7 +173,7 @@ private:
 				attrib_value = attrib->value;
 			}
 			(((*transaction)["parameters"])["props"])[attrib->name].append(attrib_value);
-			std::cout << "addAttribute built: " << transaction->toStyledString() << std::endl;
+			//std::cout << "addAttribute built: " << transaction->toStyledString() << std::endl;
 		}
 
 		std::list<Json::Value*>* getJson ()
@@ -187,10 +187,10 @@ private:
 			// Add the json values for the html tags
 			for (std::unordered_map<std::string, Json::Value*>::iterator it = JsonTags.begin(); it != JsonTags.end(); it++)
 			{
-				std::cout << "JsonBuilder packing: \n" << it->second->toStyledString() << std::endl;
+				//std::cout << "JsonBuilder packing: \n" << it->second->toStyledString() << std::endl;
 				json_list->push_back(it->second);
 			}
-			std::cout << "JsonBuilder done packing.\n";
+			//std::cout << "JsonBuilder done packing.\n";
 			return json_list;
 		}
 	};
