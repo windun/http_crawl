@@ -169,50 +169,125 @@ public:
 			if (results[r].isMember("columns"))
 			{
 				// Print columns
-				std::cout << "[||] ";
+				std::cout << "[\"columns\"] ";
 				Json::Value columns = results[r]["columns"];
 				for (int i = 0; i < columns.size(); i++)
 				{
-					std::cout << columns[i] << " |";
+					std::cout << columns[i].asString() << " |";
 				}
 				std::cout << std::endl;
 			}
 			if (results[r].isMember("data"))
 			{
 				// Print data
-				std::cout << "[+] " << std::endl;
 				Json::Value data = results[r]["data"];
 				for (int i = 0; i < data.size(); i++)
 				{
-					std::cout << "[" << i << "]";
+					std::cout << "[\"data\"[" << i << "]]";
 					if (data[i].isMember("row"))
 					{
 						Json::Value row = data[i]["row"];
-						for (int rw = 0; rw < row.size(); rw++)
-						{
-							std::cout << "[=] "; 
-							for (Json::ValueIterator it = row[rw].begin(); it != row[rw].end(); it++)
-							{
-								std::cout << it.key();
-								if (it->type() == Json::arrayValue)
-								{
-									std::cout << "[";
-									for (int e = 0; e < it->size(); e++)
-									{
-										std::cout << std::string((*it)[e]) << " ";
-									}
-									std::cout << "]";
-								}	
-								else
-								{
-									std::cout << *it;
-								}			
-								std::cout << " |";									
-							}		
-							std::cout << std::endl;
-						}
+						ProcessRow(row);
 					}
+					if (data[i].isMember("graph"))
+					{
+						Json::Value graph = data[i]["graph"];
+						ProcessGraph(graph);
+					}
+					std::cout << std::endl;
 				}
+			}
+		}
+	}
+
+	static void ProcessRow (Json::Value row)
+	{
+		for (int rw = 0; rw < row.size(); rw++)
+		{
+			std::cout << "[\"row\"] "; 
+			for (Json::ValueIterator it = row[rw].begin(); it != row[rw].end(); it++)
+			{
+				std::cout << "\"" << it.key().asString() << "\":";
+				if (it->type() == Json::arrayValue)
+				{
+					std::cout << "[";
+					for (int e = 0; e < it->size(); e++)
+					{
+						//std::cout << (*it)[e].type() << " ";
+						std::cout << (*it)[e].asString() << " ";
+					}
+					std::cout << "]";
+				}	
+				else
+				{
+					std::cout << (*it).asString();
+				}			
+				std::cout << " |";									
+			}		
+			//std::cout << std::endl;
+		}
+	}
+
+	static void ProcessGraph(Json::Value graph)
+	{
+		Json::Value nodes = graph["nodes"];
+		Json::Value relationships = graph["relationships"];
+		std::cout << "[\"nodes\"] ";
+		for (int i = 0; i < nodes.size(); i++)
+		{
+			std::cout << "(" << nodes[i]["id"].asString();
+			for (int l = 0; l < nodes[i]["labels"].size(); l++)
+			{
+				std::cout << ":" << nodes[i]["labels"][l].asString();
+			}
+			std::cout << ") "; 
+			for (Json::ValueIterator it = nodes[i]["properties"].begin(); it != nodes[i]["properties"].end(); it++)
+			{
+				std::cout << "\"" << it.key().asString() << "\":";
+				if (it->type() == Json::arrayValue)
+				{
+					std::cout << "[";
+					for (int e = 0; e < it->size(); e++)
+					{
+						//std::cout << (*it)[e].type() << " ";
+						std::cout << (*it)[e].asString() << " ";
+					}
+					std::cout << "]";
+				}	
+				else
+				{
+					std::cout << (*it).asString();
+				}			
+				std::cout << " |";
+			}
+		}
+		std::cout << "[\"relationships\"] ";
+		for (int i = 0; i < relationships.size(); i++)
+		{
+			std::cout << "(" << relationships[i]["id"].asString();
+			for (int l = 0; l < relationships[i]["labels"].size(); l++)
+			{
+				std::cout << ":" << relationships[i]["labels"][l].asString();
+			}
+			std::cout << ") "; 
+			for (Json::ValueIterator it = relationships[i]["properties"].begin(); it != relationships[i]["properties"].end(); it++)
+			{
+				std::cout << "\"" << it.key().asString() << "\":";
+				if (it->type() == Json::arrayValue)
+				{
+					std::cout << "[";
+					for (int e = 0; e < it->size(); e++)
+					{
+						//std::cout << (*it)[e].type() << " ";
+						std::cout << (*it)[e].asString() << " ";
+					}
+					std::cout << "]";
+				}	
+				else
+				{
+					std::cout << (*it).asString();
+				}			
+				std::cout << " |";
 			}
 		}
 	}
