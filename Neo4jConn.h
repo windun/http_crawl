@@ -162,24 +162,43 @@ public:
 		Json::Value results = value["results"];
 
 
-		// Print columns
-		std::cout << "[c] " << std::endl;
+		
+	
 		for (int r = 0; r < results.size(); r++)
 		{
-		
-			Json::Value columns = results["columns"];
-			for (int i = 0; i < columns.size(); i++)
+			if (results[r].isMember("columns"))
 			{
-				std::cout << columns[i] << " |";
+				// Print columns
+				std::cout << "[||] ";
+				Json::Value columns = results[r]["columns"];
+				for (int i = 0; i < columns.size(); i++)
+				{
+					std::cout << columns[i] << " |";
+				}
+				std::cout << std::endl;
 			}
-			std::cout << std::endl;
-
-	
-			// Print data
-			Json::Value data = results["data"];
-			for (int i = 0; i < data.size(); i++)
+			if (results[r].isMember("data"))
 			{
-				std::cout << "[" << i << "]" << data.toStyledString();
+				// Print data
+				std::cout << "[+] " << std::endl;
+				Json::Value data = results[r]["data"];
+				for (int i = 0; i < data.size(); i++)
+				{
+					std::cout << "[" << i << "]";
+					if (data[i].isMember("row"))
+					{
+						Json::Value row = data[i]["row"];
+						for (int rw = 0; rw < row.size(); rw++)
+						{
+							std::cout << "[=] "; //<< row[rw].toStyledString() << std::endl;
+							for (Json::ValueIterator it = row[rw].begin(); it != row[rw].end(); it++)
+							{
+								std::cout << it.key() << it->toStyledString() << " | ";													
+							}		
+							std::cout << std::endl;
+						}
+					}
+				}
 			}
 		}
 	}
