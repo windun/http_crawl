@@ -18,6 +18,16 @@ private:
 	Json::Value JSON_DATA;
 	int transaction_id = 0;
 
+	std::string  row_ofilename;
+	std::fstream row_ofile;
+	Json::Value  row_ojson;
+
+	std::string  graph_ofilename;
+	std::fstream graph_ofile;
+	Json::Value  graph_ojson;
+
+	std::unordered_set<std::string> node_ids;
+	std::unordered_set<std::string> edge_ids;
 
 	std::string Trim(char * cstr)
 	{
@@ -55,6 +65,19 @@ private:
 	}
 public:
 
+	Neo4jConn (std::string row_out_filename, std::string graph_out_filename)
+	{
+		row_ofilename = row_out_filename;
+		graph_ofilename = graph_out_filename;
+		graph_ojson["nodes"] = Json::Value(Json::arrayValue);
+		graph_ojson["edges"] = Json::Value(Json::arrayValue);
+	}
+
+	~Neo4jConn ()
+	{
+
+	}
+
 	static void PrintStringChars (Json::Value data)
 	{
 		const char * cstr = data.toStyledString().c_str();
@@ -85,7 +108,7 @@ public:
 		JSON_DATA["statements"].append(*json);
 	}
 
-	static std::string Post (Json::Value data, std::string url)
+	std::string Post (Json::Value data, std::string url)
 	{
 		CURL *curl_handle;
 		CURLcode res;
@@ -127,6 +150,7 @@ public:
 				bool parse_success = reader.parse(chunk.memory, json_reply);
 				std::cout << "Response: \n" << json_reply.toStyledString() << std::endl;
 				ProcessResult(json_reply);
+				PrintResultJson ();
 				
 			}
 			curl_easy_cleanup(curl_handle);	
@@ -136,7 +160,7 @@ public:
 		return "";
 	}
 
-	static std::string PostTransactionCommit (Json::Value data)
+	std::string PostTransactionCommit (Json::Value data)
 	{
 		return Post (data, "http://localhost:7474/db/data/transaction/commit");
 	}
@@ -146,7 +170,7 @@ public:
 		return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
 	}
 
-	static void ProcessResult (Json::Value value)
+	void ProcessResult (Json::Value value)
 	{
 		std::cout << "Response (processed): \n";
 		//PrintJsonTree(value, 0);
@@ -162,8 +186,6 @@ public:
 		Json::Value results = value["results"];
 
 
-		
-	
 		for (int r = 0; r < results.size(); r++)
 		{
 			if (results[r].isMember("columns"))
@@ -200,7 +222,7 @@ public:
 		}
 	}
 
-	static void ProcessRow (Json::Value row)
+	void ProcessRow (Json::Value row)
 	{
 		for (int rw = 0; rw < row.size(); rw++)
 		{
@@ -228,72 +250,75 @@ public:
 		}
 	}
 
-	static void ProcessGraph(Json::Value graph)
+	void ProcessGraph(Json::Value graph)
 	{
 		Json::Value nodes = graph["nodes"];
 		Json::Value relationships = graph["relationships"];
 		std::cout << "[\"nodes\"] ";
+
 		for (int i = 0; i < nodes.size(); i++)
 		{
-			std::cout << "(" << nodes[i]["id"].asString();
-			for (int l = 0; l < nodes[i]["labels"].size(); l++)
+			if (node_ids.count(nodes[i]["id"].asString()) == 0)
 			{
-				std::cout << ":" << nodes[i]["labels"][l].asString();
-			}
-			std::cout << ") "; 
-			for (Json::ValueIterator it = nodes[i]["properties"].begin(); it != nodes[i]["properties"].end(); it++)
-			{
-				std::cout << "\"" << it.key().asString() << "\":";
-				if (it->type() == Json::arrayValue)
-				{
-					std::cout << "[";
-					for (int e = 0; e < it->size(); e++)
-					{
-						//std::cout << (*it)[e].type() << " ";
-						std::cout << (*it)[e].asString() << " ";
-					}
-					std::cout << "]";
-				}	
-				else
-				{
-					std::cout << (*it).asString();
-				}			
-				std::cout << " |";
+				Json::Value n;	// we will create a modified node json
+						// with all labels concatenated to one
+				n["id"] = nodes[i]["id"];			// copy id
+				n["properties"] = nodes[i]["properties"];	// copy properties
+				std::string label;					
+				for (int l = 0; l < nodes[i]["labels"].size(); l++)	// copy labels
+				{							// into one string
+					label += (":" + nodes[i]["labels"][l].asString());
+				}
+				n["label"] = label;				// set the label
+				graph_ojson["nodes"].append(n);
+				node_ids.insert(nodes[i]["id"].asString());
 			}
 		}
 		std::cout << "[\"relationships\"] ";
 		for (int i = 0; i < relationships.size(); i++)
 		{
-			std::cout << "(" << relationships[i]["id"].asString();
-			for (int l = 0; l < relationships[i]["labels"].size(); l++)
+			if (edge_ids.count(relationships[i]["id"].asString()) == 0)
 			{
-				std::cout << ":" << relationships[i]["labels"][l].asString();
-			}
-			std::cout << ") "; 
-			for (Json::ValueIterator it = relationships[i]["properties"].begin(); it != relationships[i]["properties"].end(); it++)
-			{
-				std::cout << "\"" << it.key().asString() << "\":";
-				if (it->type() == Json::arrayValue)
-				{
-					std::cout << "[";
-					for (int e = 0; e < it->size(); e++)
-					{
-						//std::cout << (*it)[e].type() << " ";
-						std::cout << (*it)[e].asString() << " ";
-					}
-					std::cout << "]";
-				}	
-				else
-				{
-					std::cout << (*it).asString();
-				}			
-				std::cout << " |";
+				Json::Value edge;
+				edge["id"] = relationships[i]["id"];
+				edge["labels"] = relationships[i]["labels"];
+				edge["properties"] = relationships[i]["properties"];
+				edge["source"] = relationships[i]["startNode"];
+				edge["target"] = relationships[i]["endNode"];
+				graph_ojson["edges"].append(edge);
+				edge_ids.insert(relationships[i]["id"].asString());
 			}
 		}
 	}
 
+	void PrintResultJson ()
+	{
+		if(row_ofilename != "")
+		{
+			row_ofile.open(row_ofilename, std::fstream::out);
+			if (!row_ofile.is_open()) 
+			{
+				std::cerr << "Could not open \"row\" out file.\n";
+				exit(1);
+			}
+			row_ofile << row_ojson.toStyledString();
+			row_ofile.close();
+		}
+		if(graph_ofilename != "")
+		{
+			graph_ofile.open(graph_ofilename, std::fstream::out);
+			if (!graph_ofile.is_open()) 
+			{
+				std::cerr << "Could not open \"graph\" out file.\n";
+				exit(1);
+			}
+			graph_ofile << graph_ojson.toStyledString();
+			graph_ofile.close();
+		}
+	}
+
 	// http://stackoverflow.com/questions/4800605/iterating-through-objects-in-jsoncpp
-	static void PrintJsonTree (Json::Value root, int depth)
+	void PrintJsonTree (Json::Value root, int depth)
 	{ 
 		depth++;
 		if (root.size() > 0)
@@ -323,7 +348,7 @@ public:
 	}
 
 	// http://stackoverflow.com/questions/4800605/iterating-through-objects-in-jsoncpp
-	static void PrintValue (Json::Value val)
+	void PrintValue (Json::Value val)
 	{
 	    if( val.isString() ) {
 		std::cout << val.asString();

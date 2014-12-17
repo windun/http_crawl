@@ -319,7 +319,7 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 		Parser_.get_attribute_values("href", new_URLS);
 
 		std::list<Json::Value*> *json_creates = Parser_.getJson();
-		Neo4jConn Connection;
+		Neo4jConn Connection ("out_row.json", "out_graph.json");
 		for (std::list<Json::Value*>::iterator it = json_creates->begin(); it != json_creates->end(); it++)
 		{
 			Connection.NewTransaction();
@@ -405,12 +405,14 @@ int main (int argc, char* argv[])
 		ofile_name += "directory.txt";
 		URL_directory.write_file(ofile_name);
 		clean_up();
+		std::cout << "[OK] crawl finished successfully\n";
 	}
 	else
 	{
-		Neo4jConn Connection;
+		Neo4jConn Connection ("out_row.json", "out_graph.json");
 		Connection.NewTransaction();
 		Connection.AddTransaction(argv[2], argv[3]);
 		Connection.PostTransactionCommit();
+		std::cout << "[OK] crawl completed the query.\n";
 	}
 }
