@@ -388,7 +388,7 @@ public:
 				Json::Value n;	// we will create a modified node json
 						// with all labels concatenated to one
 				n["id"] = nodes[i]["id"];			// copy id
-				//n["properties"] = nodes[i]["properties"];	// copy properties
+				n["properties"] = nodes[i]["properties"];	// copy properties
 				n["labels"] = nodes[i]["labels"];
 				std::string label;					
 				for (int l = 0; l < nodes[i]["labels"].size(); l++)	// copy labels
@@ -439,61 +439,6 @@ public:
 			}
 		}
 	}
-
-	// SearchGraph - use the processed graph stored in graph_ojson to search for
-	// for specific values.
-	/*
-	void SearchGraph (std::string nodes_or_edges, std::string id_label_properties, std::string property, std::string value)
-	{
-		
-		// Error checking
-		if(!(nodes_or_edges == "nodes" || nodes_or_edges == "edges"))
-		{
-			std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") 1st argument not valid.\n"; 
-			exit(1);
-		}
-		if(!(id_label_properties == "id" || id_label_properties == "label" || id_label_properties == "properties" ))
-		{
-			std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") 2nd argument not valid.\n"; 
-			exit(1);
-		}
-		if (id_label_properties == "properties") 
-		{
-			if (property == "")
-			{
-				std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") needs property.\n"; 
-				exit(1);
-			}
-		}
-		else
-		{
-			if (property != "")
-			{
-				std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") must provide \"\" as property.\n"; 
-				exit(1);
-			}
-		}
-
-		// The parameters should be good at this point
-		Json::Value subgraph = graph_ojson[nodes_or_edges];
-		search_ojson[nodes_or_edges] = Json::Value(Json::arrayValue);
-		// Loop through all the nodes or edges
-		for (int i = 0; i < subgraph.size(); i++)
-		{
-			if(id_label_properties == "id" && subgraph[i]["id"] == value)
-			{
-				search_ojson[nodes_or_edges].append(subgraph[i]);
-			}
-			else if(id_label_properties == "label")
-			{
-				for (int l = 0; l < subgraph[i]["labels"][l]; l++)
-				{
-					
-				}
-				search_ojson[nodes_or_edges].append(subgraph[i]);
-			}
-		}
-	}*/
 
 	void PrintResultJson ()
 	{

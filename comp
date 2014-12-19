@@ -1,5 +1,5 @@
 echo ". . . . . . . . . . . . . . . . . . . . . . . . . ."
 echo ". . . . . . . . . . . . . . . . . . . . . . . . . ."
-#g++ crawl.cpp -o crawl -std=c++11 -lcurl -g -O0
+#g++ crawl.cpp -o crawl -std=c++11 -lcurl -g -O0 -ljsoncpp
 g++ crawl.cpp -o crawl -std=c++11 -lcurl -ljsoncpp
 #g++ -o comm comm.cpp jsoncpp.cpp -lcurl -I/usr/include/json

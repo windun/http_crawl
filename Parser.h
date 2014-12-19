@@ -536,7 +536,7 @@ void Parser::process_content ()
 	//tag->content[tag->content_size] = 0;
 	tag->edit_content(0, tag->content_size);
 
-	Attribute *contents_attrib;
+	Attribute *contents_attrib = new Attribute ();
 	contents_attrib->name = "contents";
 	contents_attrib->value = tag->get_content();
 	JsonBuilder_.addAttribute(tag->type, contents_attrib);
