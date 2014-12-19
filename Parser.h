@@ -147,7 +147,7 @@ private:
 				Json::Value props;
 				props["props"] = Json::Value(Json::objectValue);
 				(*transaction)["parameters"] = props;
-				(*transaction)["statement"] = "MATCH (s:URL{url:\"" + source_url + "\"}) CREATE (n:" + tag_type + " { props } ), (n)-[:IN]->(s) RETURN n";
+				(*transaction)["statement"] = "MATCH (s:URL{url:\"" + source_url + "\"}) CREATE (n:" + tag_type + " { props } ), (s)-[:TAG]->(n) RETURN n";
 			}
 			//std::cout << "addTag built: " << transaction->toStyledString() << std::endl;
 		}

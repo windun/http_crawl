@@ -14,17 +14,22 @@ private:
 	  char *memory;
 	  size_t size;
 	};
+							// Transactions will be built with
+	Json::Value JSON_DATA;				// either JSON
+	std::string QUERY = "";				// or a Cypher Query
 
-	Json::Value JSON_DATA;
 	int transaction_id = 0;
+							// Output will either be in
+							// ROW format
+	std::string  row_ofilename;			//  
+	std::fstream row_ofile;				// - not yet supported -
+	Json::Value  row_ojson;				//
+							// or GRAPH format
+	std::string  graph_ofilename;			// 	output file for graph json
+	std::fstream graph_ofile;			//	file stream for graph_ofilename
+	Json::Value  graph_ojson;			// 	json built for graph
 
-	std::string  row_ofilename;
-	std::fstream row_ofile;
-	Json::Value  row_ojson;
-
-	std::string  graph_ofilename;
-	std::fstream graph_ofile;
-	Json::Value  graph_ojson;
+	Json::Value search_ojson;
 
 	std::unordered_set<std::string> node_ids;
 	std::unordered_set<std::string> edge_ids;
@@ -108,7 +113,62 @@ public:
 		JSON_DATA["statements"].append(*json);
 	}
 
-	std::string Post (Json::Value data, std::string url)
+	void AddSearchTransaction (std::string nodes_or_edges, std::string id_label_properties, std::string property, std::string value)
+	{
+		////////////////////////////////////////////////////////////////////
+		//	
+		//	NODES
+		//
+		// Searching for a that has id = value
+		//
+		if (nodes_or_edges == "nodes" && id_label_properties == "id")
+		{
+			QUERY = "MATCH (a) WHERE id(a) = " + value + " RETURN a";
+		}
+		//
+		// Searching for a:value, that is a node with 'label' that is 'value'
+		//
+		else if (nodes_or_edges == "nodes" && id_label_properties == "label")
+		{
+			QUERY = "MATCH (a:" + value + ") RETURN a";
+		}
+		//
+		// Searching for a node that has a property similar to value
+		//
+		else if (nodes_or_edges == "nodes" && id_label_properties == "properties")
+		{
+			QUERY = "MATCH (a) WHERE any (" + property + " IN a." + property + " WHERE " + property + " =~ \"" + value + "\") RETURN a";
+		}
+
+
+		////////////////////////////////////////////////////////////////////
+		//	
+		//	EDGES
+		//
+		//
+		// Searching for an edge with id=value
+		//
+		else if (nodes_or_edges == "edges" && id_label_properties == "id")
+		{
+			QUERY = "MATCH ()-[r]->() WHERE id(r)=" + value + " RETURN a";
+		}
+		//
+		// Searching for a:value, that is a node with 'label' that is 'value'
+		//
+		else if (nodes_or_edges == "edges" && id_label_properties == "label")
+		{
+			QUERY = "MATCH ()-[r:" + value + "]->() RETURN a";
+		}
+		//
+		// Searching for a node that has a property similar to value
+		//
+		else if (nodes_or_edges == "edges" && id_label_properties == "properties")
+		{
+			QUERY = "MATCH ()-[r]->() WHERE any (" + property + " IN r." + property + " WHERE " + property + " =~ \"" + value + "\") RETURN r";
+		}
+	}
+
+	std::string Post (std::string data_str, std::string url)
 	{
 		CURL *curl_handle;
 		CURLcode res;
@@ -122,8 +182,7 @@ public:
 		headers = curl_slist_append(headers, "Accept: application/json; charset=UTF-8");
 		headers = curl_slist_append(headers, "Content-Type: application/json");
 	
-		std::string data_str = data.toStyledString();
-		std::cout << "Sending " << data_str << std::endl;	
+		//std::cout << "Sending " << data_str << std::endl;	
 
 		curl_handle = curl_easy_init();
 		if(curl_handle) {
@@ -135,7 +194,7 @@ public:
 			curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);		// write response memory is &chunk
 		
 
-			curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
+			//curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
 
 			res = curl_easy_perform(curl_handle);
 			if(res != CURLE_OK)
@@ -148,7 +207,7 @@ public:
 				Json::Value json_reply;
 				Json::Reader reader;
 				bool parse_success = reader.parse(chunk.memory, json_reply);
-				std::cout << "Response: \n" << json_reply.toStyledString() << std::endl;
+				//std::cout << "Response: \n" << json_reply.toStyledString() << std::endl;
 				ProcessResult(json_reply);
 				PrintResultJson ();
 				
@@ -160,6 +219,12 @@ public:
 		return "";
 	}
 
+	std::string Post (Json::Value data, std::string url)
+	{
+		std::string data_str = data.toStyledString();
+		return Post (data_str, url);
+	}
+
 	std::string PostTransactionCommit (Json::Value data)
 	{
 		return Post (data, "http://localhost:7474/db/data/transaction/commit");
@@ -167,16 +232,39 @@ public:
 
 	std::string PostTransactionCommit ()
 	{
-		return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
+		if (QUERY != "")
+		{
+			return Post (QUERY, "http://localhost:7474/db/data/transaction/commit");
+		}
+		else
+		{
+			return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
+		}
 	}
 
-	void ProcessResult (Json::Value value)
+	// This function will generate a result json
+	//	- first it prints errors to stderr
+	//	- then it depends on the format of the output which is
+	//	required as a parameter for the Cypher HTTP endpoint.
+	//	It may either be "row" or "graph" or both.
+	//
+	//		"row" - ProcessRow() - NOT WORKING
+	//		
+	//		"graph" - ProcessGraph() - This will
+	//		parse through the json that Neo4j transmits 
+	//		following a transaction. This builds up a 
+	//		result json - graph_ojson, which will be written
+	//		to some file graph_ofile, which can then be read
+	//		by the webcrawler php interface.	
+	void ProcessResult (Json::Value value)		
 	{
 		std::cout << "Response (processed): \n";
 		//PrintJsonTree(value, 0);
 
 
-		// Print errors
+		////////////////////////////////////////////////////////////
+		// Process all the errors and make an appropriate
+		// output to stderr
 		Json::Value errors = value["errors"];
 		for (int i = 0; i < errors.size(); i++)
 		{
@@ -185,9 +273,14 @@ public:
 
 		Json::Value results = value["results"];
 
-
+	
+		////////////////////////////////////////////////////////////
+		// Walk through all data
 		for (int r = 0; r < results.size(); r++)
 		{
+
+			////////////////////////////////////////////////////////////
+			// Neo4j first describes columns for data
 			if (results[r].isMember("columns"))
 			{
 				// Print columns
@@ -199,18 +292,23 @@ public:
 				}
 				std::cout << std::endl;
 			}
+
 			if (results[r].isMember("data"))
 			{
 				// Print data
 				Json::Value data = results[r]["data"];
 				for (int i = 0; i < data.size(); i++)
 				{
+					////////////////////////////////////////////////////////////
+					// Format output for row data
 					std::cout << "[\"data\"[" << i << "]]";
 					if (data[i].isMember("row"))
 					{
 						Json::Value row = data[i]["row"];
 						ProcessRow(row);
 					}
+					////////////////////////////////////////////////////////////
+					// Format output for graph data
 					if (data[i].isMember("graph"))
 					{
 						Json::Value graph = data[i]["graph"];
@@ -256,6 +354,9 @@ public:
 		Json::Value relationships = graph["relationships"];
 		std::cout << "[\"nodes\"] ";
 
+		////////////////////////////////////////////////////////////
+		// Walk through all of the nodes, and create
+		// appropriate Sigma.js counterparts.
 		for (int i = 0; i < nodes.size(); i++)
 		{
 			if (node_ids.count(nodes[i]["id"].asString()) == 0)
@@ -264,16 +365,21 @@ public:
 						// with all labels concatenated to one
 				n["id"] = nodes[i]["id"];			// copy id
 				n["properties"] = nodes[i]["properties"];	// copy properties
+				n["labels"] = nodes[i]["labels"];
 				std::string label;					
 				for (int l = 0; l < nodes[i]["labels"].size(); l++)	// copy labels
 				{							// into one string
 					label += (":" + nodes[i]["labels"][l].asString());
 				}
-				n["label"] = label;				// set the label
+				n["label"] = label;				// set the label				
 				graph_ojson["nodes"].append(n);
 				node_ids.insert(nodes[i]["id"].asString());
 			}
 		}
+
+		////////////////////////////////////////////////////////////
+		// Walk through all of the edges, and create
+		// appropriate Sigma.js counterparts.
 		std::cout << "[\"relationships\"] ";
 		for (int i = 0; i < relationships.size(); i++)
 		{
@@ -290,6 +396,61 @@ public:
 			}
 		}
 	}
+
+	// SearchGraph - use the processed graph stored in graph_ojson to search for
+	// for specific values.
+	/*
+	void SearchGraph (std::string nodes_or_edges, std::string id_label_properties, std::string property, std::string value)
+	{
+		
+		// Error checking
+		if(!(nodes_or_edges == "nodes" || nodes_or_edges == "edges"))
+		{
+			std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") 1st argument not valid.\n"; 
+			exit(1);
+		}
+		if(!(id_label_properties == "id" || id_label_properties == "label" || id_label_properties == "properties" ))
+		{
+			std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") 2nd argument not valid.\n"; 
+			exit(1);
+		}
+		if (id_label_properties == "properties") 
+		{
+			if (property == "")
+			{
+				std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") needs property.\n"; 
+				exit(1);
+			}
+		}
+		else
+		{
+			if (property != "")
+			{
+				std::cerr << "[!] Neo4jConn.SearchGraph(" << nodes_or_edges << ", " << id_label_properties << ", " << property << ", " << value << ") must provide \"\" as property.\n"; 
+				exit(1);
+			}
+		}
+
+		// The parameters should be good at this point
+		Json::Value subgraph = graph_ojson[nodes_or_edges];
+		search_ojson[nodes_or_edges] = Json::Value(Json::arrayValue);
+		// Loop through all the nodes or edges
+		for (int i = 0; i < subgraph.size(); i++)
+		{
+			if(id_label_properties == "id" && subgraph[i]["id"] == value)
+			{
+				search_ojson[nodes_or_edges].append(subgraph[i]);
+			}
+			else if(id_label_properties == "label")
+			{
+				for (int l = 0; l < subgraph[i]["labels"][l]; l++)
+				{
+					
+				}
+				search_ojson[nodes_or_edges].append(subgraph[i]);
+			}
+		}
+	}*/
 
 	void PrintResultJson ()
 	{

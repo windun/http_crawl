@@ -71,12 +71,22 @@ namespace robots
 		{
 			adj_url = url.substr(8, url.size() - 8);
 		}
-		if (blacklist.count(adj_url) > 0)
+
+		// Check if the url is blacklisted by checking if its
+		// subdirectories are blacklisted
+		std::string residual = adj_url;
+		int pos = adj_url.length(); 
+		while (pos != std::string::npos)
 		{
-			std::cout << "[B] " << adj_url << std::endl;
-			return true;
+			residual = adj_url.substr(0, pos);
+			if(blacklist.count(residual) > 0 || blacklist.count(residual + "/") > 0)
+			{
+				std::cout << "[x] " << adj_url << std::endl;
+				return true;
+			}
+			pos = residual.find_last_of("/");
 		}
-		else return false;
+		return false;
 	}
 
 	std::string get_domain (std::string url)
@@ -127,7 +137,7 @@ namespace robots
 			i_end = residual.find_first_of('\n');
 			entry = residual.substr(0, i_end);		// defaults to remainder (e.g. no more newlines)
 			//std::cout << "entry:" << entry << "(" << entry.size() << ") i_end:" << i_end << std::endl;
-			std::cout << "[x] " << domain + entry << std::endl;
+			std::cout << "[b] " << domain + entry << std::endl;
 			blacklist.insert(domain + entry);
 
 			if (residual[i_end] == 0 || i_end <= 0) break;

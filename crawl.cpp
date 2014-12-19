@@ -386,7 +386,24 @@ int main (int argc, char* argv[])
 	std::stringstream ss; ss << argv[2];
 	ss >> max_curls;
 	std::string url = std::string(argv[1]);
-	if (url != "-c")
+
+	if (url == "-q")
+	{
+		Neo4jConn Connection ("out_row.json", "out_graph.json");
+		Connection.NewTransaction();
+		Connection.AddTransaction(argv[2], argv[3]);
+		Connection.PostTransactionCommit();
+		std::cout << "[OK] crawl completed the query.\n";
+	}
+	else if (url == "-pq")
+	{
+		Neo4jConn Connection ("out_row.json", "out_graph.json");
+		Connection.NewTransaction();
+		Connection.AddTransaction(argv[2], argv[3]);
+		Connection.PostTransactionCommit();
+		std::cout << "[OK] crawl completed the query.\n";
+	}
+	else
 	{
 		robots::check(url);
 		if (robots::is_blacklisted(url)) return 0;
@@ -406,13 +423,5 @@ int main (int argc, char* argv[])
 		URL_directory.write_file(ofile_name);
 		clean_up();
 		std::cout << "[OK] crawl finished successfully\n";
-	}
-	else
-	{
-		Neo4jConn Connection ("out_row.json", "out_graph.json");
-		Connection.NewTransaction();
-		Connection.AddTransaction(argv[2], argv[3]);
-		Connection.PostTransactionCommit();
-		std::cout << "[OK] crawl completed the query.\n";
 	}
 }
