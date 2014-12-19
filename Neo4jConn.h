@@ -388,12 +388,31 @@ public:
 				Json::Value n;	// we will create a modified node json
 						// with all labels concatenated to one
 				n["id"] = nodes[i]["id"];			// copy id
-				n["properties"] = nodes[i]["properties"];	// copy properties
+				//n["properties"] = nodes[i]["properties"];	// copy properties
 				n["labels"] = nodes[i]["labels"];
 				std::string label;					
 				for (int l = 0; l < nodes[i]["labels"].size(); l++)	// copy labels
 				{							// into one string
 					label += (":" + nodes[i]["labels"][l].asString());
+				}
+				label += "\n";
+				for (Json::ValueIterator it = nodes[i]["properties"].begin(); it != nodes[i]["properties"].end(); it++)
+				{
+					label += it.key().asString() + ":";
+					if (it->type() == Json::arrayValue)
+					{
+						label += "[";
+						for (int e = 0; e < it->size(); e++)
+						{
+							label += (*it)[e].asString() + " ";
+						}
+						label += "]";
+					}	
+					else
+					{
+						label += (*it).asString();
+					}			
+					label += "\n";
 				}
 				n["label"] = label;				// set the label				
 				graph_ojson["nodes"].append(n);
