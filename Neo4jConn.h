@@ -23,7 +23,7 @@ private:
 							// ROW format
 	std::string  row_ofilename;			//  
 	std::fstream row_ofile;				// - not yet supported -
-	Json::Value  row_ojson;				//
+	Json::Value  row_ojson;		
 							// or GRAPH format
 	std::string  graph_ofilename;			// 	output file for graph json
 	std::fstream graph_ofile;			//	file stream for graph_ofilename
@@ -76,6 +76,7 @@ public:
 		graph_ofilename = graph_out_filename;
 		graph_ojson["nodes"] = Json::Value(Json::arrayValue);
 		graph_ojson["edges"] = Json::Value(Json::arrayValue);
+		row_ojson["row"] = Json::Value(Json::arrayValue);	
 	}
 
 	~Neo4jConn ()
@@ -103,7 +104,20 @@ public:
 		Json::Value statement;
 		statement["statement"] = str_stmt;
 		statement["resultDataContents"] = Json::Value(Json::arrayValue);
-		statement["resultDataContents"].append(format);
+		if (format == "row" || format == "graph")
+		{
+			statement["resultDataContents"].append(format);
+		}
+		else if (format == "row/graph")
+		{
+			statement["resultDataContents"].append("row");
+			statement["resultDataContents"].append("graph");
+		}
+		else
+		{
+			std::cerr << "[!] Neo4jConn: incorrect query format.\n";
+			exit(1);
+		}
 		JSON_DATA["statements"].append(statement);
 	}
 
@@ -216,7 +230,8 @@ public:
 		//std::cout << "Sending " << data_str << std::endl;	
 
 		curl_handle = curl_easy_init();
-		if(curl_handle) {
+		if(curl_handle) 
+		{
 			curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());			// url set
 			curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, headers);			// send POST message
 			curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data_str.c_str());//data);//stmts.c_str());
@@ -253,6 +268,7 @@ public:
 	std::string Post (Json::Value data, std::string url)
 	{
 		std::string data_str = data.toStyledString();
+		std::cout << data_str << std::endl;
 		return Post (data_str, url);
 	}
 
@@ -328,6 +344,7 @@ public:
 					std::cout << "[\"data\"[" << i << "]]";
 					if (data[i].isMember("row"))
 					{
+						row_ojson["columns"] = results[r]["columns"];
 						Json::Value row = data[i]["row"];
 						ProcessRow(row);
 					}
@@ -335,6 +352,7 @@ public:
 					// Format output for graph data
 					if (data[i].isMember("graph"))
 					{
+						graph_ojson["columns"] = results[r]["columns"];
 						Json::Value graph = data[i]["graph"];
 						ProcessGraph(graph);
 					}
@@ -346,18 +364,19 @@ public:
 
 	void ProcessRow (Json::Value row)
 	{
+		row_ojson["row"].append(row);	// throw it all in here
 		for (int rw = 0; rw < row.size(); rw++)
 		{
 			std::cout << "[\"row\"] "; 
 			for (Json::ValueIterator it = row[rw].begin(); it != row[rw].end(); it++)
 			{
+				Json::Value row_value;
 				std::cout << "\"" << it.key().asString() << "\":";
 				if (it->type() == Json::arrayValue)
 				{
 					std::cout << "[";
 					for (int e = 0; e < it->size(); e++)
 					{
-						//std::cout << (*it)[e].type() << " ";
 						std::cout << (*it)[e].asString() << " ";
 					}
 					std::cout << "]";
@@ -368,7 +387,6 @@ public:
 				}			
 				std::cout << " |";									
 			}		
-			//std::cout << std::endl;
 		}
 	}
 
@@ -385,36 +403,17 @@ public:
 		{
 			if (node_ids.count(nodes[i]["id"].asString()) == 0)
 			{
-				Json::Value n;	// we will create a modified node json
-						// with all labels concatenated to one
-				n["id"] = nodes[i]["id"];			// copy id
-				n["properties"] = nodes[i]["properties"];	// copy properties
+				Json::Value n;						// we will create a modified node json
+											// with all labels concatenated to one
+				n["id"] = nodes[i]["id"];				// copy id
+				n["properties"] = nodes[i]["properties"];		// copy properties
 				n["labels"] = nodes[i]["labels"];
 				std::string label;					
 				for (int l = 0; l < nodes[i]["labels"].size(); l++)	// copy labels
 				{							// into one string
 					label += (":" + nodes[i]["labels"][l].asString());
 				}
-				label += "\n";
-				for (Json::ValueIterator it = nodes[i]["properties"].begin(); it != nodes[i]["properties"].end(); it++)
-				{
-					label += it.key().asString() + ":";
-					if (it->type() == Json::arrayValue)
-					{
-						label += "[";
-						for (int e = 0; e < it->size(); e++)
-						{
-							label += (*it)[e].asString() + " ";
-						}
-						label += "]";
-					}	
-					else
-					{
-						label += (*it).asString();
-					}			
-					label += "\n";
-				}
-				n["label"] = label;				// set the label				
+				n["label"] = label;					// set the label				
 				graph_ojson["nodes"].append(n);
 				node_ids.insert(nodes[i]["id"].asString());
 			}
@@ -431,6 +430,12 @@ public:
 				Json::Value edge;
 				edge["id"] = relationships[i]["id"];
 				edge["labels"] = relationships[i]["labels"];
+				std::string label;					
+				for (int l = 0; l < relationships[i]["labels"].size(); l++)	// copy labels
+				{							// into one string
+					label += (":" + relationships[i]["labels"][l].asString());
+				}
+				edge["label"] = label;
 				edge["properties"] = relationships[i]["properties"];
 				edge["source"] = relationships[i]["startNode"];
 				edge["target"] = relationships[i]["endNode"];

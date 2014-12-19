@@ -392,13 +392,34 @@ int main (int argc, char* argv[])
 		if (argc != 4)
 		{
 			std::cout << "webcrawler: query\n";
-			std::cout << "crawl -q [\"query\"] [row/graph]\n"; 
+			std::cout << "crawl -q [\"query\"] [row,graph,row/graph]\n"; 
 			return 0;
 		}
-		Neo4jConn Connection ("out_row.json", "out_graph.json");
-		Connection.NewTransaction();
-		Connection.AddTransaction(argv[2], argv[3]);
-		Connection.PostTransactionCommit();
+		Neo4jConn *Connection;
+		std::string selection = argv[3];
+		if (selection == "row")
+		{
+			Connection = new Neo4jConn ("out_row.json", "");
+		}
+		else if (selection == "graph")
+		{
+			Connection = new Neo4jConn ("", "out_graph.json");
+		} 
+		else if (selection == "row/graph")
+		{
+			std::cout << "row/graph\n";
+			Connection = new Neo4jConn ("out_row.json", "out_graph.json");
+		}
+		else
+		{
+			std::cout << "Invalid 2nd argument\n";
+			std::cout << "webcrawler: query\n";
+			std::cout << "crawl -q [\"query\"] [row,graph,row/graph]\n"; 
+			return 0;
+		}
+		Connection->NewTransaction();
+		Connection->AddTransaction(argv[2], selection);
+		Connection->PostTransactionCommit();
 		std::cout << "[OK] crawl completed the query.\n";
 	}
 	else if (url == "-pq")
