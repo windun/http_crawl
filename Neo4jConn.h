@@ -121,25 +121,39 @@ public:
 		//
 		// Searching for a that has id = value
 		//
-		if (nodes_or_edges == "nodes" && id_label_properties == "id")
-		{
-			QUERY = "MATCH (a) WHERE id(a) = " + value + " RETURN a";
+		if (nodes_or_edges == "nodes")
+		{ 	
+			if (id_label_properties == "")
+			{
+				QUERY = "MATCH (a) RETURN a";
+			}
+			else if (id_label_properties == "id")
+			{
+				if (value == "")
+				{
+					std::cerr << "[!] this query needs a value\n";
+				}
+				QUERY = "MATCH (a) WHERE id(a) = " + value + " RETURN a";
+			}
+			//
+			// Searching for a:value, that is a node with 'label' that is 'value'
+			//
+			else if (id_label_properties == "label")
+			{
+				if (value == "")
+				{
+					std::cerr << "[!] this query needs a value\n";
+				}
+				QUERY = "MATCH (a:" + value + ") RETURN a";
+			}
+			//
+			// Searching for a node that has a property similar to value
+			//
+			else if (id_label_properties == "properties")
+			{
+				QUERY = "MATCH (a) WHERE any (" + property + " IN a." + property + " WHERE " + property + " =~ \"" + value + "\") RETURN a";
+			}
 		}
-		//
-		// Searching for a:value, that is a node with 'label' that is 'value'
-		//
-		else if (nodes_or_edges == "nodes" && id_label_properties == "label")
-		{
-			QUERY = "MATCH (a:" + value + ") RETURN a";
-		}
-		//
-		// Searching for a node that has a property similar to value
-		//
-		else if (nodes_or_edges == "nodes" && id_label_properties == "properties")
-		{
-			QUERY = "MATCH (a) WHERE any (" + property + " IN a." + property + " WHERE " + property + " =~ \"" + value + "\") RETURN a";
-		}
-
 
 		////////////////////////////////////////////////////////////////////
 		//	
@@ -148,24 +162,41 @@ public:
 		//
 		// Searching for an edge with id=value
 		//
-		else if (nodes_or_edges == "edges" && id_label_properties == "id")
+		else if (nodes_or_edges == "edges")
 		{
-			QUERY = "MATCH ()-[r]->() WHERE id(r)=" + value + " RETURN a";
+			if (id_label_properties == "")
+			{
+				QUERY = "MATCH ()-[r]->() RETURN r";
+			}
+			else if (id_label_properties == "id")
+			{
+				if (value == "")
+				{
+					std::cerr << "[!] this query needs a value\n";
+				}
+				QUERY = "MATCH ()-[r]->() WHERE id(r)=" + value + " RETURN a";
+			}
+			//
+			// Searching for a:value, that is a node with 'label' that is 'value'
+			//
+			else if (id_label_properties == "label")
+			{
+				if (value == "")
+				{
+					std::cerr << "[!] this query needs a value\n";
+				}
+				QUERY = "MATCH ()-[r:" + value + "]->() RETURN a";
+			}
+			//
+			// Searching for a node that has a property similar to value
+			//
+			else if (id_label_properties == "properties")
+			{
+				QUERY = "MATCH ()-[r]->() WHERE any (" + property + " IN r." + property + " WHERE " + property + " =~ \"" + value + "\") RETURN r";
+			}
 		}
-		//
-		// Searching for a:value, that is a node with 'label' that is 'value'
-		//
-		else if (nodes_or_edges == "edges" && id_label_properties == "label")
-		{
-			QUERY = "MATCH ()-[r:" + value + "]->() RETURN a";
-		}
-		//
-		// Searching for a node that has a property similar to value
-		//
-		else if (nodes_or_edges == "edges" && id_label_properties == "properties")
-		{
-			QUERY = "MATCH ()-[r]->() WHERE any (" + property + " IN r." + property + " WHERE " + property + " =~ \"" + value + "\") RETURN r";
-		}
+		std::cout << "[+] built query: " << QUERY << std::endl;
+		AddTransaction (QUERY, "graph");
 	}
 
 	std::string Post (std::string data_str, std::string url)
@@ -232,14 +263,7 @@ public:
 
 	std::string PostTransactionCommit ()
 	{
-		if (QUERY != "")
-		{
-			return Post (QUERY, "http://localhost:7474/db/data/transaction/commit");
-		}
-		else
-		{
-			return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
-		}
+		return Post (JSON_DATA, "http://localhost:7474/db/data/transaction/commit");
 	}
 
 	// This function will generate a result json

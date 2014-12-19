@@ -389,6 +389,12 @@ int main (int argc, char* argv[])
 
 	if (url == "-q")
 	{
+		if (argc != 4)
+		{
+			std::cout << "webcrawler: query\n";
+			std::cout << "crawl -q [\"query\"] [row/graph]\n"; 
+			return 0;
+		}
 		Neo4jConn Connection ("out_row.json", "out_graph.json");
 		Connection.NewTransaction();
 		Connection.AddTransaction(argv[2], argv[3]);
@@ -397,9 +403,20 @@ int main (int argc, char* argv[])
 	}
 	else if (url == "-pq")
 	{
+		if (argc != 6)
+		{
+			std::cout << "webcrawler: pieced query\n";
+			std::cout << "crawl -pq [nodes/edges] [id/label/properties] [property] [value]\n"; 
+			return 0;
+		}
+		std::string nodes_or_edges = argv[2];
+		std::string id_label_properties = argv[3];
+		std::string property = argv[4];
+		std::string value = argv[5];
+
 		Neo4jConn Connection ("out_row.json", "out_graph.json");
 		Connection.NewTransaction();
-		Connection.AddTransaction(argv[2], argv[3]);
+		Connection.AddSearchTransaction(nodes_or_edges, id_label_properties, property, value);;
 		Connection.PostTransactionCommit();
 		std::cout << "[OK] crawl completed the query.\n";
 	}
