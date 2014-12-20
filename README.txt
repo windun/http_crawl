@@ -39,7 +39,7 @@ http_crawl/README.txt
 
 
 
-1. install libcurl
+1a. install libcurl
 
 On ubuntu: 
 user@host-$ apt-get install libcurl4-gnutls-dev
@@ -49,7 +49,18 @@ user@host-$ sudo yum install libcurl-devel
 
 
 
+1b. install jsoncpp - this library is used form JSON processing
 
+user@host-$ studo apt-get instsall cmake
+user@host-$ git clone https://github.com/open-source-parsers/jsoncpp
+user@host-$ cd jsoncpp
+user@host-$ mkdir -p build/debug
+user@host-$ cd build/debug
+user@host-$ cmake -DCMAKE_BUILD_TYPE=debug -DJSONCPP_LIB_BUILD_SHARED=OFF -G "Unix Makefiles" ../..
+user@host-$ make
+user@host-$ sudo mkdir /usr/lib/json
+user@host-$ sudo cp build/debug/lib/libjsoncpp.a /usr/lib/json/
+user@host-$ sudo cp include/json /usr/include/
 
 2. compilation
 

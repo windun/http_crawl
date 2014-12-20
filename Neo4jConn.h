@@ -268,7 +268,7 @@ public:
 	std::string Post (Json::Value data, std::string url)
 	{
 		std::string data_str = data.toStyledString();
-		std::cout << data_str << std::endl;
+		//std::cout << data_str << std::endl;
 		return Post (data_str, url);
 	}
 
