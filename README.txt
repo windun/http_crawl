@@ -1,12 +1,12 @@
-***************************************************************************************************************
-**************************************************************************************************** * *** * *
-** 											****** *** * **** *
-** DASON ADAMOS 									******* * * *
-** CSC 718 				HTTP_CRAWL - README 				* *** * *
-** 09DEC2014 										* * *** *
-** 											****
-******************************************************************************************* *
-******************************************************************************************
+*********************************************************************************
+************************************************************************* * *** * *
+** 								****** *** * **** *
+** DASON ADAMOS 						******* * * *
+** CSC 718 		HTTP_CRAWL - README 			* *** * *
+** 09DEC2014 							* * *** *
+** 								****
+******************************************************************** *
+*********************************************************************
 
 . . . . . . . . . . . . . . . . INTRODUCTION. . . . . . . . . . . . . . . .
 
@@ -15,29 +15,40 @@ In depth documentation: http://students.dsu.edu/DSU/ddadamos/webcrawler/
 git repository: https://github.com/laterDays/http_crawl
 
 The files included in this project are the files necessary to build the
-simple webcrawler. I have made all steps simple by utilizing one line 
-scripts.
+simple webcrawler. At this time, the webcrawler is programmed to run
+alongside Neo4j. Please install Neo4j before running this webcrawler.
+
+
 
 
 0. preparation: unzip files into a directory. Create a "data" folder:
 
-http_crawl/Parser.h
-http_crawl/README.txt
-http_crawl/clear
-http_crawl/comp
-http_crawl/crawl.cpp
+
+http_crawl/clear			data clear script
+http_crawl/comp				compiling script
+http_crawl/crawl.cpp		
 http_crawl/crawl.sh
-http_crawl/crawl_mem
+http_crawl/crawl_mem			valgrid test run
 http_crawl/robots.h
-http_crawl/data/     <- make this
+http_crawl/data/     			* make this directory
+http_crawl/Neo4jConn.h		Neo4j Connections handled here
+http_crawl/Parser.h		HTML parser and JSON builder
+http_crawl/robots.h
+http_crawl/README.txt
+
+
+
 
 1. install libcurl
 
 On ubuntu: 
-user@host-$ sudo apt-get install libcurl-dev
+user@host-$ apt-get install libcurl4-gnutls-dev
 
 On fedora:
 user@host-$ sudo yum install libcurl-devel
+
+
+
 
 
 2. compilation
@@ -45,13 +56,44 @@ user@host-$ sudo yum install libcurl-devel
 user@host-$ ./comp
 
 
+
+
+
 3. execution
 
-user@host-$ ./crawl [url] [#pages to download]
+a. Data gathering
+
+//user@host-$ ./crawl [url] [#pages to download]
 user@host-$ ./crawl google.com 100 
+
+b. Querying
+
+// user@host-$ ./crawl -q ["query"] [row,graph,row/graph]
+user@host-$ ./crawl -q "MATCH (a) RETURN a" "row"
+
+c. "Pieced Query"
+
+// user@host-$ ./crawl -pq [nodes/edges] [id/label/properties] [property] [value]
+
+search for node whose id=1
+user@host-$ ./crawl -pq nodes id '' 1	
+
+search for edge whose id=1
+user@host-$ ./crawl -pq edges id '' 1	
+
+search for nodes with label URL
+user@host-$ ./crawl -pq nodes label '' URL
+
+search for nodes that have an href property with the letter "h" in,
+it, for example node.href="homepage.com"
+user@host-$ ./crawl -pq nodes properties href .*h.*
+
 
 
 4. results
+
+The queries that are performed run on Neo4j. However, during the web
+crawl, the following files are generated:
 
 http_crawl/data/*_head.txt	// HTTP header
 http_crawl/data/*_body.txt	// HTML text
@@ -80,6 +122,8 @@ the meta tag originally looked something like this:
      <meta http-equiv="content-type" content="text/html;charset=utf-8">
      ...
 </HEAD>
+
+
 
 
 5. clear data
