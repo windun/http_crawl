@@ -18,6 +18,7 @@ private:
 		std::string name;
 		std::string value;
 	};
+
 	class Tag
 	{
 	#define MIN_BUF_SIZE 500000
@@ -204,19 +205,21 @@ private:
 	bool in_tag = false;
 	int global_id = 1;
 
-	bool is_tag(std::string lc_str, std::string str);
-	void skip_spaces ();
-	std::string open_tag ();
-	void get_attribute (Tag *tag);
-	void process_tag (std::string tag_type);
-	std::string close_tag ();
-	void process_content ();
-	void process_comment ();
-	void print_section (std::string comment);
-	std::string char_string (int i);
-	bool stack_pop(std::string tag_type);
-	bool stack_pop(Tag *tag);
+	bool is_tag(std::string lc_str, std::string str);	// compare tag name: is "html" (lower case) same as "HTML"?
+	void skip_spaces ();					// advance parser through whitespace
+	std::string open_tag ();				// are we beginning a tag?
+	void process_tag (std::string tag_type);		// then deal with the tag
+	void get_attribute (Tag *tag);				// get attributes for this tag
+	std::string close_tag ();				// now, close the tag
+	void process_content ();				// process content between tags
+	void process_comment ();				// process through comments
 
+	void print_section (std::string comment);		// print function for debug
+	std::string char_string (int i);			// more like get char as string, unless it is some wierd
+								// char like ascii < 32, then get the number (used for debugging)
+	bool stack_pop(std::string tag_type);			// we handle tags in a stack like manner
+	bool stack_pop(Tag *tag);				// 	only thing is, they do not necessarily
+								//	have to terminate...
 public:
 
 
