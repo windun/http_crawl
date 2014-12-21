@@ -429,6 +429,32 @@ void clean_up ()
 	}				// remember URL[source url id] -> set of target url ids
 }
 
+void setFilenames (std::string file_out_opt, std::string row_arg, std::string &out_row_filename, std::string graph_arg, std::string &out_graph_filename)
+{
+	if(file_out_opt == "-r") 			// set row filename
+	{	
+		out_row_filename = row_arg;
+		out_graph_filename = "out_graph.json";
+	}
+	else if (file_out_opt == "-g") 			// set graph filename
+	{
+		out_graph_filename = graph_arg;
+		out_row_filename = "out_row.json";
+	}
+	else if (file_out_opt == "-rg") 		// set row and graph filenames
+	{
+		out_row_filename = row_arg;
+		out_graph_filename = graph_arg;
+	}
+	else
+	{
+		out_row_filename = "out_row.json";
+		out_graph_filename = "out_graph.json";
+	}
+	std::cout << "[ ] writing rows to " << out_row_filename << std::endl;
+	std::cout << "[ ] writing graph to " << out_graph_filename << std::endl;
+}	
+
 int main (int argc, char* argv[])
 {
 	int n = 0;
@@ -447,31 +473,13 @@ int main (int argc, char* argv[])
 		}
 		Neo4jConn *Connection;
 		std::string selection = argv[3];
-		std::string file_out_opt = argv[4];
+
+		std::string file_out_opt = (argv[4] == NULL? "" : argv[4]);
+		std::string out_row_arg = (argv[5] == NULL? "" : argv[5]);
 		std::string out_row_filename;
+		std::string out_graph_arg= (argv[6] == NULL? "" : argv[6]);
 		std::string out_graph_filename;
-
-		if(file_out_opt == "-r") 			// set row filename
-		{	
-			out_row_filename = argv[5];
-			out_graph_filename = "out_graph.json";
-		}
-		else if (file_out_opt == "-g") 			// set graph filename
-		{
-			out_graph_filename = argv[5];
-			out_row_filename = "out_row.json";
-		}
-		else if (file_out_opt == "-rg") 		// set row and graph filenames
-		{
-			out_row_filename = argv[5];
-			out_graph_filename = argv[6];
-		}
-		else
-		{
-			out_row_filename = "out_row.json";
-			out_graph_filename = "out_graph.json";
-		}
-
+		setFilenames (file_out_opt, out_row_arg, out_row_filename, out_graph_arg, out_graph_filename);
 
 		if (selection == "row")							// get the output format
 		{									//	- row
@@ -501,7 +509,7 @@ int main (int argc, char* argv[])
 	}
 	else if (url == "-pq")											// option -pq, for "pieced query"
 	{
-		if (argc != 6)
+		if (argc < 6)
 		{
 			std::cout << "webcrawler: pieced query\n";
 			std::cout << "crawl -pq [nodes/edges] [id/label/properties] [property] [value]\n"; 
@@ -510,9 +518,16 @@ int main (int argc, char* argv[])
 		std::string nodes_or_edges = argv[2];		// gather args
 		std::string id_label_properties = argv[3];	//
 		std::string property = argv[4];			//
-		std::string value = argv[5];			//
+		std::string value = argv[5];	
+		//
+		std::string file_out_opt = (argv[6] == NULL? "" : argv[6]);
+		std::string out_row_arg = (argv[7] == NULL? "" : argv[7]);
+		std::string out_row_filename;
+		std::string out_graph_arg= (argv[8] == NULL? "" : argv[8]);
+		std::string out_graph_filename;
+		setFilenames (file_out_opt, out_row_arg, out_row_filename, out_graph_arg, out_graph_filename);
 
-		Neo4jConn Connection ("out_row.json", "out_graph.json");
+		Neo4jConn Connection (out_row_filename, out_graph_filename);
 		Connection.NewTransaction();
 		Connection.AddSearchTransaction(nodes_or_edges, id_label_properties, property, value);;
 		Connection.PostTransactionCommit();
