@@ -23,7 +23,7 @@
 #define HTML_BUF_SIZE 2000000	// for UrlData buffer (stores html data)
 #define MSG_BUF_SIZE 4096		// link recognition (regex.h) error
 int TIME_LIMIT = 60;
-struct url_pair
+struct url_pair				
 {
 	std::string origin;
 	std::string url;
@@ -32,6 +32,12 @@ std::unordered_map<int, std::unordered_set<int>*> URLS;
 std::queue<url_pair*> URL_queue;	
 int MAX_USED = 0;
 
+/*
+	Directory - this class will help us keep track of
+		urls. Will use it on order to find url strings
+		given id, and to find id given url strings 
+		(reverse).
+*/
 class Directory
 {
 private:
@@ -44,8 +50,6 @@ public:
 		std::pair<std::string, int> rev_entry (value, key);
 		if(reverse.insert(rev_entry).second)
 		{
-			//std::pair<int, std::string> entry (key, value);
-			//standard.insert(entry);
 			standard[key] = value;
 			return true;
 		}
@@ -67,6 +71,10 @@ public:
 		return standard.size();
 	}
 
+	// Used to write a text file listing
+	//	id url
+	//	id url
+	//	...
 	void write_file (std::string ofile_name)
 	{
 		ofile.open(ofile_name);
@@ -95,13 +103,7 @@ struct UrlData
 	int buf_size = 0;
 	//int level;
 };
-//void print_indent (int indent)
-//{
-//	for (int i = 0; i < indent; i++)
-//	{
-//		fprintf(stdout, " ");
-//	}
-//}
+
 void print_column (std::string str, int width)
 {
 	for (int i = 0; i < width && str[i] != '\0'; i++)
@@ -191,6 +193,7 @@ std::string toString (char *c_str)
 	} 
 	return str;
 }
+
 std::string toString (const char *c_str)
 {
 	std::string str = "";
@@ -201,12 +204,15 @@ std::string toString (const char *c_str)
 	return str;
 }
 
+// Just write header to disk
 static size_t write_header (void *ptr, size_t size, size_t nmemb, void *data)
 {
 	int written = fwrite(ptr, size, nmemb, ((struct UrlData *)data)->file);
 	return written;
 }
 
+// This will just write memory to a buffer, so that we can parse it
+// when it is finished.
 // called during curl_easy_perform ()
 // ptr = data from internet
 // size = #packets ?
@@ -229,23 +235,25 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 {
 	int source_url_id = URL_directory.get_key(source_url);
 
-	UrlData header_data;
-	UrlData body_data;
+	UrlData header_data;		// will have url and buffer info
+	UrlData body_data;		// and will be used to write to
+					// output text files in data folder
 
-	CURL *curl_handle;
-	CURLcode res = CURLE_OK;
+	CURL *curl_handle;		// libcurl vars
+	CURLcode res = CURLE_OK;	//
 
-	std::string headerFilename = DATA_DIR + std::to_string(source_url_id) + "_head.txt";
-	std::string bodyFilename = DATA_DIR + std::to_string(source_url_id) + "_body.txt";
+	std::string headerFilename = DATA_DIR + std::to_string(source_url_id) + "_head.txt";	// header output file
+	std::string bodyFilename = DATA_DIR + std::to_string(source_url_id) + "_body.txt";	// body output file
 
 
-	std::unordered_set<int> *target_URLS;
+	std::unordered_set<int> *target_URLS;				// target_URLS - this set will hold all urls that 
+									// 	come from source_url
+	if (URLS.count(source_url_id) == 0)				// URLS[source_url_id]
+	{								//	- holds the set of target_URLS
+		URLS[source_url_id] = new std::unordered_set<int> ();	//	- create the set if it doesn't exist
+	}								//
+	target_URLS = URLS[source_url_id];				//
 
-	if (URLS.count(source_url_id) == 0)
-	{
-		URLS[source_url_id] = new std::unordered_set<int> ();
-	}
-	target_URLS = URLS[source_url_id];
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -257,42 +265,59 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 		//	SET UP CURL
 		std::string heading = std::string("[" +  std::to_string(nth_curl) + "]-> " + source_url + "(" + std::to_string(source_url_id) + ")");
 		print_column (heading, COLUMN_WIDTH);
-		curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPALIVE, 1L);
-		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url.c_str());
-		curl_easy_setopt(curl_handle, CURLOPT_HEADERFUNCTION, write_header);
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_body);
-		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, TIME_LIMIT);
+		curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPALIVE, 1L);		//
+		curl_easy_setopt(curl_handle, CURLOPT_URL, source_url.c_str());		// set curl url
+		curl_easy_setopt(curl_handle, CURLOPT_HEADERFUNCTION, write_header);	// set http header
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_body);	// write_body - write actual html code to disk
+		curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, TIME_LIMIT);		// set connection timeout
+
 
 		/////////////////////////////////////////////
 		//	SET UP FILES
-		header_data.file = fopen(headerFilename.c_str(), "wb");
-		if (header_data.file == NULL)
-		{
-			curl_easy_cleanup(curl_handle);
-			return -1;
-		}
-		body_data.file = fopen(bodyFilename.c_str(), "wb");
-		if (body_data.file == NULL)
-		{
+		header_data.file = fopen(headerFilename.c_str(), "wb");		// open access to output files
+		if (header_data.file == NULL)					// they will be saved to the data folder
+		{								//	- open header output files
+			curl_easy_cleanup(curl_handle);				//
+			return -1;						//
+		}								//
+		body_data.file = fopen(bodyFilename.c_str(), "wb");		//	- open body outpu file
+		if (body_data.file == NULL)					//
+		{								//
 			curl_easy_cleanup(curl_handle);
 			return -1;
 		}
 
-		header_data.source = source_url;
-		body_data.source = source_url;
+		/*struct UrlData			// for reference!
+		{					// these will be passed to
+			std::string source;		// for writing
+			FILE * file;
+			char buffer [HTML_BUF_SIZE];
+			int buf_size = 0;
+			//int level;
+		};*/
+		header_data.source = source_url;	// write_header()
+		body_data.source = source_url;		// write_body()
 
-		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, &header_data);
-		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &body_data);
+		curl_easy_setopt(curl_handle, CURLOPT_HEADERDATA, &header_data);	// write_header(...,&header_data)
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &body_data);		// write_body(...,&body_data)
+
+
 
  		/////////////////////////////////////////////
+		//
 		//	PERFORM THE CURL
 		res = curl_easy_perform(curl_handle);
+		//
+		//
+		/////////////////////////////////////////////
+
+
 		
 		// 1. Block SIGINT
-		sigset_t old_mask, to_block;
-		sigemptyset(&to_block);
-		sigaddset(&to_block, SIGINT);
-		sigprocmask(SIG_BLOCK, &to_block, &old_mask);
+		sigset_t old_mask, to_block;			// I included this because Linux
+		sigemptyset(&to_block);				// kept killing this process.
+		sigaddset(&to_block, SIGINT);			// I haven't tested too much to
+		sigprocmask(SIG_BLOCK, &to_block, &old_mask);	// see if this really helps.
 
 		fclose(header_data.file);
 		fclose(body_data.file);
@@ -300,6 +325,10 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 		// 3. Restore signal handling
 		sigprocmask(SIG_SETMASK, &old_mask, NULL);
 
+
+ 		/////////////////////////////////////////////
+		//
+		//	CHECK CURL - did it finish ok?
 		if (res != CURLE_OK)
 		{
 			fprintf(stdout, "[!]-> %s\n", curl_easy_strerror(res));
@@ -310,14 +339,21 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 			std::cerr << "[!] files removed." << std::endl;
 		}
 		curl_easy_cleanup(curl_handle);
+		//
+		//
+ 		/////////////////////////////////////////////
 
-		std::list<std::string> *new_URLS = new std::list<std::string>();
-		Parser Parser_(origin_url, source_url, (char *)body_data.buffer);
-		Parser_.set_debug(false);
-		Parser_.process();
-		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));
-		Parser_.get_attribute_values("href", new_URLS);
 
+		// Parse the data
+		std::list<std::string> *new_URLS = new std::list<std::string>();	// container to hold the new-found urls
+		Parser Parser_(origin_url, source_url, (char *)body_data.buffer);	// create Parser
+		Parser_.set_debug(false);						// change to "true" if you would like to see the parser in action
+		Parser_.process();							// run the parse
+		Parser_.print_info(std::string(DATA_DIR + std::to_string(source_url_id) + "_tags.txt"));	// print info to file
+		Parser_.get_attribute_values("href", new_URLS);				// get list of all href attribute
+											// values and store in new_URLS
+
+		// Transmit the data
 		std::list<Json::Value*> *json_creates = Parser_.getJson();
 		Neo4jConn Connection ("out_row.json", "out_graph.json");
 		for (std::list<Json::Value*>::iterator it = json_creates->begin(); it != json_creates->end(); it++)
@@ -325,12 +361,16 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 			Connection.NewTransaction();
 			Connection.AddTransaction(*it);
 			Connection.PostTransactionCommit();
-			delete *it;
-		}
-		delete json_creates;
+			delete *it;				// delete the json entry that was allocated
+		}						// for usage here
+		delete json_creates;				// delete the container holding all
+								// the "CREATE..." queries
 
-		std::string new_url;
-		std::string robots_url;
+		// Run all the newfound urls through robots.h
+		// which will check for robots.txt entries and
+		// disallow data colleciton
+		std::string new_url;		// get the name of a new url that was found
+		std::string robots_url;		// holds url that should have robots.txt (domain/robots.txt)
 		for (std::list<std::string>::iterator it=new_URLS->begin(); it != new_URLS->end(); it++)
 		{
 			int new_id = URL_directory.size();
@@ -350,19 +390,29 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 				}
 			}
 		}
-		delete new_URLS;
-		target_URLS = NULL;
+		delete new_URLS;	// delete the container
+		target_URLS = NULL;	// don't delete target_URLS, but,
+					// we will set it to NULL. I'm not sure if
+					// this is necessary.
+					// remember, URLS[source_url_id] = target_URLS
+					// so all the target urls are already in URLS
 
-		std::string footer = "[+] " + std::to_string(source_url_id) + " urls found.";
+		std::string footer = "[+] " + std::to_string(URLS.at(source_url_id)->size()) + " urls found.";
 		print_column (footer.c_str(), COLUMN_WIDTH);
+
+
+
+		// Now we will add all the new urls to the
+		// URL_queue
 		for (std::unordered_set<int>::iterator it=URLS.at(source_url_id)->begin(); it != URLS.at(source_url_id)->end(); it++)
 		{
-			std::string url = URL_directory.get_value(*it);
-			struct url_pair *url_pair_ = new url_pair ();
+			std::string url = URL_directory.get_value(*it);	// URLS is a map of source id -> target ids
+									// get_value() gets the actual url name
+			struct url_pair *url_pair_ = new url_pair ();	
 			url_pair_->origin = source_url;
 			url_pair_->url = url;
-			URL_queue.push(url_pair_);
-		}
+			URL_queue.push(url_pair_);			// we need the source url and target urlfor the
+		}							// mCurl() call we will use on this new url
 	}	
 	else
 	{
@@ -373,12 +423,12 @@ int mCurl (std::string origin_url, std::string source_url, int nth_curl)
 
 void clean_up ()
 {
-	//std::unordered_map<int, std::unordered_set<int>*> URLS;
 	for (std::unordered_map<int, std::unordered_set<int>*>::iterator it = URLS.begin(); it != URLS.end(); it++)
 	{
-		delete it->second;
-	}
+		delete it->second;	// delete the set of target urls
+	}				// remember URL[source url id] -> set of target url ids
 }
+
 int main (int argc, char* argv[])
 {
 	int n = 0;
@@ -387,7 +437,7 @@ int main (int argc, char* argv[])
 	ss >> max_curls;
 	std::string url = std::string(argv[1]);
 
-	if (url == "-q")
+	if (url == "-q")								// Option -q, for query
 	{
 		if (argc != 4)
 		{
@@ -397,32 +447,33 @@ int main (int argc, char* argv[])
 		}
 		Neo4jConn *Connection;
 		std::string selection = argv[3];
-		if (selection == "row")
-		{
-			Connection = new Neo4jConn ("out_row.json", "");
+		if (selection == "row")							// get the output format
+		{									//	- row
+			Connection = new Neo4jConn ("out_row.json", "");		//	- graph	
+		}									//	- row/graph
+		else if (selection == "graph")						//
+		{									//
+			Connection = new Neo4jConn ("", "out_graph.json");		//
+		} 									//
+		else if (selection == "row/graph")					//
+		{									//
+			std::cout << "row/graph\n";					//
+			Connection = new Neo4jConn ("out_row.json", "out_graph.json");	//
+		}									//
+		else									//
+		{									//
+			std::cout << "Invalid 2nd argument\n";				//
+			std::cout << "webcrawler: query\n";				//
+			std::cout << "crawl -q [\"query\"] [row,graph,row/graph]\n"; 	//
+			return 0;							//
 		}
-		else if (selection == "graph")
-		{
-			Connection = new Neo4jConn ("", "out_graph.json");
-		} 
-		else if (selection == "row/graph")
-		{
-			std::cout << "row/graph\n";
-			Connection = new Neo4jConn ("out_row.json", "out_graph.json");
-		}
-		else
-		{
-			std::cout << "Invalid 2nd argument\n";
-			std::cout << "webcrawler: query\n";
-			std::cout << "crawl -q [\"query\"] [row,graph,row/graph]\n"; 
-			return 0;
-		}
-		Connection->NewTransaction();
-		Connection->AddTransaction(argv[2], selection);
-		Connection->PostTransactionCommit();
+
+		Connection->NewTransaction();						// run the transaction
+		Connection->AddTransaction(argv[2], selection);				//
+		Connection->PostTransactionCommit();					//
 		std::cout << "[OK] crawl completed the query.\n";
 	}
-	else if (url == "-pq")
+	else if (url == "-pq")											// option -pq, for "pieced query"
 	{
 		if (argc != 6)
 		{
@@ -430,10 +481,10 @@ int main (int argc, char* argv[])
 			std::cout << "crawl -pq [nodes/edges] [id/label/properties] [property] [value]\n"; 
 			return 0;
 		}
-		std::string nodes_or_edges = argv[2];
-		std::string id_label_properties = argv[3];
-		std::string property = argv[4];
-		std::string value = argv[5];
+		std::string nodes_or_edges = argv[2];		// gather args
+		std::string id_label_properties = argv[3];	//
+		std::string property = argv[4];			//
+		std::string value = argv[5];			//
 
 		Neo4jConn Connection ("out_row.json", "out_graph.json");
 		Connection.NewTransaction();
@@ -442,24 +493,40 @@ int main (int argc, char* argv[])
 		std::cout << "[OK] crawl completed the query.\n";
 	}
 	else
-	{
-		robots::check(url);
-		if (robots::is_blacklisted(url)) return 0;
-		URL_directory.insert(0, argv[1]);
-		struct url_pair *url_pair_ = new url_pair;
-		url_pair_->origin = "";
-		url_pair_->url = argv[1];
-		URL_queue.push(url_pair_);
-		while (URL_queue.size() > 0 && n <= max_curls)
+	{								// the webcrawl
+		robots::check(url);					// check starting url robots.txt
+		if (robots::is_blacklisted(url)) return 0;		//
+
+		URL_directory.insert(0, argv[1]);			// insert into the map of source url ids -> target url ids
+		
+		struct url_pair *url_pair_ = new url_pair;		// make an entry to load into the queue	
+		url_pair_->origin = "";					//
+		url_pair_->url = argv[1];				//
+		URL_queue.push(url_pair_);				// load the queue
+
+		while (URL_queue.size() > 0 && n <= max_curls)						
 		{
+			// Perform the curl, the curl will add urls
+			// we find to the end of the URL_queue
 			if(mCurl(URL_queue.front()->origin, URL_queue.front()->url, n) == CURLE_OK) n++;
+
+			// delete memory used for the url_pair entry we ran curl with
 			delete URL_queue.front();
+
+			// remove the entry in the queue
 			URL_queue.pop();
 		}
-		std::string ofile_name = DATA_DIR;
-		ofile_name += "directory.txt";
-		URL_directory.write_file(ofile_name);
+									// URL_directory lists
+									// id url
+									// id url	
+									// ...
+		std::string ofile_name = DATA_DIR;			// prepare to write the URL_directory
+		ofile_name += "directory.txt";				// to data/directory.txt
+		URL_directory.write_file(ofile_name);			// write
+
+
 		clean_up();
+
 		std::cout << "[OK] crawl finished successfully\n";
 	}
 }
