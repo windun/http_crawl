@@ -439,26 +439,52 @@ int main (int argc, char* argv[])
 
 	if (url == "-q")								// Option -q, for query
 	{
-		if (argc != 4)
-		{
+		if (argc < 4)
+		{	
 			std::cout << "webcrawler: query\n";
-			std::cout << "crawl -q [\"query\"] [row,graph,row/graph]\n"; 
+			std::cout << "crawl -q [\"query\"] [row|graph|row/graph] [-r|-g|-rg] [filename1] [filename2]\n"; 
 			return 0;
 		}
 		Neo4jConn *Connection;
 		std::string selection = argv[3];
+		std::string file_out_opt = argv[4];
+		std::string out_row_filename;
+		std::string out_graph_filename;
+
+		if(file_out_opt == "-r") 			// set row filename
+		{	
+			out_row_filename = argv[5];
+			out_graph_filename = "out_graph.json";
+		}
+		else if (file_out_opt == "-g") 			// set graph filename
+		{
+			out_graph_filename = argv[5];
+			out_row_filename = "out_row.json";
+		}
+		else if (file_out_opt == "-rg") 		// set row and graph filenames
+		{
+			out_row_filename = argv[5];
+			out_graph_filename = argv[6];
+		}
+		else
+		{
+			out_row_filename = "out_row.json";
+			out_graph_filename = "out_graph.json";
+		}
+
+
 		if (selection == "row")							// get the output format
 		{									//	- row
-			Connection = new Neo4jConn ("out_row.json", "");		//	- graph	
+			Connection = new Neo4jConn (out_row_filename, "");		//	- graph	
 		}									//	- row/graph
 		else if (selection == "graph")						//
 		{									//
-			Connection = new Neo4jConn ("", "out_graph.json");		//
+			Connection = new Neo4jConn ("", out_graph_filename);		//
 		} 									//
 		else if (selection == "row/graph")					//
 		{									//
 			std::cout << "row/graph\n";					//
-			Connection = new Neo4jConn ("out_row.json", "out_graph.json");	//
+			Connection = new Neo4jConn (out_row_filename, out_graph_filename);	
 		}									//
 		else									//
 		{									//
